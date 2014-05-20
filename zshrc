@@ -59,6 +59,7 @@ setopt HIST_IGNORE_SPACE
 setopt HIST_NO_STORE
 setopt RM_STAR_WAIT
 setopt EXTENDED_GLOB
+setopt DVORAK
 
 # Play safe!
 alias 'rm=rm -i'

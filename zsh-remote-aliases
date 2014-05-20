@@ -1,1 +1,1 @@
-alias vim='vim -S ~/.dotfiles-harrison/.vimrc'
+alias vim='vim -S ~/.dotfiles-harrison/vimrc'
