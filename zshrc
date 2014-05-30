@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh configuration.
-ZSH=$HOME/.dotfiles-harrison/oh-my-zsh
+ZSH=$HOME/.dotfiles-harrison/oh-my-zsh/
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -86,8 +86,8 @@ alias update='sudo apt-fast update && apt-fast upgrade'
 alias todo='clear && todo'
 alias idea='idea.sh'
 alias studio='studio.sh'
-alias zshrc='vim ~/.zshrc'
-alias vimrc='vim ~/.vimrc'
+alias zshrc='vim ~/.dotfiles-harrison/zshrc'
+alias vimrc='vim ~/.dotfiles-harrison/vimrc'
 alias vim='vim -S ~/.dotfiles-harrison/vimrc'
 
 # SUFFIX ALIAS
