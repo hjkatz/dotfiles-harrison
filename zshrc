@@ -88,6 +88,7 @@ alias idea='idea.sh'
 alias studio='studio.sh'
 alias zshrc='vim ~/.zshrc'
 alias vimrc='vim ~/.vimrc'
+alias vim='vim -S ~/.dotfiles-harrison/vimrc'
 
 # SUFFIX ALIAS
 alias -s txt=vim

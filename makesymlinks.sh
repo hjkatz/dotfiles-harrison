@@ -30,3 +30,9 @@ for file in $files; do
     ln -s $dir/$file ~/.$file
     echo "done"
 done
+
+# link my .zshrc and zshrc inside of .dotfiles-harrison
+mv $dir/.zshrc $olddir
+echo "Creating symlink to .zshrc in .dotfiles-harrison directory."
+ln -s $dir/zshrc $dir/.zshrc
+echo "done"
