@@ -1,0 +1,12 @@
+[user]
+	email = hjkatz03@gmail.com
+	name = hjkatz
+[alias]
+	st = status
+	co = checkout
+[color]
+	diff = auto
+[core]
+	autocrlf = input
+[help]
+	autocorrect = 30
