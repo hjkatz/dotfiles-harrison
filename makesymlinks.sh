@@ -36,3 +36,9 @@ mv $dir/.zshrc $olddir
 echo "Creating symlink to .zshrc in .dotfiles-harrison directory."
 ln -s $dir/zshrc $dir/.zshrc
 echo "done"
+
+# link my .gitconfig and gitconfig inside of .dotfiles-harrison
+mv $dir/.gitconfig $olddir
+echo "Creating symlink to .gitconfig in .dotfiles-harrison directory."
+ln -s $dir/gitconfig $dir/.gitconfig
+echo "done"

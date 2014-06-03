@@ -27,3 +27,7 @@ function vack () {
 function taile () {
     tail -f /var/log/httpd/$1*-error_log
 }
+
+function git() { 
+    (HOME=$DOTFILES/; command git $*;)
+};
