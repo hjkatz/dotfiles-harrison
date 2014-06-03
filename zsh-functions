@@ -1,0 +1,29 @@
+# This is a file full of functions
+
+function chpwd ()
+{
+    cl
+}
+
+function ack () {
+    if [ -e ~/bin/ack ] ; then
+        ~/bin/ack "$@"
+    elif [ -e /usr/bin/ack ] ; then
+        /usr/bin/ack "$@"
+    else
+        \grep -lR "$@" | \grep -v "/\.svn/"
+    fi
+}
+
+function vack () {
+    files="$(ack -l "$@")"
+    if [ -z "$files" ] ; then
+        echo "No matches found."
+    else
+        vim $files
+    fi
+}
+
+function taile () {
+    tail -f /var/log/httpd/$1*-error_log
+}

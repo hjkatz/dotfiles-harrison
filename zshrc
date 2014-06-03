@@ -16,6 +16,7 @@ COMPLETION_WAITING_DOTS="true"
 # Source my files
 source $DOTFILES/*.version
 source $DOTFILES/zsh-colors
+source $DOTFILES/zsh-functions
 
 # Plugins need to be setup before sourcing oh-my-zsh
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
@@ -45,27 +46,3 @@ setopt HIST_NO_STORE
 setopt RM_STAR_WAIT
 setopt EXTENDED_GLOB
 setopt DVORAK
-
-function chpwd ()
-{
-    cl
-}
-
-function ack () {
-    if [ -e ~/bin/ack ] ; then
-        ~/bin/ack "$@"
-    elif [ -e /usr/bin/ack ] ; then
-        /usr/bin/ack "$@"
-    else
-        \grep -lR "$@" | \grep -v "/\.svn/"
-    fi
-}
-
-function vack () {
-    files="$(ack -l "$@")"
-    if [ -z "$files" ] ; then
-        echo "No matches found."
-    else
-        vim $files
-    fi
-}
