@@ -1,5 +1,6 @@
 # Path to your oh-my-zsh configuration.
-ZSH=$HOME/.dotfiles-harrison/oh-my-zsh/
+DOTFILES=$HOME/.dotfiles-harrison/
+ZSH=$DOTFILES/oh-my-zsh/
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -12,16 +13,15 @@ DEFAULT_USER="harrison"
 
 COMPLETION_WAITING_DOTS="true"
 
-# Uncomment following line if you want to disable marking untracked files under
-# VCS as dirty. This makes repository status check for large repositories much,
-# much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
+# Source my files
+source $DOTFILES/zsh-colors
+source $DOTFILES/zsh-aliases
 
+# Plugins need to be setup before sourcing oh-my-zsh
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(git-fast git-extras sudo web-search command-not-found zsh-syntax-highlighting)
-
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
@@ -40,33 +40,6 @@ setopt HIST_NO_STORE
 setopt RM_STAR_WAIT
 setopt EXTENDED_GLOB
 setopt DVORAK
-
-# ALIAS
-alias 'rm=rm -i'
-alias 'mv=mv -i'
-alias 'cp=cp -i'
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-alias l='ls'
-alias cl='clear && ls'
-alias ises='psql -U postgres ises'
-alias ..='cd ..'
-alias 'cd..=cd ..'
-alias install='sudo apt-fast install'
-alias purge='sudo apt-fast purge'
-alias update='sudo apt-fast update && apt-fast upgrade'
-alias search='sudo apt-cache search'
-alias todo='clear && todo'
-alias idea='idea.sh'
-alias studio='studio.sh'
-alias zshrc='vim ~/.dotfiles-harrison/zshrc'
-alias vimrc='vim ~/.dotfiles-harrison/vimrc'
-alias vim='vim -S ~/.dotfiles-harrison/vimrc'
-
-# SUFFIX ALIAS
-alias -s txt=vim
-alias -s mp4=vlc
 
 function chpwd ()
 {
@@ -91,57 +64,3 @@ function vack () {
         vim $files
     fi
 }
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-
-# Define Colors
-# normal
-black="%{^[[0;30m%}"
-red="%{^[[0;31m%}"
-green="%{^[[0;32m%}"
-yellow="%{^[[0;33m%}"
-blue="%{^[[0;34m%}"
-magenta="%{^[[0;35m%}"
-cyan="%{^[[0;36m%}"
-white="%{^[[0;37m%}"
-
-# bold (grey is actually bold black)
-grey="%{^[[01;30m%}"
-bred="%{^[[01;31m%}"
-bgreen="%{^[[01;32m%}"
-byellow="%{^[[01;33m%}"
-bblue="%{^[[01;34m%}"
-bmagenta="%{^[[01;35m%}"
-bcyan="%{^[[01;36m%}"
-bwhite="%{^[[01;37m%}"
-
-# underscore
-ublack="%{^[[04;30m%}"
-ugrey="%{^[[01;04;30m%}"
-ured="%{^[[04;31m%}"
-ugreen="%{^[[04;32m%}"
-uyellow="%{^[[04;33m%}"
-ublue="%{^[[04;34m%}"
-umagenta="%{^[[04;35m%}"
-ucyan="%{^[[04;36m%}"
-uwhite="%{^[[04;37m%}"
-
-# blinking
-kgrey="%{^[[01;05;30m%}"
-kred="%{^[[05;31m%}"
-kgreen="%{^[[05;32m%}"
-kyellow="%{^[[05;33m%}"
-kblue="%{^[[05;34m%}"
-kmagenta="%{^[[05;35m%}"
-kcyan="%{^[[05;36m%}"
-kwhite="%{^[[05;37m%}"
-
-normal="%{^[[0m%}"
-
-# example of background colour
-# foreground white = 37
-# background red = 41
-fgwhitebgred="%{^[[0;37;41m%}"

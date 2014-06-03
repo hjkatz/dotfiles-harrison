@@ -11,6 +11,7 @@ set smartcase
 set incsearch
 set formatoptions+=r
 set pastetoggle=<F12>
+set hlsearch
 
 syntax on
 filetype on

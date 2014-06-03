@@ -1,0 +1,76 @@
+# This is my colors file
+
+# normal
+black="%{^[[0;30m%}"
+red="%{^[[0;31m%}"
+green="%{^[[0;32m%}"
+yellow="%{^[[0;33m%}"
+blue="%{^[[0;34m%}"
+magenta="%{^[[0;35m%}"
+cyan="%{^[[0;36m%}"
+white="%{^[[0;37m%}"
+
+# bold (grey is actually bold black)
+grey="%{^[[01;30m%}"
+bred="%{^[[01;31m%}"
+bgreen="%{^[[01;32m%}"
+byellow="%{^[[01;33m%}"
+bblue="%{^[[01;34m%}"
+bmagenta="%{^[[01;35m%}"
+bcyan="%{^[[01;36m%}"
+bwhite="%{^[[01;37m%}"
+
+# underscore
+ublack="%{^[[04;30m%}"
+ugrey="%{^[[01;04;30m%}"
+ured="%{^[[04;31m%}"
+ugreen="%{^[[04;32m%}"
+uyellow="%{^[[04;33m%}"
+ublue="%{^[[04;34m%}"
+umagenta="%{^[[04;35m%}"
+ucyan="%{^[[04;36m%}"
+uwhite="%{^[[04;37m%}"
+
+# blinking
+kgrey="%{^[[01;05;30m%}"
+kred="%{^[[05;31m%}"
+kgreen="%{^[[05;32m%}"
+kyellow="%{^[[05;33m%}"
+kblue="%{^[[05;34m%}"
+kmagenta="%{^[[05;35m%}"
+kcyan="%{^[[05;36m%}"
+kwhite="%{^[[05;37m%}"
+
+normal="%{^[[0m%}"
+
+# example of background colour
+# foreground white = 37
+# background red = 41
+fgwhitebgred="%{^[[0;37;41m%}"
+
+# Color settings for zsh-syntax-highlighing
+
+# Define default styles.
+ZSH_HIGHLIGHT_STYLES[default]='none'
+ZSH_HIGHLIGHT_STYLES[unknown-token]='bg=red,bold'
+ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=yellow,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=green'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=green'
+ZSH_HIGHLIGHT_STYLES[function]='fg=green'
+ZSH_HIGHLIGHT_STYLES[command]='fg=green'
+ZSH_HIGHLIGHT_STYLES[precommand]='fg=green,underline'
+ZSH_HIGHLIGHT_STYLES[commandseparator]='fg=magenta,bold'
+ZSH_HIGHLIGHT_STYLES[hashed-command]='fg=green'
+ZSH_HIGHLIGHT_STYLES[path]='white'
+ZSH_HIGHLIGHT_STYLES[path_prefix]='white'
+ZSH_HIGHLIGHT_STYLES[path_approx]='fg=yellow,bold'
+ZSH_HIGHLIGHT_STYLES[globbing]='fg=cyan'
+ZSH_HIGHLIGHT_STYLES[history-expansion]='fg=cyan'
+ZSH_HIGHLIGHT_STYLES[single-hyphen-option]='fg=cyan,bold'
+ZSH_HIGHLIGHT_STYLES[double-hyphen-option]='fg=cyan,bold'
+ZSH_HIGHLIGHT_STYLES[back-quoted-argument]='fg=yellow,bold'
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=yellow'
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=yellow'
+ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]='none'
+ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]='none'
+ZSH_HIGHLIGHT_STYLES[assign]='none'

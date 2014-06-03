@@ -1,0 +1,33 @@
+# This is my aliases file
+
+alias 'rm=rm -i'
+alias 'mv=mv -i'
+alias 'cp=cp -i'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias l='ls'
+alias cl='clear && ls'
+alias ises='psql -U postgres ises'
+alias ..='cd ..'
+alias 'cd..=cd ..'
+alias install='sudo apt-fast install'
+alias purge='sudo apt-fast purge'
+alias update='sudo apt-fast update && apt-fast upgrade'
+alias search='sudo apt-cache search'
+alias todo='clear && todo'
+alias idea='idea.sh'
+alias studio='studio.sh'
+alias zshrc='vim ~/.dotfiles-harrison/zshrc'
+alias zsh-aliases='vim ~/.dotfiles-harrison/zsh-aliases'
+alias zsh-colors='vim ~/.dotfiles-harrison/zsh-colors'
+alias vimrc='vim ~/.dotfiles-harrison/vimrc'
+alias vim='vim -S ~/.dotfiles-harrison/vimrc'
+
+# SUFFIX ALIAS
+alias -s txt=vim
+alias -s mp4=vlc
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
