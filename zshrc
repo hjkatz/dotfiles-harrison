@@ -23,6 +23,8 @@ source $DOTFILES/zsh-colors
 plugins=(git-fast git-extras sudo web-search command-not-found zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
+source $DOTFILES/zsh-syntax-highlighting-settings
+
 # Source my aliases last to overwrite any created by oh-my-zsh
 source $DOTFILES/zsh-aliases
 

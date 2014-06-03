@@ -18,11 +18,12 @@ alias search='sudo apt-cache search'
 alias todo='clear && todo'
 alias idea='idea.sh'
 alias studio='studio.sh'
+alias vimrc='vim ~/.dotfiles-harrison/vimrc'
+alias vim='vim -S ~/.dotfiles-harrison/vimrc'
 alias zshrc='vim ~/.dotfiles-harrison/zshrc'
 alias zsh-aliases='vim ~/.dotfiles-harrison/zsh-aliases'
 alias zsh-colors='vim ~/.dotfiles-harrison/zsh-colors'
-alias vimrc='vim ~/.dotfiles-harrison/vimrc'
-alias vim='vim -S ~/.dotfiles-harrison/vimrc'
+alias zsh-syntax-highlighting-settings='vim ~/.dotfiles-harrison/zsh-syntax-highlighting-settings'
 
 # SUFFIX ALIAS
 alias -s txt=vim
