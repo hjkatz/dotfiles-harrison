@@ -14,6 +14,7 @@ DEFAULT_USER="harrison"
 COMPLETION_WAITING_DOTS="true"
 
 # Source my files
+source $DOTFILES/*.version
 source $DOTFILES/zsh-colors
 
 # Plugins need to be setup before sourcing oh-my-zsh
@@ -29,7 +30,7 @@ source $DOTFILES/zsh-syntax-highlighting-settings
 source $DOTFILES/zsh-aliases
 
 # Customize to your needs...
-export PATH=$PATH:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/pgsql-9.1/bin/:/home/harrison/Apps/idea/bin/:/home/harrison/Apps/android-sdk-linux/tools/:/home/harrison/Apps/android-sdk-linux/platform-tools/:/home/harrison/Apps/android-studio/bin/
+export PATH=$PATH:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/pgsql-9.1/bin/:/home/harrison/Apps/idea/bin/:/home/harrison/Apps/android-sdk-linux/tools/:/home/harrison/Apps/android-sdk-linux/platform-tools/:/home/harrison/Apps/android-studio/bin/:$DOTFILES
 export EDITOR=/usr/bin/vim
 
 # sets completion to be arrow driven

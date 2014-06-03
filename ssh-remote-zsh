@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+# check if ~/.ssh/id_rsa.pub is in the file REMOTE:~/.ssh/authorized_keys
+# if not, then "ssh-copy-id REMOTE"
+
+if ssh -A $1 "[[ ! -e ~/.dotfiles-harrison/$DOTFILES_VERSION.version ]]" # assuming bash is the default shell
+then
+    echo "transferring files..."
+    tar c -C${HOME} --exclude-vcs -h -z .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME}'
+fi
+
+# maybe check if zsh is installed and if not install it? Or return an error?
+
+ssh -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ zsh"
