@@ -12,6 +12,7 @@ set incsearch
 set formatoptions+=r
 set pastetoggle=<F12>
 set hlsearch
+set wrap
 
 syntax on
 filetype on
