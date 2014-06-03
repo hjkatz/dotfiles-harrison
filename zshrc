@@ -8,28 +8,8 @@ ZSH=$HOME/.dotfiles-harrison/oh-my-zsh/
 # DEFAULT: robbyrussell
 ZSH_THEME="katz"
 
-# username for use with certain themes
 DEFAULT_USER="harrison"
 
-# Set to this to use case-sensitive completion
-# CASE_SENSITIVE="true"
-
-# Comment this out to disable bi-weekly auto-update checks
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment to change how often before auto-updates occur? (in days)
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment following line if you want to disable colors in ls
-# DISABLE_LS_COLORS="true"
-
-# Uncomment following line if you want to disable autosetting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment following line if you want to disable command autocorrection
-# DISABLE_CORRECTION="true"
-
-# Uncomment following line if you want red dots to be displayed while waiting for completion
 COMPLETION_WAITING_DOTS="true"
 
 # Uncomment following line if you want to disable marking untracked files under
@@ -40,7 +20,7 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git)
+plugins=(git-fast git-extras sudo web-search command-not-found)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -61,17 +41,10 @@ setopt RM_STAR_WAIT
 setopt EXTENDED_GLOB
 setopt DVORAK
 
-# Play safe!
+# ALIAS
 alias 'rm=rm -i'
 alias 'mv=mv -i'
 alias 'cp=cp -i'
-
-# alt+s inserts sudo at beginning of line
-insert_sudo () { zle beginning-of-line; zle -U "sudo " }
-zle -N insert-sudo insert_sudo
-bindkey "^[s" insert-sudo
-
-# ALIAS
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
@@ -83,6 +56,7 @@ alias 'cd..=cd ..'
 alias install='sudo apt-fast install'
 alias purge='sudo apt-fast purge'
 alias update='sudo apt-fast update && apt-fast upgrade'
+alias search='sudo apt-cache search'
 alias todo='clear && todo'
 alias idea='idea.sh'
 alias studio='studio.sh'
