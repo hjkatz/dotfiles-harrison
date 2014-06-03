@@ -15,7 +15,6 @@ COMPLETION_WAITING_DOTS="true"
 
 # Source my files
 source $DOTFILES/zsh-colors
-source $DOTFILES/zsh-aliases
 
 # Plugins need to be setup before sourcing oh-my-zsh
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
@@ -23,6 +22,9 @@ source $DOTFILES/zsh-aliases
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(git-fast git-extras sudo web-search command-not-found zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
+
+# Source my aliases last to overwrite any created by oh-my-zsh
+source $DOTFILES/zsh-aliases
 
 # Customize to your needs...
 export PATH=$PATH:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/pgsql-9.1/bin/:/home/harrison/Apps/idea/bin/:/home/harrison/Apps/android-sdk-linux/tools/:/home/harrison/Apps/android-sdk-linux/platform-tools/:/home/harrison/Apps/android-studio/bin/
