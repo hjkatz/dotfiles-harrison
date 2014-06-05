@@ -1,4 +1,19 @@
-set ts=4 sw=4 expandtab
+"""BEGIN VUNDLE INSTALLATION"""
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+    Plugin 'gmarik/Vundle.vim'
+    Plugin 'https://github.com/gmarik/vundle'
+call vundle#end()            " required
+filetype plugin indent on    " required
+"""END VUNDLE INSTALLATION"""
+
+set ts=4
+set sw=4
+set expandtab
 set ai
 set si
 set background=dark
