@@ -6,7 +6,7 @@ filetype off                  " required
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
     Plugin 'gmarik/Vundle.vim'
-    Plugin 'https://github.com/gmarik/vundle'
+    Bundle 'LaTeX-Box-Team/LaTeX-Box'
 call vundle#end()            " required
 filetype plugin indent on    " required
 """END VUNDLE INSTALLATION"""
