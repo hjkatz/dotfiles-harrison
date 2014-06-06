@@ -1,6 +1,6 @@
 # Path to your oh-my-zsh configuration.
-DOTFILES=$HOME/.dotfiles-harrison/
-ZSH=$DOTFILES/oh-my-zsh/
+DOTFILES=$HOME/.dotfiles-harrison
+ZSH=$DOTFILES/oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -21,7 +21,7 @@ source $DOTFILES/zsh-colors
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git-fast git-extras sudo web-search command-not-found zsh-syntax-highlighting)
+plugins=(git gitfast git-extras sudo web-search command-not-found zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
 source $DOTFILES/zsh-syntax-highlighting-settings
