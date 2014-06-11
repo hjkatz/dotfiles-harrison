@@ -11,4 +11,4 @@ fi
 
 # maybe check if zsh is installed and if not install it? Or return an error?
 
-ssh -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ zsh"
+ssh -Y -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ zsh"
