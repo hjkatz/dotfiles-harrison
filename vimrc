@@ -36,7 +36,7 @@ filetype indent on
 let g:LatexBox_latexmk_options              = "-pdf -pvc"
 let g:LatexBox_output_type                  = "pdf"
 let g:LatexBox_latexmk_preview_continuously = 1
-let g:LatexBox_viewer                       = "evince"
+let g:LatexBox_viewer                       = "zathura"
 
 function! SuperTab()
     if(strpart(getline('.'),col('.')-2,1)=~'^\W\?$')
