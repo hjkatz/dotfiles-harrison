@@ -10,3 +10,5 @@
 	autocrlf = input
 [help]
 	autocorrect = 30
+[push]
+	default = simple

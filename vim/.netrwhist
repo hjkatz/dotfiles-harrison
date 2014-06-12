@@ -1,5 +1,6 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_cnt =4
 let g:netrw_dirhist_1='/home/harrison/Projects/XERP/xerp/mobile/mobile_xerp/android/src/main/java/com/neadwerx/thd/mobile/ises/fieldteam/helper'
 let g:netrw_dirhist_2='/home/harrison/Desktop'
 let g:netrw_dirhist_3='/home/harrison/.dotfiles-harrison/vim/bundle/Vundle.vim'
+let g:netrw_dirhist_4='/home/harrison/.ssh'

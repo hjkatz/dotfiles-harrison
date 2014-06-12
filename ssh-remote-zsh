@@ -6,9 +6,10 @@
 if ssh -A $1 "[[ ! -e ~/.dotfiles-harrison/$DOTFILES_VERSION.version ]]" # assuming bash is the default shell
 then
     echo "transferring files..."
-    tar c -C${HOME} -h -z .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME}'
+    ssh $1 "rm -rf ~/.dotfiles-harrison/*.version"
+    tar c -C${HOME} -h -z --exclude-vcs .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME}'
 fi
 
 # maybe check if zsh is installed and if not install it? Or return an error?
 
-ssh -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ zsh"
+ssh -Y -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ zsh"
