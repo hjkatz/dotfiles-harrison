@@ -9,6 +9,4 @@
 [core]
 	autocrlf = input
 [help]
-	autocorrect = 30
-[push]
-	default = simple
+	autocorrect = 10
