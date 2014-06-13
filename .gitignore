@@ -2,3 +2,4 @@
 *.swp
 vim/bundle/*
 oh-my-zsh/cache/*
+vim/.netrwhist

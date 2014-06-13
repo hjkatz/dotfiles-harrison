@@ -179,13 +179,13 @@ __git_ps1_show_upstream ()
 		"") # no upstream
 			p="" ;;
 		"0	0") # equal to upstream
-			p="=" ;;
+			p="%{$fg[green]%}✓%{$reset_color%}%{$fg_bold[red]%}" ;;
 		"0	"*) # ahead of upstream
-			p=">" ;;
+			p="%{$fg_bold[green]%}↑%{$reset_color%}" ;;
 		*"	0") # behind upstream
-			p="<" ;;
+			p="%{$fg_bold[red]%}↓%{$reset_color%}" ;;
 		*)	    # diverged from upstream
-			p="<>" ;;
+			p="%{$fg_bold[yellow]%}◊%{$reset_color%}" ;;
 		esac
 	else
 		case "$count" in
@@ -428,6 +428,10 @@ __git_ps1 ()
 	if [ $pcmode = yes ] && [ -n "${GIT_PS1_SHOWCOLORHINTS-}" ]; then
 		__git_ps1_colorize_gitstring
 	fi
+
+    if [ -n "$p" ]; then
+        p=" $p"
+    fi
 
 	local f="$w$i$s$u"
 	local gitstring="$c${b##refs/heads/}${f:+$z$f}$r$p"
