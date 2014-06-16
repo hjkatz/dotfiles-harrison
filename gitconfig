@@ -6,7 +6,5 @@
 	co = checkout
 [color]
 	diff = auto
-[core]
-	autocrlf = input
 [help]
 	autocorrect = 10
