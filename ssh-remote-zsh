@@ -1,4 +1,17 @@
-#!/bin/zsh
+#!/bin/bash
+
+FLAG=""
+
+# parse commandline
+while [ $# -gt 0 ]
+do
+      arg="$1"
+      case "$arg" in
+         -*) FLAG="$FLAG $1"; ;; # add flag
+         *) break;; # not option, its some argument
+       esac
+       shift
+done
 
 # check if ~/.ssh/id_rsa.pub is in the file REMOTE:~/.ssh/authorized_keys
 # if not, then "ssh-copy-id REMOTE"
@@ -12,4 +25,4 @@ fi
 
 # maybe check if zsh is installed and if not install it? Or return an error?
 
-ssh -Y -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ zsh"
+ssh $FLAG -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ zsh"
