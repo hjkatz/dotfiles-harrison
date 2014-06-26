@@ -270,12 +270,12 @@ __git_ps1 ()
                 fi
             fi
             if [ -n "${GIT_PS1_SHOWSTASHSTATE-}" ]; then
-                git rev-parse --verify refs/stash >/dev/null 2>&1 && s="$"
+                git rev-parse --verify refs/stash >/dev/null 2>&1 && s="%{$fg_bold[magenta]%}$%{$fg_bold[red]%}"
             fi
 
             if [ -n "${GIT_PS1_SHOWUNTRACKEDFILES-}" ]; then
                 if [ -n "$(git ls-files --others --exclude-standard)" ]; then
-                    u="%"
+                    u="%{$fg_bold[red]%}…"
                 fi
             fi
 
@@ -288,7 +288,7 @@ __git_ps1 ()
             p=" $p"
         fi
 
-        local f="$w$i$s$u"
-        printf -- "${1:- (%s)}" "$c${b##refs/heads/}${f:+ $f}$r$p"
+        local f="$w$i"
+        printf -- "${1:- (%s)}" "$s$c${b##refs/heads/}$u${f:+ $f}$r$p"
     fi
 }

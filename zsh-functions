@@ -3,6 +3,12 @@
 function chpwd ()
 {
     cl
+
+    GITDIR="$(git rev-parse --show-toplevel 2>/dev/null)"
+    if [[ "$GITDIR" == "$(pwd)" ]]; then
+        # Fetch changes for current branch
+        git fetch $(git rev-parse --symbolic-full-name --abbrev-ref "@{u}" | sed 's!/! !') 2>/dev/null 1>/dev/null
+    fi
 }
 
 function ack () {
