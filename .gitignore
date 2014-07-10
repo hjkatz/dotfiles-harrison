@@ -3,3 +3,4 @@
 vim/bundle/*
 oh-my-zsh/cache/*
 vim/.netrwhist
+vim/undo/*
