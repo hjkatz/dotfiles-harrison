@@ -25,6 +25,7 @@ alias zsh-aliases='vim ~/.dotfiles-harrison/zsh-aliases'
 alias zsh-functions='vim ~/.dotfiles-harrison/zsh-functions'
 alias zsh-colors='vim ~/.dotfiles-harrison/zsh-colors'
 alias zsh-syntax-highlighting-settings='vim ~/.dotfiles-harrison/zsh-syntax-highlighting-settings'
+alias gitconfig='vim ~/.dotfiles-harrison/gitconfig'
 
 # SUFFIX ALIAS
 alias -s txt=vim

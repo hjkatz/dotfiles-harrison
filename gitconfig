@@ -8,3 +8,5 @@
 	diff = auto
 [help]
 	autocorrect = 10
+[push]
+	default = simple

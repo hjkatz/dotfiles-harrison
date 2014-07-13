@@ -2,6 +2,15 @@
 DOTFILES=$HOME/.dotfiles-harrison
 ZSH=$DOTFILES/oh-my-zsh
 
+# update if needed
+function update_dotfiles
+{
+    cd $DOTFILES
+    git pull
+}
+
+update_dotfiles()
+
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
