@@ -3,7 +3,7 @@ DOTFILES=$HOME/.dotfiles-harrison
 ZSH=$DOTFILES/oh-my-zsh
 
 # update if needed
-function update_dotfiles
+function update_dotfiles ()
 {
     cd $DOTFILES
     git pull
