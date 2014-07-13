@@ -8,8 +8,7 @@ function update_dotfiles ()
     cd $DOTFILES
     git pull
 }
-
-update_dotfiles()
+update_dotfiles
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
