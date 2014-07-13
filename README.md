@@ -2,7 +2,7 @@
 
 This repo holds customizations for many programs and environments.
 
-### What is this repository for? ###
+### What is this repository for?
 
 * Dotfiles
 * Configurations
