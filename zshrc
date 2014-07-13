@@ -7,6 +7,7 @@ function update_dotfiles ()
 {
     cd $DOTFILES
     git pull
+    cd $HOME
 }
 update_dotfiles
 
