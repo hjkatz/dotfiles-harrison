@@ -6,7 +6,12 @@ ZSH=$DOTFILES/oh-my-zsh
 function update_dotfiles ()
 {
     cd $DOTFILES
-    git pull
+
+    local IS_GIT_DIR=$(git rev-parse)
+    if [[ $IS_GIT_DIR == 0 ]] ; then
+        git pull
+    fi
+
     cd $HOME
 }
 update_dotfiles
