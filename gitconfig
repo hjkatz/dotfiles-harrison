@@ -6,6 +6,7 @@
 	co = checkout
 [color]
 	diff = auto
+	ui = true
 [help]
 	autocorrect = 10
 [push]
