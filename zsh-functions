@@ -23,7 +23,12 @@ function ack () {
 }
 
 function vack () {
-    files="$(ack -l "$@")"
+    if [ type ag >/dev/null 2>&1 ] ; then
+        files="$(ag -l "$@")"
+    else
+        files="$(ack -l "$@")"
+    fi
+
     if [ -z "$files" ] ; then
         echo "No matches found."
     else
