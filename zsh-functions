@@ -23,6 +23,8 @@ function ack () {
 }
 
 function vack () {
+    setopt local_options SH_WORD_SPLIT
+
     if [ type ag >/dev/null 2>&1 ] ; then
         files="$(ag -l "$@")"
     else
