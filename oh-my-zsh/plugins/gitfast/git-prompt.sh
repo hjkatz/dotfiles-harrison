@@ -272,7 +272,8 @@ __git_ps1 ()
             if [ -n "${GIT_PS1_SHOWSTASHSTATE-}" ]; then
                 git rev-parse --verify refs/stash >/dev/null 2>&1 && 
                 {
-                    if [ "$(git stash list | grep -q $(git rev-parse --symbolic-full-name --abbrev-ref "@{u}" | sed 's#\w*/##'))" ] ; then
+                    # check exit status of the command
+                    if ( exit $(git stash list | grep -q $(git rev-parse --symbolic-full-name --abbrev-ref "@{u}" | sed 's#\w*/##')) ) ; then
                         s="%{$fg_bold[green]%}$%{$fg_bold[red]%}"
                     else
                         s="%{$fg_bold[magenta]%}$%{$fg_bold[red]%}"
