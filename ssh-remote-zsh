@@ -19,7 +19,7 @@ done
 if ssh -A $1 "[[ ! -e ~/.dotfiles-harrison/$DOTFILES_VERSION.version ]]" # assuming bash is the default shell
 then
     echo "transferring files..."
-    ssh $1 "rm -rf ~/.dotfiles-harrison/*.version"
+    ssh $1 "rm -rf ~/.dotfiles-harrison/*.version > /dev/null 2>&1"
     tar c -C${HOME} -h -z --exclude-vcs .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME}'
 fi
 

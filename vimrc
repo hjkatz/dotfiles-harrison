@@ -47,7 +47,7 @@ function! SuperTab()
     if(strpart(getline('.'),col('.')-2,1)=~'^\W\?$')
         return "\<Tab>"
     else
-        return "\<C-n>"
+        return "\<C-p>"
     endif
 endfunction
 
@@ -77,7 +77,6 @@ augroup AutoReloadVimRC
   au BufWritePost $MYVIMRC so $MYVIMRC
 augroup END
 
-
 " prevent accidental help
 noremap <F1> <Esc>
 
@@ -92,8 +91,8 @@ if exists("+undofile")
   if isdirectory($DOTFILES . '/vim/undo') == 0
     :silent !mkdir -p ~/.vim/undo > /dev/null 2>&1
   endif
-  set undodir=./.vim-undo//
-  set undodir+=~/.vim/undo//
+  set undodir=./.vim-undo/
+  set undodir+=~/.vim/undo/
   set undofile
 endif
 

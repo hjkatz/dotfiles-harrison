@@ -3,13 +3,15 @@ DOTFILES=$HOME/.dotfiles-harrison
 ZSH=$DOTFILES/oh-my-zsh
 
 # update if needed
+UPDATED=false
 function update_dotfiles ()
 {
     cd $DOTFILES
 
-    local IS_GIT_DIR=$(git rev-parse)
+    local IS_GIT_DIR=$(git rev-parse 2> /dev/null)
     if [[ $IS_GIT_DIR == 0 ]] ; then
-        git pull
+        git pull > /dev/null 2>&1
+        $UPDATED=true
     fi
 
     cd $HOME
@@ -39,6 +41,11 @@ source $DOTFILES/zsh-syntax-highlighting-settings
 # Source my aliases last to overwrite any created by oh-my-zsh
 source $DOTFILES/zsh-aliases
 source $DOTFILES/zsh-functions
+
+# Echo updated message after sourcing files
+if [ $UPDATED = true ] ; then
+    echo "Updated to $DOTFILES_VERSION"
+fi
 
 # Customize to your needs...
 export PATH=$PATH:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/pgsql-9.1/bin/:/home/harrison/Apps/idea/bin/:/home/harrison/Apps/android-sdk-linux/tools/:/home/harrison/Apps/android-sdk-linux/platform-tools/:/home/harrison/Apps/android-studio/bin/:$DOTFILES
