@@ -19,6 +19,7 @@ set rtp+=~/.dotfiles-harrison/vim/bundle/Vundle.vim
 call vundle#begin()
     Plugin 'gmarik/Vundle.vim'
     Plugin 'LaTeX-Box-Team/LaTeX-Box'
+    Plugin 'tpope/vim-endwise'
 call vundle#end()            " required
 
 " Installing vundle plugins
