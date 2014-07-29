@@ -2,12 +2,32 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
+" Auto-install Vundle
+let vundle_installed=0
+let vundle_readme=expand('~/.dotfiles-harrison/vim/bundle/Vundle.vim/README.md')
+if !filereadable(vundle_readme)
+    echo "Installing Vundle..."
+    echo ""
+    silent !mkdir -p ~/.dotfiles-harrison/vim/bundle
+    silent !git clone https://github.com/gmarik/vundle ~/.dotfiles-harrison/vim/bundle/Vundle.vim
+    let vundle_installed=1
+endif
+
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.dotfiles-harrison/vim/bundle/Vundle.vim
+
 call vundle#begin()
     Plugin 'gmarik/Vundle.vim'
-    Bundle 'LaTeX-Box-Team/LaTeX-Box'
+    Plugin 'LaTeX-Box-Team/LaTeX-Box'
 call vundle#end()            " required
+
+" Installing vundle plugins
+if vundle_installed == 1
+    echo "Installing Plugins..."
+    echo ""
+    :PluginInstall
+endif
+
 filetype plugin indent on    " required
 """END VUNDLE INSTALLATION"""
 
