@@ -20,6 +20,7 @@ call vundle#begin()
     Plugin 'gmarik/Vundle.vim'
     Plugin 'LaTeX-Box-Team/LaTeX-Box'
     Plugin 'tpope/vim-endwise'
+    Plugin 'ervandew/supertab'
 call vundle#end()            " required
 
 " Installing vundle plugins
@@ -63,16 +64,6 @@ let g:LatexBox_latexmk_options              = "-pdf -pvc"
 let g:LatexBox_output_type                  = "pdf"
 let g:LatexBox_latexmk_preview_continuously = 1
 let g:LatexBox_viewer                       = "zathura"
-
-function! SuperTab()
-    if(strpart(getline('.'),col('.')-2,1)=~'^\W\?$')
-        return "\<Tab>"
-    else
-        return "\<C-p>"
-    endif
-endfunction
-
-imap <Tab> <C-R>=SuperTab()<CR>
 
 " keep search pattern in center of screen
 nnoremap n nzz
