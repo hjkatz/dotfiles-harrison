@@ -8,8 +8,8 @@ let vundle_readme=expand('~/.dotfiles-harrison/vim/bundle/Vundle.vim/README.md')
 if !filereadable(vundle_readme)
     echo "Installing Vundle..."
     echo ""
-    silent !mkdir -p ~/.dotfiles-harrison/vim/bundle
-    silent !git clone https://github.com/gmarik/vundle ~/.dotfiles-harrison/vim/bundle/Vundle.vim
+    silent! mkdir -p ~/.dotfiles-harrison/vim/bundle
+    silent! git clone https://github.com/gmarik/vundle ~/.dotfiles-harrison/vim/bundle/Vundle.vim
     let vundle_installed=1
 endif
 
@@ -73,6 +73,9 @@ nnoremap # #zz
 nnoremap g* g*zz
 nnoremap g# g#zz
 
+" don't move cursor on '*'
+nnoremap <silent> * :let stay_star_view = winsaveview()<cr>*:call winrestview(stay_star_view)<cr>
+
 " easy split navigation
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
@@ -89,6 +92,15 @@ augroup AutoReloadVimRC
   au BufWritePost $MYVIMRC so $MYVIMRC
 augroup END
 
+" return to same line when reopening a file
+augroup line_return
+    au!
+    au BufReadPost *
+        \ if line("'\"") > 0 && line("'\"") <= line("$") |
+        \     execute 'normal! g`"zvzz' |
+        \ endif
+augroup END
+
 " prevent accidental help
 noremap <F1> <Esc>
 
@@ -103,11 +115,18 @@ if exists("+undofile")
   if isdirectory($DOTFILES . '/vim/undo') == 0
     :silent !mkdir -p ~/.vim/undo > /dev/null 2>&1
   endif
-  set undodir=./.vim-undo/
-  set undodir+=~/.vim/undo/
+  set undodir=./.vim-undo//
+  set undodir+=~/.vim/undo//
   set undofile
 endif
 
 " more intuitive increment/decrement
 nnoremap + <C-a>
 nnoremap - <C-x>
+
+" Panic Button
+nnoremap <f9> mzggg?G`z
+
+" Use sane regexes.
+nnoremap / /\v
+vnoremap / /\v
