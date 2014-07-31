@@ -6,10 +6,11 @@ ZSH=$DOTFILES/oh-my-zsh
 UPDATED=false
 function update_dotfiles ()
 {
+        echo "testing"
     cd $DOTFILES
 
-    local IS_GIT_DIR=$(git rev-parse 2> /dev/null)
-    if [[ $IS_GIT_DIR == 0 ]] ; then
+    git rev-parse 2> /dev/null
+    if [[ $! == 0 ]] ; then
         git pull > /dev/null 2>&1
         $UPDATED=true
     fi
