@@ -9,9 +9,13 @@ function update_dotfiles ()
     cd $DOTFILES
 
     git rev-parse 2> /dev/null
-    if [[ $! == 0 ]] ; then
+    if [[ $? -eq 0 ]] ; then
+        OLD_HASH=$(cd $DOTFILES && git rev-parse --verify HEAD)
         git pull > /dev/null 2>&1
-        UPDATED=true
+        NEW_HASH=$(cd $DOTFILES && git rev-parse --verify HEAD)
+        if [ ! "$OLD_HASH" = "$NEW_HASH" ] ; then
+            UPDATED=true
+        fi
     fi
 
     cd $HOME
