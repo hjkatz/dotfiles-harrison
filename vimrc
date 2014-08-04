@@ -1,3 +1,8 @@
+" Author: Harrison Katz <hjkatz03@gmail.com>
+"
+" This is my vimrc. If you have any questions, comments, concerns or
+" suggestions, please feel free to tell me!
+
 " Vundle ------------------------------- {{{
 
 """BEGIN VUNDLE INSTALLATION"""
@@ -35,7 +40,6 @@ filetype plugin indent on    " required
 """END VUNDLE INSTALLATION"""
 
 " }}}
-
 " 'Set'ings ---------------------------- {{{
 set ts=4
 set sw=4
@@ -56,9 +60,26 @@ set wrap
 set scrolloff=10
 set sidescrolloff=15
 set sidescroll=1
+set wildmenu
+set lazyredraw
+" Wildmenu completion {{{
+
+set wildmenu
+set wildmode=list:longest
+
+set wildignore+=.hg,.git,.svn                    " Version control
+set wildignore+=*.aux,*.out,*.toc                " LaTeX intermediate files
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg   " binary images
+set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest " compiled object files
+set wildignore+=*.spl                            " compiled spelling word lists
+set wildignore+=*.sw?                            " Vim swap files
+set wildignore+=*.luac                           " Lua byte code
+set wildignore+=*.pyc                            " Python byte code
+set wildignore+=*.orig                           " Merge resolution files
 
 " }}}
 
+" }}}
 " Misc --------------------------------- {{{
 
 syntax on
@@ -101,8 +122,11 @@ nnoremap <f9> mzggg?G`z
 nnoremap / /\v
 vnoremap / /\v
 
-" }}}
+" Leader
+let mapleader = ","
+let maplocalleader = "\\"
 
+" }}}
 " Plugin Config ------------------------ {{{
 
 " LatexBox ----------------------------- {{{
@@ -115,30 +139,26 @@ let g:LatexBox_Folding                      = 1
 " }}}
 
 " }}}
-
 " AuGroups ----------------------------- {{{
+
+" Paste mode {{{
 
 " disable paste mode when leaving insert mode
 au InsertLeave * set nopaste
 
-if exists("+undofile")
-  " undofile - This allows you to use undos after exiting and restarting
-  " This, like swap and backups, uses .vim-undo first, then ~/.vim/undo
-  " :help undo-persistence
-  " This is only present in 7.3+
-  if isdirectory($DOTFILES . '/vim/undo') == 0
-    :silent !mkdir -p ~/.vim/undo > /dev/null 2>&1
-  endif
-  set undodir=./.vim-undo//
-  set undodir+=~/.vim/undo//
-  set undofile
-endif
+" }}}
+
+" Auto reload vimrc {{{
 
 " automatically reload vimrc when it's saved
 augroup AutoReloadVimRC
   au!
   au BufWritePost $MYVIMRC so $MYVIMRC
 augroup END
+
+" }}}
+
+" Return to line {{{
 
 " return to same line when reopening a file
 augroup line_return
@@ -151,6 +171,7 @@ augroup END
 
 " }}}
 
+" }}}
 " Functions ---------------------------- {{{
 
 " Pulse Line {{{
@@ -200,12 +221,28 @@ imap <Tab> <C-R>=SuperTab()<CR>
 
 " }}}
 
+" Persistant undo {{{
+
+if exists("+undofile")
+  " undofile - This allows you to use undos after exiting and restarting
+  " This, like swap and backups, uses .vim-undo first, then ~/.vim/undo
+  " :help undo-persistence
+  " This is only present in 7.3+
+  if isdirectory($DOTFILES . '/vim/undo') == 0
+    :silent !mkdir -p ~/.vim/undo > /dev/null 2>&1
+  endif
+  set undodir=./.vim-undo//
+  set undodir+=~/.vim/undo//
+  set undofile
+endif
+
 " }}}
 
+" }}}
 " Folding ------------------------------ {{{
 
+set foldenable
 set foldlevelstart=0
-
 
 " Space to toggle folds.
 nnoremap <Space> za
@@ -240,5 +277,149 @@ function! MyFoldText() " {{{
     return line . '…' . repeat(" ",fillcharcount) . foldedlinecount . '…' . ' '
 endfunction " }}}
 set foldtext=MyFoldText()
+
+" }}}
+" Filetype-specific -------------------- {{{
+
+" CSS and LessCSS {{{
+
+augroup ft_css
+    au!
+
+    au BufNewFile,BufRead *.less setlocal filetype=less
+
+    au Filetype less,css setlocal foldmethod=marker
+    au Filetype less,css setlocal foldmarker={,}
+    au Filetype less,css setlocal iskeyword+=-
+
+    " Use <localleader>S to sort properties.  Turns this:
+    "
+    "     p {
+    "         width: 200px;
+    "         height: 100px;
+    "         background: red;
+    "
+    "         ...
+    "     }
+    "
+    " into this:
+
+    "     p {
+    "         background: red;
+    "         height: 100px;
+    "         width: 200px;
+    "
+    "         ...
+    "     }
+    au BufNewFile,BufRead *.less,*.css nnoremap <buffer> <localleader>S ?{<CR>jV/\v^\s*\}?$<CR>k:sort<CR>:noh<CR>
+
+    " Make {<cr> insert a pair of brackets in such a way that the cursor is correctly
+    " positioned inside of them AND the following code doesn't get unfolded.
+    au BufNewFile,BufRead *.less,*.css inoremap <buffer> {<cr> {}<left><cr><space><space><space><space>.<cr><esc>kA<bs>
+augroup END
+
+" }}}
+" Java {{{
+
+augroup ft_java
+    au!
+
+    au FileType java setlocal foldmethod=marker
+    au FileType java setlocal foldmarker={,}
+augroup END
+
+" }}}
+" Javascript {{{
+
+augroup ft_javascript
+    au!
+
+    au FileType javascript setlocal foldmethod=marker
+    au FileType javascript setlocal foldmarker={,}
+
+    " Make {<cr> insert a pair of brackets in such a way that the cursor is correctly
+    " positioned inside of them AND the following code doesn't get unfolded.
+    au Filetype javascript inoremap <buffer> {<cr> {}<left><cr><space><space><space><space>.<cr><esc>kA<bs>
+    " }
+
+    " Prettify a hunk of JSON with <localleader>p
+    au FileType javascript nnoremap <buffer> <localleader>p ^vg_:!python -m json.tool<cr>
+    au FileType javascript vnoremap <buffer> <localleader>p :!python -m json.tool<cr>
+augroup END
+
+" }}}
+" Latex {{{
+
+augroup ft_latex
+    au!
+
+    " Folding for latex is handled by latexbox
+
+    au FileType latex setlocal textwidth=80
+augroup END
+
+" }}}
+" Markdown {{{
+
+augroup ft_markdown
+    au!
+
+    au BufNewFile,BufRead *.m*down setlocal filetype=markdown foldlevel=1
+
+    " Use <localleader>1/2/3/4 to add headings.
+    au Filetype markdown nnoremap <buffer> <localleader>1 yypVr=:redraw<cr>
+    au Filetype markdown nnoremap <buffer> <localleader>2 yypVr-:redraw<cr>
+    au Filetype markdown nnoremap <buffer> <localleader>3 mzI###<space><esc>`zllll
+    au Filetype markdown nnoremap <buffer> <localleader>4 mzI####<space><esc>`zlllll
+
+    au Filetype markdown nnoremap <buffer> <localleader>p VV:'<,'>!python -m json.tool<cr>
+    au Filetype markdown vnoremap <buffer> <localleader>p :!python -m json.tool<cr>
+augroup END
+
+" }}}
+" Python {{{
+
+augroup ft_python
+    au!
+
+    au FileType python setlocal define=^\s*\\(def\\\\|class\\)
+augroup END
+
+" }}}
+" Vim {{{
+
+augroup ft_vim
+    au!
+
+    au FileType vim setlocal foldmethod=marker
+    au FileType help setlocal textwidth=80
+augroup END
+
+" }}}
+" XML {{{
+
+augroup ft_xml
+    au!
+
+    au FileType xml setlocal foldmethod=manual
+
+    " Use <localleader>f to fold the current tag.
+    au FileType xml nnoremap <buffer> <localleader>f Vatzf
+
+    " Indent tag
+    au FileType xml nnoremap <buffer> <localleader>= Vat=
+augroup END
+
+" }}}
+" Zsh {{{
+
+augroup ft_zsh
+    au!
+
+    au FileType vim setlocal foldmethod=marker
+    au FileType zsh setlocal foldmethod=manual
+augroup END
+
+" }}}
 
 " }}}
