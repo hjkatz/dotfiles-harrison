@@ -377,6 +377,21 @@ augroup ft_markdown
 augroup END
 
 " }}}
+" Perl {{{
+
+augroup ft_javascript
+    au!
+
+    au FileType perl setlocal foldmethod=marker
+    au FileType perl setlocal foldmarker={,}
+
+    " Make {<cr> insert a pair of brackets in such a way that the cursor is correctly
+    " positioned inside of them AND the following code doesn't get unfolded.
+    au Filetype perl inoremap <buffer> {<cr> {}<left><cr><space><space><space><space>.<cr><esc>kA<bs>
+    " }
+augroup END
+
+" }}}
 " Python {{{
 
 augroup ft_python
