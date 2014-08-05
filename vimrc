@@ -379,7 +379,7 @@ augroup END
 " }}}
 " Perl {{{
 
-augroup ft_javascript
+augroup ft_perl
     au!
 
     au FileType perl setlocal foldmethod=marker
