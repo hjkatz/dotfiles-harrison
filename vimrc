@@ -15,8 +15,8 @@ let vundle_readme=expand('~/.dotfiles-harrison/vim/bundle/Vundle.vim/README.md')
 if !filereadable(vundle_readme)
     echo "Installing Vundle..."
     echo ""
-    silent! mkdir -p ~/.dotfiles-harrison/vim/bundle
-    silent! git clone https://github.com/gmarik/vundle ~/.dotfiles-harrison/vim/bundle/Vundle.vim
+    silent ! mkdir -p ~/.dotfiles-harrison/vim/bundle
+    silent ! git clone https://github.com/gmarik/vundle ~/.dotfiles-harrison/vim/bundle/Vundle.vim
     let vundle_installed=1
 endif
 
