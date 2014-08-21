@@ -324,6 +324,10 @@ augroup ft_css
     "     }
     au BufNewFile,BufRead *.less,*.css nnoremap <buffer> <localleader>S ?{<CR>jV/\v^\s*\}?$<CR>k:sort<CR>:noh<CR>
 
+    " Make {<cr> insert a pair of brackets
+    au Filetype css inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
+    " }fixes syntax highlighting
+
 augroup END
 
 " }}}
@@ -334,6 +338,10 @@ augroup ft_java
 
     au FileType java setlocal foldmethod=marker
     au FileType java setlocal foldmarker={,}
+
+    " Make {<cr> insert a pair of brackets
+    au Filetype java inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
+    " }fixes syntax highlighting
 augroup END
 
 " }}}
@@ -348,6 +356,10 @@ augroup ft_javascript
     " Prettify a hunk of JSON with <localleader>p
     au FileType javascript nnoremap <buffer> <localleader>p ^vg_:!python -m json.tool<cr>
     au FileType javascript vnoremap <buffer> <localleader>p :!python -m json.tool<cr>
+
+    " Make {<cr> insert a pair of brackets
+    au Filetype javascript inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
+    " }fixes syntax highlighting
 augroup END
 
 " }}}
@@ -388,6 +400,9 @@ augroup ft_perl
     au FileType perl setlocal foldmethod=marker
     au FileType perl setlocal foldmarker={,}
 
+    " Make {<cr> insert a pair of brackets
+    au Filetype perl inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
+    " }fixes syntax highlighting
 augroup END
 
 " }}}
@@ -432,6 +447,10 @@ augroup ft_zsh
 
     au FileType vim setlocal foldmethod=marker
     au FileType zsh setlocal foldmethod=manual
+
+    " Make {<cr> insert a pair of brackets
+    au Filetype zsh inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
+    " }fixes syntax highlighting
 augroup END
 
 " }}}
