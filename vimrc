@@ -171,6 +171,17 @@ augroup END
 
 " }}}
 
+" Folding Fix {{{
+
+" Don't update folds in insert mode 
+aug NoInsertFolding 
+    au! 
+    au InsertEnter * let b:oldfdm = &l:fdm | setl fdm=manual 
+    au InsertLeave * let &l:fdm = b:oldfdm 
+aug END 
+
+" }}}
+
 " }}}
 " Functions ---------------------------- {{{
 
@@ -313,9 +324,6 @@ augroup ft_css
     "     }
     au BufNewFile,BufRead *.less,*.css nnoremap <buffer> <localleader>S ?{<CR>jV/\v^\s*\}?$<CR>k:sort<CR>:noh<CR>
 
-    " Make {<cr> insert a pair of brackets in such a way that the cursor is correctly
-    " positioned inside of them AND the following code doesn't get unfolded.
-    au BufNewFile,BufRead *.less,*.css inoremap <buffer> {<cr> {}<left><cr><space><space><space><space>.<cr><esc>kA<bs>
 augroup END
 
 " }}}
@@ -336,11 +344,6 @@ augroup ft_javascript
 
     au FileType javascript setlocal foldmethod=marker
     au FileType javascript setlocal foldmarker={,}
-
-    " Make {<cr> insert a pair of brackets in such a way that the cursor is correctly
-    " positioned inside of them AND the following code doesn't get unfolded.
-    au Filetype javascript inoremap <buffer> {<cr> {}<left><cr><space><space><space><space>.<cr><esc>kA<bs>
-    " }
 
     " Prettify a hunk of JSON with <localleader>p
     au FileType javascript nnoremap <buffer> <localleader>p ^vg_:!python -m json.tool<cr>
@@ -385,10 +388,6 @@ augroup ft_perl
     au FileType perl setlocal foldmethod=marker
     au FileType perl setlocal foldmarker={,}
 
-    " Make {<cr> insert a pair of brackets in such a way that the cursor is correctly
-    " positioned inside of them AND the following code doesn't get unfolded.
-    au Filetype perl inoremap <buffer> {<cr> {}<left><cr><space><space><space><space>.<cr><esc>kA<bs>
-    " }
 augroup END
 
 " }}}
