@@ -86,6 +86,10 @@ syntax on
 filetype on
 filetype indent on
 
+" <f5> insert date
+nnoremap <F5> "=strftime("%c")<CR>P
+inoremap <F5> <C-R>=strftime("%c")<CR>
+
 " keep search pattern in center of screen
 nnoremap n nzz
 nnoremap N Nzz
