@@ -130,6 +130,9 @@ vnoremap / /\v
 let mapleader = ","
 let maplocalleader = "\\"
 
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+cmap w!! w !sudo tee > /dev/null %
+
 " }}}
 " Plugin Config ------------------------ {{{
 
