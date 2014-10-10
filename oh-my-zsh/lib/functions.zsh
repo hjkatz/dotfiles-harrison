@@ -26,7 +26,7 @@ function take() {
 #    0 if the alias was found,
 #    1 if it does not exist
 #
-function alias_value() {
+function which_alias() {
     alias "$1" | sed "s/^$1='\(.*\)'$/\1/"
     test $(alias "$1")
 }

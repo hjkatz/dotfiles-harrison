@@ -413,6 +413,17 @@ augroup ft_perl
 augroup END
 
 " }}}
+" PHP {{{
+
+augroup ft_php
+    au!
+
+    " Make {<cr> insert a pair of brackets
+    au Filetype php inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
+    " }fixes syntax highlighting
+augroup END
+
+" }}}
 " Python {{{
 
 augroup ft_python
@@ -447,7 +458,7 @@ augroup ft_xml
 augroup END
 
 " }}}
-" Zsh {{{
+" ZSH {{{
 
 augroup ft_zsh
     au!
