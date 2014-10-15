@@ -37,4 +37,4 @@ alias -s mp4=vlc
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # GLOBAL ALIAS
-alias -g gcurrent="$(git stash list | grep $(git rev-parse --symbolic-full-name --abbrev-ref "@{u}" | sed 's#\w*/##') | sed 's/\(stash@{.*}\):.*/\1/')"
+alias -g gcurrent='$(git stash list | grep $(git rev-parse --symbolic-full-name --abbrev-ref "@{u}" | sed "s#\w*/##") | sed "s/\(stash@{.*}\):.*/\1/")'
