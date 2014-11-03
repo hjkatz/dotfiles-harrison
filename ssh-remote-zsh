@@ -1,12 +1,14 @@
 #!/bin/bash
 
 FLAG=""
+NO_FORWARD=false
 
 # parse commandline
 while [ $# -gt 0 ]
 do
       arg="$1"
       case "$arg" in
+         --no-forward) NO_FORWARD=true; ;;
          -*) FLAG="$FLAG $1"; ;; # add flag
          *) break;; # not option, its some argument
        esac
@@ -26,4 +28,8 @@ fi
 
 # maybe check if zsh is installed and if not install it? Or return an error?
 
-ssh $FLAG -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ zsh"
+if [ $NO_FORWARD == true ] ; then
+    ssh $FLAG -t $1 "ZDOTDIR=~/.dotfiles-harrison/ zsh"
+else
+    ssh $FLAG -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ zsh"
+fi
