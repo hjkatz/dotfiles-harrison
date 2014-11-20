@@ -1,36 +1,46 @@
 " Author: Harrison Katz <hjkatz03@gmail.com>
 "
-" This is my vimrc. If you have any questions, comments, concerns or
-" suggestions, please feel free to tell me!
+" This is my personal vimrc, feel free to ask me questions about anything that
+" you may not understand. Thanks for taking a look!
+
+" NOTE: the below MUST be pointed to the correct installation directory for
+" vim extras. If you do not know where this is please contact the author.
+let s:vim_directory='~/.dotfiles-harrison/.vim/'
 
 " Vundle ------------------------------- {{{
+" This is our plugin manager. There are a few competing managers that
+" you can research online at vimisawesome.com. This will automatically install plugins using
+" git. Things that are required for Vundle to work are marked.
 
 """BEGIN VUNDLE INSTALLATION"""
-set nocompatible              " be iMproved, required
-filetype off                  " required
+set nocompatible              " required, sets vim to be incompatible with vi
+filetype off                  " required, turns off automatic filetype detection for installation
 
 " Auto-install Vundle
-let vundle_installed=0
-let vundle_readme=expand('~/.dotfiles-harrison/vim/bundle/Vundle.vim/README.md')
+let is_vundle_installed=0
+let vundle_readme=expand(s:vim_directory.'bundle/Vundle.vim/README.md')
 if !filereadable(vundle_readme)
     echo "Installing Vundle..."
     echo ""
-    silent ! mkdir -p ~/.dotfiles-harrison/vim/bundle
-    silent ! git clone https://github.com/gmarik/vundle ~/.dotfiles-harrison/vim/bundle/Vundle.vim
+    exec 'silent !mkdir -p '.s:vim_directory.'bundle'
+    exec 'silent !git clone https://github.com/gmarik/vundle '.s:vim_directory.'bundle/Vundle.vim'
     let vundle_installed=1
 endif
 
 " set the runtime path to include Vundle and initialize
-set rtp+=~/.dotfiles-harrison/vim/bundle/Vundle.vim
+let vundle=s:vim_directory
+let &runtimepath.=','.s:vim_directory.'bundle/Vundle.vim'
 
+" here is where you would add new plugins
+" these are the git repos on github
 call vundle#begin()
     Plugin 'gmarik/Vundle.vim'
     Plugin 'LaTeX-Box-Team/LaTeX-Box'
     Plugin 'tpope/vim-endwise'
-call vundle#end()            " required
+call vundle#end()
 
 " Installing vundle plugins
-if vundle_installed == 1
+if is_vundle_installed == 1
     echo "Installing Plugins..."
     echo ""
     :PluginInstall
@@ -41,31 +51,30 @@ filetype plugin indent on    " required
 
 " }}}
 " 'Set'ings ---------------------------- {{{
-set ts=4
-set sw=4
-set expandtab
-set ai
-set si
-set background=dark
-set number
-set ruler
-set backspace=eol,start,indent
-set ignorecase
-set smartcase
-set incsearch
-set formatoptions+=r
-set pastetoggle=<F12>
-set hlsearch
-set wrap
-set scrolloff=10
-set sidescrolloff=15
-set sidescroll=1
-set wildmenu
-set lazyredraw
+set ts=4                           " tab spacing is 4 spaces
+set sw=4                           " shift width is 4 spaces
+set expandtab                      " expand all tabs to spaces
+set ai                             " autoindent a file based on filetype
+set si                             " smartindent while typing
+set background=dark                " our backdrop is dark
+set number                         " show line numbers
+set ruler                          " show row,col count on bottom bar
+set backspace=eol,start,indent     " backspace wraps around indents, start of lines, and end of lines
+set ignorecase                     " ignore case when searching
+set smartcase                      " ...unless we have atleast 1 capital letter
+set incsearch                      " search incrementally
+set formatoptions=tcqronj          " see :help fo-table for more information
+set pastetoggle=<F12>              " sets <F12> to toggle paste mode
+set hlsearch                       " highlight search results
+set wrap                           " wrap lines
+set scrolloff=10                   " leave at least 10 lines at the bottom/top of screen when scrolling
+set sidescrolloff=15               " leave at least 15 lines at the right/left of screen when scrolling
+set sidescroll=1                   " scroll sidways 1 character at a time
+set lazyredraw                     " redraw the screen lazily
 " Wildmenu completion {{{
 
-set wildmenu
-set wildmode=list:longest
+set wildmenu " turn on globing for opening files
+set wildmode=list:longest " see :help wildmode for more information
 
 set wildignore+=.hg,.git,.svn                    " Version control
 set wildignore+=*.aux,*.out,*.toc                " LaTeX intermediate files
@@ -82,6 +91,7 @@ set wildignore+=*.orig                           " Merge resolution files
 " }}}
 " Misc --------------------------------- {{{
 
+" turn on syntax coloring and indentation based on the filetype
 syntax on
 filetype on
 filetype indent on
@@ -101,7 +111,7 @@ nnoremap g# g#zz
 " don't move cursor on '*'
 nnoremap <silent> * :let stay_star_view = winsaveview()<cr>*:call winrestview(stay_star_view)<cr>
 
-" easy split navigation
+" move in split windows with ctrl+hjkl
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -115,7 +125,7 @@ nnoremap k gk
 noremap <F1> <Esc>
 inoremap <F1> <Esc>
 
-" more intuitive increment/decrement
+" more intuitive increment/decrement with +/-
 nnoremap + <C-a>
 nnoremap - <C-x>
 
@@ -246,11 +256,11 @@ if exists("+undofile")
   " This, like swap and backups, uses .vim-undo first, then ~/.vim/undo
   " :help undo-persistence
   " This is only present in 7.3+
-  if isdirectory($DOTFILES . '/vim/undo') == 0
-    :silent !mkdir -p ~/.vim/undo > /dev/null 2>&1
+  if isdirectory(s:vim_directory.'undo') == 0
+    exec 'silent !mkdir -p '.s:vim_directory.'undo > /dev/null 2>&1'
   endif
-  set undodir=./.vim-undo//
-  set undodir+=~/.vim/undo//
+  let &undodir=s:vim_directory.'undo'
+  set undodir+=~/.vim/undo/
   set undofile
 endif
 
@@ -259,6 +269,7 @@ endif
 " }}}
 " Folding ------------------------------ {{{
 
+" enable folding and start folds with level-0 unfolded
 set foldenable
 set foldlevelstart=0
 
