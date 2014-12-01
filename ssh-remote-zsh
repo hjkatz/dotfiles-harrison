@@ -3,6 +3,11 @@
 FLAG=""
 NO_FORWARD=false
 
+if [ $# -eq 0 ] ; then
+    echo "Missing Hostname"
+    exit 1
+fi
+
 # parse commandline
 while [ $# -gt 0 ]
 do
