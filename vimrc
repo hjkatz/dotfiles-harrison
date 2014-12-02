@@ -417,6 +417,7 @@ augroup ft_perl
 
     au FileType perl setlocal foldmethod=marker
     au FileType perl setlocal foldmarker={,}
+    au FileType perl setlocal complete-=i
 
     " Make {<cr> insert a pair of brackets
     au Filetype perl inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
