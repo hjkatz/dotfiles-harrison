@@ -41,3 +41,7 @@ function vack () {
 function taile () {
     tail -f /var/log/httpd/$1*-error_log
 }
+
+function mdless () {
+    pandoc -s -f markdown -t man "$*" | groff -T utf8 -man | less;
+}
