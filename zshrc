@@ -75,7 +75,7 @@ zstyle ':completion:*:expand:*' keep-prefix true tag-order all-expansions
 
 # formatting and messages
 zstyle ':completion:*' verbose yes
-zstyle ':completion:*:descriptions' format "%{${fg_bold[green]}%}##%d%{${reset_color}%}"
+zstyle ':completion:*:descriptions' format "%{${color[green]}%}##%d%{${reset_color}%}"
 zstyle ':completion:*:messages' format '%d'
 zstyle ':completion:*:warnings' format 'No matches for: %d'
 zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
