@@ -60,6 +60,7 @@ call vundle#begin(expand(g:vim_dir_neadwerx.'bundle'))
     endif
 
     " Insert your own plugins here
+    Plugin 'LaTeX-Box-Team/LaTeX-Box'
 call vundle#end()
 
 " Installing vundle plugins
@@ -343,6 +344,15 @@ aug END
 
 " }}}
 
+" Markdown Filetype {{{
+
+aug MarkdownFiletype
+    au! 
+    au BufNewFile,BufFilePre,BufRead *.md set filetype=markdown
+aug END 
+
+" }}}
+
 " }}}
 " Functions ---------------------------- {{{
 
@@ -544,6 +554,8 @@ augroup END
 
 augroup ft_markdown
     au!
+
+    au Filetype markdown setlocal tw=80
 
     au BufNewFile,BufRead *.m*down setlocal filetype=markdown foldlevel=1
 
