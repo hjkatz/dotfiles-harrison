@@ -52,7 +52,7 @@ if [ $UPDATED = true ] ; then
 fi
 
 # Customize to your needs...
-export PATH=$PATH:/usr/local/git/bin/:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/pgsql-9.1/bin/:/home/harrison/Apps/idea/bin/:/home/harrison/Apps/android-sdk-linux/tools/:/home/harrison/Apps/android-sdk-linux/platform-tools/:/home/harrison/Apps/android-studio/bin/:$DOTFILES
+export PATH=/usr/local/git/bin/:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/pgsql-9.1/bin/:/home/harrison/Apps/idea/bin/:/home/harrison/Apps/android-sdk-linux/tools/:/home/harrison/Apps/android-sdk-linux/platform-tools/:/home/harrison/Apps/android-studio/bin/:$DOTFILES:$PATH
 export EDITOR=/usr/bin/vim
 
 setopt AUTO_CD
