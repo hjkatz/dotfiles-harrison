@@ -11,10 +11,6 @@ alias cl='clear && ls '
 alias ises='psql -U postgres ises'
 alias ..='cd ..'
 alias 'cd..=cd ..'
-alias install='sudo apt-get install '
-alias purge='sudo apt-get purge '
-alias update='sudo apt-get update && sudo apt-get upgrade '
-alias search='sudo apt-cache search '
 alias todo='clear && todo '
 alias idea='idea.sh '
 alias studio='studio.sh '
@@ -27,6 +23,9 @@ alias zsh-colors='vim ~/.dotfiles-harrison/zsh-colors'
 alias zsh-syntax-highlighting-settings='vim ~/.dotfiles-harrison/zsh-syntax-highlighting-settings'
 alias gitconfig='vim ~/.dotfiles-harrison/gitconfig'
 alias resource='source zshrc'
+
+# alias to rename function
+alias remove='purge'
 
 # SUFFIX ALIAS
 alias -s txt=vim

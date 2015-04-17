@@ -33,6 +33,40 @@ DEFAULT_USER="harrison"
 
 COMPLETION_WAITING_DOTS="true"
 
+function which_distro ()
+{
+    release_info=`cat /etc/*-release`
+
+    echo "$release_info" | grep -i -q 'ubuntu' && {
+        echo "ubuntu"
+        exit 0
+    }
+
+    echo "$release_info" | grep -i -q 'debian' && {
+        echo "debian"
+        exit 0
+    }
+
+    echo "$release_info" | grep -i -q 'centos' && {
+        echo "centos"
+        exit 0
+    }
+
+    echo "$release_info" | grep -i -q 'redhat' && {
+        echo "redhat"
+        exit 0
+    }
+
+    echo "$release_info" | grep -i -q 'rhel' && {
+        echo "rhel"
+        exit 0
+    }
+
+    echo ""
+}
+
+DISTRO=$(which_distro)
+
 # Source my files
 source $DOTFILES/*.version
 source $DOTFILES/zsh-colors

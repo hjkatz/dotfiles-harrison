@@ -45,3 +45,107 @@ function taile () {
 function mdless () {
     pandoc -s -f markdown -t man "$*" | groff -T utf8 -man | less;
 }
+
+function install () {
+    case "$DISTRO" in
+        ubuntu)
+            # fall through
+            ;&
+        debian)
+            sudo apt-get install "$@"
+            ;;
+        fedora)
+            # fall through
+            ;&
+        centos)
+            # fall through
+            ;&
+        rhel)
+            # fall through
+            ;&
+        redhat)
+            sudo yum install "$@"
+            ;;
+        *)
+            echo "Distro '$DISTRO' is unrecognized"
+            ;;
+    esac
+}
+
+function purge () {
+    case "$DISTRO" in
+        ubuntu)
+            # fall through
+            ;&
+        debian)
+            sudo apt-get purge "$@"
+            ;;
+        fedora)
+            # fall through
+            ;&
+        centos)
+            # fall through
+            ;&
+        rhel)
+            # fall through
+            ;&
+        redhat)
+            sudo yum remove "$@"
+            ;;
+        *)
+            echo "Distro '$DISTRO' is unrecognized"
+            ;;
+    esac
+}
+
+function update () {
+    case "$DISTRO" in
+        ubuntu)
+            # fall through
+            ;&
+        debian)
+            sudo apt-get update && sudo apt-get upgrade
+            ;;
+        fedora)
+            # fall through
+            ;&
+        centos)
+            # fall through
+            ;&
+        rhel)
+            # fall through
+            ;&
+        redhat)
+            sudo yum update
+            ;;
+        *)
+            echo "Distro '$DISTRO' is unrecognized"
+            ;;
+    esac
+}
+
+function search () {
+    case "$DISTRO" in
+        ubuntu)
+            # fall through
+            ;&
+        debian)
+            sudo apt-cache search "$@"
+            ;;
+        fedora)
+            # fall through
+            ;&
+        centos)
+            # fall through
+            ;&
+        rhel)
+            # fall through
+            ;&
+        redhat)
+            sudo yum search "$@"
+            ;;
+        *)
+            echo "Distro '$DISTRO' is unrecognized"
+            ;;
+    esac
+}
