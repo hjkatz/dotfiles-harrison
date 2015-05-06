@@ -23,6 +23,7 @@ alias zsh-colors='vim ~/.dotfiles-harrison/zsh-colors'
 alias zsh-syntax-highlighting-settings='vim ~/.dotfiles-harrison/zsh-syntax-highlighting-settings'
 alias gitconfig='vim ~/.dotfiles-harrison/gitconfig'
 alias resource='source zshrc'
+alias show_keyboard='key-mon --theme=clear-ubuntu --nomouse --scale=1.5 --old-keys=3 --decorated >/dev/null 2>&1 &'
 
 # alias to rename function
 alias remove='purge'

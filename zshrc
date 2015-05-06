@@ -176,3 +176,30 @@ zstyle ':completion:*:functions' ignored-patterns '_*'
 
 # set completion definitions
 compdef ssh-remote-zsh=ssh
+
+# set distro specific completions
+case "$DISTRO" in
+    ubuntu)
+        # fall through
+        ;&
+    debian)
+        compdef '_deb_packages avail' install
+        compdef '_deb_packages installed' purge
+        ;;
+    fedora)
+        # fall through
+        ;&
+    centos)
+        # fall through
+        ;&
+    rhel)
+        # fall through
+        ;&
+    redhat)
+        compdef '_yum_available_pkgs' install
+        compdef '_yum_installed_pkgs' purge
+        ;;
+    *)
+        echo "Distro '$DISTRO' is unrecognized"
+        ;;
+esac
