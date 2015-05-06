@@ -196,8 +196,9 @@ case "$DISTRO" in
         # fall through
         ;&
     redhat)
-        compdef '_yum_available_pkgs' install
-        compdef '_yum_installed_pkgs' purge
+        compdef '_yum_install' install
+        compdef '_yum_erase' purge
+        _yum >/dev/null 2>&1
         ;;
     *)
         echo "Distro '$DISTRO' is unrecognized"
