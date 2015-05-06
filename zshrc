@@ -62,6 +62,11 @@ function which_distro ()
         exit 0
     }
 
+    echo "$release_info" | grep -i -q 'fedora' && {
+        echo "fedora"
+        exit 0
+    }
+
     echo ""
 }
 
@@ -193,6 +198,9 @@ case "$DISTRO" in
         # fall through
         ;&
     rhel)
+        # fall through
+        ;&
+    fedora)
         # fall through
         ;&
     redhat)

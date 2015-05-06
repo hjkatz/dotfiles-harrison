@@ -63,6 +63,9 @@ function install () {
         rhel)
             # fall through
             ;&
+        fedora)
+            # fall through
+            ;&
         redhat)
             sudo yum install "$@"
             ;;
@@ -87,6 +90,9 @@ function purge () {
             # fall through
             ;&
         rhel)
+            # fall through
+            ;&
+        fedora)
             # fall through
             ;&
         redhat)
@@ -115,6 +121,9 @@ function update () {
         rhel)
             # fall through
             ;&
+        fedora)
+            # fall through
+            ;&
         redhat)
             sudo yum update
             ;;
@@ -139,6 +148,9 @@ function search () {
             # fall through
             ;&
         rhel)
+            # fall through
+            ;&
+        fedora)
             # fall through
             ;&
         redhat)
