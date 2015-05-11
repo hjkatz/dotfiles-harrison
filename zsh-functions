@@ -46,6 +46,19 @@ function mdless () {
     pandoc -s -f markdown -t man "$*" | groff -T utf8 -man | less;
 }
 
+# loops a command for the specified number of sleep time
+function loop () {
+    seconds="$1"
+    shift
+    command="$@"
+    while :
+    do
+        clear
+        $command
+        sleep $seconds
+    done
+}
+
 function install () {
     case "$DISTRO" in
         ubuntu)
