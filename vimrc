@@ -586,7 +586,7 @@ augroup ft_perl
     au FileType perl setlocal complete-=i
 
     " add perl syntax highlighting for the following words
-    au FileType perl setlocal syn keyword perlStatement any all croak carp cluck confess Readonly
+    au FileType perl syn keyword perlStatement any all croak carp cluck confess Readonly
 
     " Recursive toggle
     au FileType perl nnoremap <Space> zA
