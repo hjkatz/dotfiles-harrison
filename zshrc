@@ -57,6 +57,11 @@ function which_distro ()
         exit 0
     }
 
+    echo "$release_info" | grep -i -q 'red hat' && {
+        echo "redhat"
+        exit 0
+    }
+
     echo "$release_info" | grep -i -q 'rhel' && {
         echo "rhel"
         exit 0
