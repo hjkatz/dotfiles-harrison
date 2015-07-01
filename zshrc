@@ -90,6 +90,11 @@ source $DOTFILES/zsh-syntax-highlighting-settings
 source $DOTFILES/zsh-aliases
 source $DOTFILES/zsh-functions
 
+# Source any local files for custom environments
+if [ -f $HOME/.zshlocal ] ; then
+    source $HOME/.zshlocal
+fi
+
 # Echo updated message after sourcing files
 if [ $UPDATED = true ] ; then
     echo "Updated to $DOTFILES_VERSION"
