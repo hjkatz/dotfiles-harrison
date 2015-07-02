@@ -61,6 +61,7 @@ call vundle#begin(expand(g:vim_dir_neadwerx.'bundle'))
 
     " Insert your own plugins here
     Plugin 'LaTeX-Box-Team/LaTeX-Box'
+    Plugin 'kchmck/vim-coffee-script'
 call vundle#end()
 
 " Installing vundle plugins
