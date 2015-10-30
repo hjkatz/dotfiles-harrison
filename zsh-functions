@@ -216,9 +216,9 @@ function check_for_caution_server () {
     hostname=`hostname`
     if [[ "${caution_servers[(r)$hostname]}" == "$hostname" ]] ; then
         if [[ "$USER" == "root" ]] ; then
-            return true
+            return 0
         fi
     fi
 
-    return false
+    return 1
 }
