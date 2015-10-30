@@ -224,4 +224,4 @@ case "$DISTRO" in
 esac
 
 # check if we are on a cautioned served
-check_caution_server()
+check_for_caution_server

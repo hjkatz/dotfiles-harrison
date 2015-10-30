@@ -201,16 +201,15 @@ function color_echo () {
     echo -e "\033[1;${color}m$@\033[0m"
 }
 
-
 caution_servers=(
-    maia.thdises.com
-    electra.thdises.com
-    taygete.thdises.com
-    zeus.thdises.com
-    hera.thdises.com
-    new-hermes.neadwerx.com
-    apollo.neadwerx.com
-    stats.neadwerx.com
+    "maia.thdises.com"
+    "electra.thdises.com"
+    "taygete.thdises.com"
+    "zeus.thdises.com"
+    "hera.thdises.com"
+    "new-hermes.neadwerx.com"
+    "apollo.neadwerx.com"
+    "stats.neadwerx.com"
 )
 
 function check_for_caution_server () {
