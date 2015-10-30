@@ -174,3 +174,52 @@ function search () {
             ;;
     esac
 }
+
+# echos out with color, e.g.
+#   color_echo red "My Error"
+#   color_echo yellow "My Warning"
+#   color_echo green "My Success"
+function color_echo () {
+    case $1 in
+     red)     
+          color=31
+          ;;
+     green)
+          color=32
+          ;;
+     yellow)
+          color=33
+          ;;
+     *)  
+          color=$1
+          ;;
+    esac
+
+    # remove $1
+    shift
+
+    echo -e "\033[1;${color}m$@\033[0m"
+}
+
+
+caution_servers=(
+    maia.thdises.com
+    electra.thdises.com
+    taygete.thdises.com
+    zeus.thdises.com
+    hera.thdises.com
+    new-hermes.neadwerx.com
+    apollo.neadwerx.com
+    stats.neadwerx.com
+)
+
+function check_for_caution_server () {
+    hostname=`hostname`
+    if [[ "${caution_servers[(r)$hostname]}" == "$hostname" ]] ; then
+        if [[ "$USER" == "root" ]] ; then
+            color_echo yellow "############################################"
+            color_echo red    "# CAUTION: You are on a production server! #"
+            color_echo yellow "############################################"
+        fi
+    fi
+}

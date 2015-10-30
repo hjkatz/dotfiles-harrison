@@ -222,3 +222,6 @@ case "$DISTRO" in
         echo "Distro '$DISTRO' is unrecognized"
         ;;
 esac
+
+# check if we are on a cautioned served
+check_caution_server()
