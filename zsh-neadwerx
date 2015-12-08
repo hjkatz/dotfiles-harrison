@@ -1,0 +1,10 @@
+# Nead Werx machine specific configurations
+
+# source rvm if it exists
+if [ -f /etc/profile.d/zsh/zsh_sources/rvm.zsh ] ; then
+    source /etc/profile.d/zsh/zsh_sources/rvm.zsh
+elif [ -f /etc/profile.d/rvm.sh ] ; then
+    source /etc/profile.d/rvm.sh
+elif [ -f /etc/profile.d/bash/rvm.sh ] ; then
+    source /etc/profile.d/bash/rvm.sh
+fi
