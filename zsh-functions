@@ -43,7 +43,7 @@ function taile () {
 }
 
 function mdless () {
-    pandoc -s -f markdown -t man "$*" | groff -T utf8 -man | less;
+    pandoc -f markdown -t man --smart --normalize --standalone --toc "$*" | man -l -
 }
 
 # loops a command for the specified number of sleep time
