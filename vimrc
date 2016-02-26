@@ -621,6 +621,17 @@ augroup ft_python
 augroup END
 
 " }}}
+" Ruby {{{
+
+augroup ft_ruby
+    au!
+
+    au FileType ruby setlocal ts=2
+    au FileType ruby setlocal sw=2
+    au FileType ruby setlocal expandtab
+augroup END
+
+" }}}
 " Vim {{{
 
 augroup ft_vim
