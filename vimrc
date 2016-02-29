@@ -63,6 +63,7 @@ call vundle#begin(expand(g:vim_dir_neadwerx.'bundle'))
     Plugin 'LaTeX-Box-Team/LaTeX-Box'
     Plugin 'kchmck/vim-coffee-script'
     Plugin 'sql_iabbr.vim'
+    Plugin 'rodjek/vim-puppet'
 call vundle#end()
 
 " Installing vundle plugins
@@ -108,6 +109,7 @@ call vundle#begin()
     Plugin 'junegunn/vim-easy-align'
     Plugin 'LaTeX-Box-Team/LaTeX-Box'
     Plugin 'sql_iabbr.vim'
+    Plugin 'rodjek/vim-puppet'
 call vundle#end()
 
 " Installing vundle plugins
