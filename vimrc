@@ -64,6 +64,8 @@ call vundle#begin(expand(g:vim_dir_neadwerx.'bundle'))
     Plugin 'kchmck/vim-coffee-script'
     Plugin 'sql_iabbr.vim'
     Plugin 'rodjek/vim-puppet'
+    Plugin 'wellle/targets.vim'
+    Plugin 'tpope/vim-surround'
 call vundle#end()
 
 " Installing vundle plugins
@@ -110,6 +112,8 @@ call vundle#begin()
     Plugin 'LaTeX-Box-Team/LaTeX-Box'
     Plugin 'sql_iabbr.vim'
     Plugin 'rodjek/vim-puppet'
+    Plugin 'wellle/targets.vim'
+    Plugin 'tpope/vim-surround'
 call vundle#end()
 
 " Installing vundle plugins
