@@ -518,6 +518,17 @@ augroup ft_css
 augroup END
 
 " }}}
+" HTML {{{
+
+augroup ft_html
+    au!
+
+    au FileType html setlocal ts=2
+    au FileType html setlocal sw=2
+    au FileType html setlocal expandtab
+augroup END
+
+" }}}
 " Java {{{
 
 augroup ft_java
