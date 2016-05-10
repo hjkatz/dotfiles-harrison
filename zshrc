@@ -232,5 +232,6 @@ esac
 if check_for_caution_server ; then
     color_echo yellow "############################################"
     color_echo red    "  CAUTION: You are on a production server!  "
+    color_echo red    "           Please double check the host.    "
     color_echo yellow "############################################"
 fi

@@ -202,21 +202,17 @@ function color_echo () {
 }
 
 caution_servers=(
-    "maia.thdises.com"
-    "electra.thdises.com"
-    "taygete.thdises.com"
-    "zeus.thdises.com"
-    "hera.thdises.com"
-    "new-hermes.neadwerx.com"
-    "apollo.neadwerx.com"
-    "stats.neadwerx.com"
+    "*.thdises.com"
+    "*.neadwerx.com"
 )
 
 function check_for_caution_server () {
     hostname=`hostname`
-    if [[ "${caution_servers[(r)$hostname]}" == "$hostname" ]] ; then
-        return 0
-    fi
+    for server in $caution_servers ; do
+        if [[ "$hostname" == "$server" ]] ; then
+            return 0
+        fi
+    done
 
     return 1
 }
