@@ -197,7 +197,16 @@ zstyle ':completion:*:functions' ignored-patterns '_*'
 # set completion definitions
 compdef ssh-remote-zsh=ssh
 
+# check if we are on a cautioned served
+if check_for_caution_server ; then
+    color_echo yellow "############################################"
+    color_echo red    "  CAUTION: You are on a production server!  "
+    color_echo red    "           Please double check the host.    "
+    color_echo yellow "############################################"
+fi
+
 # set distro specific completions
+# NOTE: Must happen last due to parsing error in _yum case
 case "$DISTRO" in
     ubuntu)
         # fall through
@@ -221,17 +230,10 @@ case "$DISTRO" in
     redhat)
         compdef '_yum_install' install
         compdef '_yum_erase' purge
+        # NOTE: This causes a parsing error but still must be called, so call it last!
         _yum >/dev/null 2>&1
         ;;
     *)
         echo "Distro '$DISTRO' is unrecognized"
         ;;
 esac
-
-# check if we are on a cautioned served
-if check_for_caution_server ; then
-    color_echo yellow "############################################"
-    color_echo red    "  CAUTION: You are on a production server!  "
-    color_echo red    "           Please double check the host.    "
-    color_echo yellow "############################################"
-fi

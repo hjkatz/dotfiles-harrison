@@ -202,14 +202,14 @@ function color_echo () {
 }
 
 caution_servers=(
-    "*.thdises.com"
-    "*.neadwerx.com"
+    ".*[.]thdises[.]com"
+    ".*[.]neadwerx[.]com"
 )
 
 function check_for_caution_server () {
     hostname=`hostname`
     for server in $caution_servers ; do
-        if [[ "$hostname" == "$server" ]] ; then
+        if [[ $hostname =~ $server ]] ; then
             return 0
         fi
     done
