@@ -66,6 +66,8 @@ call vundle#begin(expand(g:vim_dir_neadwerx.'bundle'))
     Plugin 'rodjek/vim-puppet'
     Plugin 'wellle/targets.vim'
     Plugin 'tpope/vim-surround'
+    Plugin 'tpope/vim-commentary'
+    Plugin 'chrisbra/Recover'
 call vundle#end()
 
 " Installing vundle plugins
@@ -114,6 +116,8 @@ call vundle#begin()
     Plugin 'rodjek/vim-puppet'
     Plugin 'wellle/targets.vim'
     Plugin 'tpope/vim-surround'
+    Plugin 'tpope/vim-commentary'
+    Plugin 'chrisbra/Recover'
 call vundle#end()
 
 " Installing vundle plugins
