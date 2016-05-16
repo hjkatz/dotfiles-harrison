@@ -91,8 +91,8 @@ source $DOTFILES/zsh-aliases
 source $DOTFILES/zsh-functions
 
 # Source any local files for custom environments
-if [ -f $HOME/.zshlocal ] ; then
-    source $HOME/.zshlocal
+if [ -f $HOME/.zshrc_local ] ; then
+    source $HOME/.zshrc_local
 fi
 
 # Source Nead Werx machine specific settings
