@@ -68,6 +68,10 @@ call vundle#begin(expand(g:vim_dir_neadwerx.'bundle'))
     Plugin 'tpope/vim-surround'
     Plugin 'tpope/vim-commentary'
     Plugin 'chrisbra/Recover.vim'
+    Plugin 'tpope/vim-repeat'
+    Plugin 'kana/vim-textobj-user'
+    Plugin 'Julian/vim-textobj-variable-segment'
+    Plugin 'tek/vim-textobj-ruby'
 call vundle#end()
 
 " Installing vundle plugins
@@ -118,6 +122,10 @@ call vundle#begin()
     Plugin 'tpope/vim-surround'
     Plugin 'tpope/vim-commentary'
     Plugin 'chrisbra/Recover.vim'
+    Plugin 'tpope/vim-repeat'
+    Plugin 'kana/vim-textobj-user'
+    Plugin 'Julian/vim-textobj-variable-segment'
+    Plugin 'tek/vim-textobj-ruby'
 call vundle#end()
 
 " Installing vundle plugins
