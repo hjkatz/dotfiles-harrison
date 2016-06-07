@@ -4,6 +4,18 @@ function chpwd ()
 {
     cl
 
+    check_and_update_git_repo
+}
+
+# period is 900 seconds == 15 mins
+export PERIOD=900
+function periodic ()
+{
+    check_and_update_git_repo
+}
+
+function check_and_update_git_repo ()
+{
     local GITDIR
     GITDIR="$(git rev-parse --show-toplevel 2>/dev/null)"
     if [[ "$GITDIR" == "$(pwd)" ]]; then
