@@ -8,56 +8,33 @@
 let s:vim_directory='~/.dotfiles-harrison/.vim/'
 
 " Plugins first, then settings
-" Vundle ------------------------------- {{{
+" Plugins ------------------------------- {{{
 
-"""BEGIN VUNDLE INSTALLATION"""
+"""BEGIN PLUG INSTALLATION"""
 set nocompatible              " required, sets vim to be incompatible with vi
 filetype off                  " required, turns off automatic filetype detection for installation
 
-" Auto-install Vundle
-let is_vundle_installed=0
-let vundle_readme=expand(s:vim_directory.'bundle/Vundle.vim/README.md')
-if !filereadable(vundle_readme)
-    echo "Installing Vundle..."
-    echo ""
-    exec 'silent !mkdir -p '.s:vim_directory.'bundle'
-    exec 'silent !git clone https://github.com/gmarik/vundle '.s:vim_directory.'bundle/Vundle.vim'
-    let vundle_installed=1
-endif
+" Vim Plug
+source ~/.dotfiles-harrison/plug.vim
 
-" set the runtime path to include Vundle and initialize
-let vundle=s:vim_directory
-let &runtimepath.=','.s:vim_directory.'bundle/Vundle.vim'
-
-" here is where you would add new plugins
-" these are the git repos on github
-call vundle#begin()
-    Plugin 'gmarik/Vundle.vim'
-    Plugin 'chrisbra/Recover.vim'
-    Plugin 'Julian/vim-textobj-variable-segment'
-    Plugin 'junegunn/vim-easy-align'
-    Plugin 'kana/vim-textobj-user'
-    Plugin 'kchmck/vim-coffee-script'
-    Plugin 'LaTeX-Box-Team/LaTeX-Box'
-    Plugin 'rodjek/vim-puppet'
-    Plugin 'sql_iabbr.vim'
-    Plugin 'tek/vim-textobj-ruby'
-    Plugin 'tpope/vim-commentary'
-    Plugin 'tpope/vim-endwise'
-    Plugin 'tpope/vim-repeat'
-    Plugin 'tpope/vim-surround'
-    Plugin 'wellle/targets.vim'
-call vundle#end()
-
-" Installing vundle plugins
-if is_vundle_installed == 1
-    echo "Installing Plugins..."
-    echo ""
-    :PluginInstall
-endif
+call plug#begin(expand(s:vim_directory.'plugged'))
+    Plug 'chrisbra/Recover.vim'
+    Plug 'Julian/vim-textobj-variable-segment'
+    Plug 'junegunn/vim-easy-align'
+    Plug 'kana/vim-textobj-user'
+    Plug 'kchmck/vim-coffee-script'
+    Plug 'LaTeX-Box-Team/LaTeX-Box'
+    Plug 'rodjek/vim-puppet'
+    Plug 'sql_iabbr.vim'
+    Plug 'tek/vim-textobj-ruby'
+    Plug 'tpope/vim-commentary'
+    Plug 'tpope/vim-endwise'
+    Plug 'tpope/vim-repeat'
+    Plug 'tpope/vim-surround'
+    Plug 'wellle/targets.vim'
+call plug#end()
 
 filetype plugin indent on    " required
-"""END VUNDLE INSTALLATION"""
 
 " }}}
 
