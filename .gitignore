@@ -1,4 +1,4 @@
 .viminfo
 *.swp
-vim/*
+.vim/*
 oh-my-zsh/cache/*
