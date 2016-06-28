@@ -25,6 +25,7 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'kchmck/vim-coffee-script'
     Plug 'LaTeX-Box-Team/LaTeX-Box'
     Plug 'rodjek/vim-puppet'
+    Plug 'scrooloose/syntastic'
     Plug 'sql_iabbr.vim'
     Plug 'tek/vim-textobj-ruby'
     Plug 'tpope/vim-commentary'
