@@ -30,6 +30,7 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'tek/vim-textobj-ruby'
     Plug 'tpope/vim-commentary'
     Plug 'tpope/vim-endwise'
+    Plug 'tpope/vim-fugitive'
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-surround'
     Plug 'wellle/targets.vim'
