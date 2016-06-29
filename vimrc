@@ -19,6 +19,7 @@ source ~/.dotfiles-harrison/plug.vim
 
 call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'chrisbra/Recover.vim'
+    Plug 'ervandew/supertab'
     Plug 'Julian/vim-textobj-variable-segment'
     Plug 'junegunn/vim-easy-align'
     Plug 'kana/vim-textobj-user'
@@ -26,8 +27,10 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'LaTeX-Box-Team/LaTeX-Box'
     Plug 'rodjek/vim-puppet'
     Plug 'scrooloose/syntastic'
+    Plug 'SirVer/ultisnips'
     Plug 'sql_iabbr.vim'
     Plug 'tek/vim-textobj-ruby'
+    Plug 'tomtom/tlib_vim'
     Plug 'tpope/vim-commentary'
     Plug 'tpope/vim-endwise'
     Plug 'tpope/vim-fugitive'
@@ -323,21 +326,6 @@ function! s:Pulse()
     execute 'hi ' . old_hi
 endfunction
 command! -nargs=0 Pulse call s:Pulse()
-
-" }}}
-
-" SuperTab {{{
-
-" personal SuperTab
-function! SuperTab()
-    if(strpart(getline('.'),col('.')-2,1)=~'^\W\?$')
-        return "\<Tab>"
-    else
-        return "\<C-p>"
-    endif
-endfunction
-
-imap <Tab> <C-R>=SuperTab()<CR>
 
 " }}}
 
