@@ -331,16 +331,13 @@ command! -nargs=0 Pulse call s:Pulse()
 
 " Persistant undo {{{
 
-if exists("+undofile")
-  " undofile - This allows you to use undos after exiting and restarting
-  " This, like swap and backups, uses .vim-undo first, then ~/.vim/undo
-  " :help undo-persistence
-  " This is only present in 7.3+
-  if isdirectory(s:vim_directory.'undo') == 0
-    exec 'silent !mkdir -p '.s:vim_directory.'undo > /dev/null 2>&1'
+if has('persistent_undo')
+  " create undodir
+  if isdirectory( s:vim_directory . 'undo' ) == 0
+    exec 'silent !mkdir -p ' . s:vim_directory . 'undo > /dev/null 2>&1'
   endif
-  let &undodir=s:vim_directory.'undo'
-  set undodir+=~/.vim/undo/
+
+  let &undodir = expand( s:vim_directory . 'undo' )
   set undofile
 endif
 
