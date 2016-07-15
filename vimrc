@@ -18,31 +18,70 @@ filetype off                  " required, turns off automatic filetype detection
 source ~/.dotfiles-harrison/plug.vim
 
 call plug#begin(expand(s:vim_directory.'plugged'))
+    " better .swp file handling
     Plug 'chrisbra/Recover.vim'
+
+    " more intuitive tab completion
     Plug 'ervandew/supertab'
-    Plug 'Julian/vim-textobj-variable-segment'
+
+    " easy alignment
     Plug 'junegunn/vim-easy-align'
-    Plug 'kana/vim-textobj-user'
-    Plug 'kchmck/vim-coffee-script'
-    Plug 'LaTeX-Box-Team/LaTeX-Box'
-    Plug 'rodjek/vim-puppet'
-    Plug 'scrooloose/syntastic'
-    Plug 'SirVer/ultisnips'
-    Plug 'sql_iabbr.vim'
-    Plug 'tek/vim-textobj-ruby'
-    Plug 'tomtom/tlib_vim'
-    Plug 'tpope/vim-commentary'
-    Plug 'tpope/vim-endwise'
-    Plug 'tpope/vim-fugitive'
-    Plug 'tpope/vim-repeat'
-    Plug 'tpope/vim-surround'
+
+    " Text Object Plugins
+    " add more builtin text object targets like quotes, tags, braces, etc...
     Plug 'wellle/targets.vim'
+    " text object user denifinitions
+    Plug 'kana/vim-textobj-user'
+    " text objects for ruby blocks with 'r'
+    Plug 'tek/vim-textobj-ruby'
+    " text object for variable segments with 'v'
+    Plug 'Julian/vim-textobj-variable-segment'
+
+    " Filetype Plugins
+    Plug 'sheerun/vim-polyglot'
+    " adds folding, fancy settings, and more!
+    Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+
+    " LaTeX Everything
+    Plug 'LaTeX-Box-Team/LaTeX-Box'
+
+    " syntax and style checking
+    Plug 'scrooloose/syntastic'
+
+    " snippets for code insertion
+    Plug 'SirVer/ultisnips'
+
+    " auto-upcase sql terms
+    Plug 'sql_iabbr.vim'
+
+    " extra vim functions to ensure ultisnips and supertab play nice together
+    Plug 'tomtom/tlib_vim'
+
+    " comment command with 'gc'
+    Plug 'tpope/vim-commentary'
+
+    " add ending control statements in languages like bash, zsh, vimscript, etc...
+    Plug 'tpope/vim-endwise'
+
+    " git in vim
+    Plug 'tpope/vim-fugitive'
+
+    " repeat everything with '.'
+    Plug 'tpope/vim-repeat'
+
+    " act on surrounding items like quotes, tags, braces, etc...
+    Plug 'tpope/vim-surround'
+
+    " undo tree viewer and manipulater
+    Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
+
+    " highlight indents
+    " Plug 'nathanaelkane/vim-indent-guides'
 call plug#end()
 
 filetype plugin indent on    " required
 
 " }}}
-
 
 " Nead Werx Settings {{{
 
@@ -238,6 +277,26 @@ let g:easy_align_delimiters =
     \       'stick_to_left' : 0
     \      }
     \ }
+
+" }}}
+
+" VimMarkdown ----------------------------- {{{
+
+" do not conceal markdown links
+let g:vim_markdown_conceal = 0
+
+" }}}
+
+" Undo Tree ----------------------------- {{{
+
+" map undotree to <F3>
+nnoremap <F3> :UndotreeToggle<CR>
+
+" window layout with long diff at bottom
+let g:undotree_WindowLayout = 2
+
+" give focus to undo tree window on open
+let g:undotree_SetFocusWhenToggle = 1
 
 " }}}
 
@@ -469,6 +528,27 @@ augroup ft_javascript
 
     " Make {<cr> insert a pair of brackets
     au Filetype javascript inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
+    " }fixes syntax highlighting
+augroup END
+
+" }}}
+" JSON {{{
+
+augroup ft_json
+    au!
+
+    au FileType json setlocal foldmethod=syntax
+
+    " Recursive toggle
+    au FileType json nnoremap <Space> zA
+    au FileType json vnoremap <Space> zA
+
+    " Prettify a hunk of JSON with <localleader>p
+    au FileType json nnoremap <buffer> <localleader>p ^vg_:!python -m json.tool<cr>
+    au FileType json vnoremap <buffer> <localleader>p :!python -m json.tool<cr>
+
+    " Make {<cr> insert a pair of brackets
+    au Filetype json inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
     " }fixes syntax highlighting
 augroup END
 

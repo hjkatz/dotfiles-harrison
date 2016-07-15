@@ -2,6 +2,8 @@
 
 function chpwd ()
 {
+    [[ "$should_run_chpwd" == "0" ]] && return
+
     cl
 
     check_and_update_git_repo
@@ -227,4 +229,25 @@ function check_for_caution_server () {
     done
 
     return 1
+}
+
+function setup_vim_plugins () {
+    local plugin_list_file="$DOTFILES/.plugin_list"
+    local plugin_list_cmd="cat $DOTFILES/vimrc | grep -P '^\s+Plug\s+' | awk '{print \$2}' | tr -d ','"
+    local do_plugin_setup=""
+
+    if [[ ! -f $plugin_list_file ]] ; then
+        eval $plugin_list_cmd > $plugin_list_file
+        do_plugin_setup="1"
+    elif ! eval $plugin_list_cmd | diff -q - $plugin_list_file &>/dev/null ; then
+        do_plugin_setup="1"
+    fi
+
+    if [[ -n $do_plugin_setup ]] ; then
+        color_echo yellow 'Setting up vim plugins...'
+        vim -u "$DOTFILES/vimrc" +PlugInstall +PlugUpdate +qall >/dev/null 2>&1 </dev/null
+
+        eval $plugin_list_cmd > $plugin_list_file
+        color_echo green 'Done.'
+    fi
 }

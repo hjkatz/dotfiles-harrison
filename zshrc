@@ -2,10 +2,15 @@
 DOTFILES=$HOME/.dotfiles-harrison
 ZSH=$DOTFILES/oh-my-zsh
 
+# globals
+should_run_chpwd="1"
+
 # update if needed
 UPDATED=false
 function update_dotfiles ()
 {
+    local should_run_chpwd="0"
+
     cd $DOTFILES
 
     git rev-parse 2> /dev/null
@@ -129,7 +134,7 @@ zstyle ':completion:*:expand:*' keep-prefix true tag-order all-expansions
 
 # formatting and messages
 zstyle ':completion:*' verbose yes
-zstyle ':completion:*:descriptions' format "%{${color[green]}%}##%d%{${reset_color}%}"
+zstyle ':completion:*:descriptions' format "%{$color[green]%}##%d%{$reset_color%}"
 zstyle ':completion:*:messages' format '%d'
 zstyle ':completion:*:warnings' format 'No matches for: %d'
 zstyle ':completion:*:corrections' format '%B%d (errors: %e)%b'
@@ -196,6 +201,8 @@ zstyle ':completion:*:functions' ignored-patterns '_*'
 
 # set completion definitions
 compdef ssh-remote-zsh=ssh
+
+setup_vim_plugins
 
 # check if we are on a cautioned served
 if check_for_caution_server ; then
