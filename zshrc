@@ -100,11 +100,6 @@ if [ -f $HOME/.zshrc_local ] ; then
     source $HOME/.zshrc_local
 fi
 
-# Source Nead Werx machine specific settings
-if [ -d /etc/neadwerx ] || [ -d /etc/profile.d/zsh/ ] ; then
-    source $DOTFILES/zsh-neadwerx
-fi
-
 # Echo updated message after sourcing files
 if [ $UPDATED = true ] ; then
     echo "Updated to $DOTFILES_VERSION"
