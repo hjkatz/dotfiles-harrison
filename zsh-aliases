@@ -27,6 +27,12 @@ alias gitconfig='vim ~/.dotfiles-harrison/gitconfig'
 alias resource='source zshrc'
 alias show_keyboard='key-mon --theme=clear-ubuntu --nomouse --scale=1.5 --old-keys=3 --decorated >/dev/null 2>&1 &'
 
+# zmv and friends
+alias zmv='noglob zmv -W'
+alias zcp='noglob zmv -W -C'
+alias zln='noglob zmv -W -L'
+alias zsy='noglob zmv -W -Ls'
+
 # alias to rename function
 alias remove='purge'
 

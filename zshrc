@@ -124,6 +124,9 @@ setopt RM_STAR_WAIT
 setopt EXTENDED_GLOB
 setopt DVORAK
 
+# autoload some functions
+autoload zmv
+
 # COMPLETION
 zmodload -i zsh/complist
 zstyle ':completion:*' use-perl on
