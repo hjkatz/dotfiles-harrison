@@ -26,7 +26,7 @@ done
 if ssh -A $1 "[[ ! -e ~/.dotfiles-harrison/$DOTFILES_VERSION.version ]]" # assuming bash-like is the default shell
 then
     echo "Transferring files..."
-    tar c -C${HOME} -h -z --exclude-vcs --exclude '.ignored/*' --exclude '.vim/*' .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME} --no-same-owner --overwrite --recursive-unlink' > /dev/null 2>&1
+    tar c -C${HOME} -h -z --exclude-vcs --exclude '.plugin_list' --exclude '.vim/*' .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME} --no-same-owner --overwrite --recursive-unlink' > /dev/null 2>&1
     echo "Updated to $DOTFILES_VERSION"
 fi
 

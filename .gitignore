@@ -2,4 +2,4 @@
 *.swp
 .vim/*
 oh-my-zsh/cache/*
-.ignored/*
+.plugin_list
