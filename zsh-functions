@@ -232,7 +232,7 @@ function check_for_caution_server () {
 }
 
 function setup_vim_plugins () {
-    local plugin_list_file="$DOTFILES/.plugin_list"
+    local plugin_list_file="$DOTFILES/.ignored/plugin_list"
     local plugin_list_cmd="cat $DOTFILES/vimrc | grep -P '^\s+Plug\s+' | awk '{print \$2}' | tr -d ','"
     local do_plugin_setup=""
 
@@ -245,7 +245,7 @@ function setup_vim_plugins () {
 
     if [[ -n $do_plugin_setup ]] ; then
         color_echo yellow 'Setting up vim plugins...'
-        vim -u "$DOTFILES/vimrc" +PlugInstall +PlugUpdate +qall >/dev/null 2>&1 </dev/null
+        vim -u "$DOTFILES/vimrc" +PlugInstall +PlugUpdate +qall #>/dev/null 2>&1 </dev/null
 
         eval $plugin_list_cmd > $plugin_list_file
         color_echo green 'Done.'
