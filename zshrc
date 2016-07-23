@@ -21,14 +21,23 @@ DOTFILES_VERSION=`cat $DOTFILES/VERSION`
 # setup the environment variables
 source $DOTFILES/zshrc.lib/environment.zsh
 
-# Source my files
+# source zshrc.d files
 for file in $DOTFILES/zshrc.d/* ; do
     source $file
 done
 
-# TODO: gut this
-plugins=(git-extras sudo web-search command-not-found zsh-syntax-highlighting gitfast)
-source $DOTFILES/oh-my-zsh/oh-my-zsh.sh
+# add omz compatible functions to the fpath
+for plugin in $DOTFILES/zshrc.plugins/* ; do
+    fpath=( $plugin $fpath )
+done
+
+# turn on the completion engine
+compinit -i -d "${ZSH_COMPDUMP}"
+
+# source omz compatible plugins
+for plugin in $DOTFILES/zshrc.plugins/* ; do
+    source $plugin
+done
 
 # Source any local files for custom environments
 if [ -f $HOME/.zshrc_local ] ; then

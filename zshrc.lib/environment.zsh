@@ -17,3 +17,7 @@ export LESS="-R"
 
 # ls colors
 export LSCOLORS="Gxfxcxdxbxegedabagacad"
+
+# Zsh compdump
+export SHORT_HOST=${HOST/.*/}
+export ZSH_COMPDUMP="${ZDOTDIR:-${HOME}}/.zcompdump-${SHORT_HOST}-${ZSH_VERSION}"
