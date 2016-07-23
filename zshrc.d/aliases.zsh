@@ -8,6 +8,7 @@ alias mv='mv -i'
 alias cp='cp -i'
 
 # various listing aliases
+alias ls='ls --color=tty'
 alias ll='ls -alF'
 alias l='ls -CF'
 alias cl='clear && ls '

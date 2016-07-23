@@ -35,14 +35,18 @@ done
 compinit -i -d "${ZSH_COMPDUMP}"
 
 # source omz compatible plugins
-for plugin in $DOTFILES/zshrc.plugins/* ; do
-    source $plugin
+plugin_list=( `/bin/ls -d -1 $DOTFILES/zshrc.plugins/* | sed 's/^\(\/[^\/]\+\)\+\///' | tr '\n' ' '` )
+for plugin in $plugin_list ; do
+    source $DOTFILES/zshrc.plugins/$plugin/$plugin.plugin.zsh
 done
 
 # Source any local files for custom environments
 if [ -f $HOME/.zshrc_local ] ; then
     source $HOME/.zshrc_local
 fi
+
+# source zsh syntax highlighting settings
+source $DOTFILES/zshrc.lib/syntax-highlighting-settings.zsh
 
 # source the prompt
 source $DOTFILES/zshrc.lib/prompt.zsh
