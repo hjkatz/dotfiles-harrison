@@ -3,7 +3,9 @@
 # update if needed
 function update_dotfiles ()
 {
-    local GLOBALS__SHOULD_RUN_CHPWD="0"
+    [ $GLOBALS__CHECK_FOR_UPDATES = false ] && return 0
+
+    local GLOBALS__SHOULD_RUN_CHPWD=false
 
     cd $DOTFILES
 
@@ -16,7 +18,6 @@ function update_dotfiles ()
             export GLOBALS__DOTFILES_UPDATED=true
         fi
     fi
-
     cd $HOME
 }
 

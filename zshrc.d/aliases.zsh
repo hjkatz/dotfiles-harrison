@@ -57,9 +57,6 @@ alias mv='nocorrect mv'
 alias mysql='nocorrect mysql'
 alias sudo='nocorrect sudo'
 
-# re-source my profiles
-alias resource='source zshrc'
-
 # show a keyboard on screen for presentations
 alias show_keyboard='key-mon --theme=clear-ubuntu --nomouse --scale=1.5 --old-keys=3 --decorated >/dev/null 2>&1 &'
 

@@ -1,5 +1,13 @@
 # Various functions
 
+# re-source zshrc profile
+function resource () {
+    # don't need to check for git updates to the dotfiles repo,
+    # we just want to resource the current dotfiles
+    local GLOBALS__CHECK_FOR_UPDATES=false
+    source $DOTFILES/zshrc
+}
+
 # echos out with color
 #
 # Called:

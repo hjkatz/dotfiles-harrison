@@ -1,5 +1,9 @@
 # Globals
 
+# whether the updater should check for updates this run or not (default:true)
+: ${GLOBALS__CHECK_FOR_UPDATES:=true}
+export GLOBALS__CHECK_FOR_UPDATES
+
 # global identifier to know if the dotfiles have been updated during this source
 export GLOBALS__DOTFILES_UPDATED=false
 

@@ -6,7 +6,7 @@
 #   - checks to update the git repo if in one
 function chpwd ()
 {
-    [[ "$GLOBALS__SHOULD_RUN_CHPWD" == "0" ]] && return
+    [ $GLOBALS__SHOULD_RUN_CHPWD = false ] && return
 
     cl
 
