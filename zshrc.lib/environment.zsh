@@ -5,3 +5,15 @@ export PATH=$PATH:/usr/local/git/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/
 
 # Set default editor
 export EDITOR=/usr/bin/vim
+
+# Setup zsh history tracking
+export HISTFILE=$HOME/.zsh_history
+export HISTSIZE=10000
+export SAVEHIST=10000
+
+# Set default pager and settings
+export PAGER="less"
+export LESS="-R"
+
+# ls colors
+export LSCOLORS="Gxfxcxdxbxegedabagacad"

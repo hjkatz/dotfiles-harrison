@@ -119,3 +119,18 @@ function setup_vim_plugins () {
         color_echo green 'Done.'
     fi
 }
+
+# Prints a list of zsh command statistics
+#
+# Called: `zsh_stats`
+function zsh_stats() {
+  fc -l 1 | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl |  head -n20
+}
+
+# My directory!
+#
+# Called: `take <dir>`
+function take() {
+  mkdir -p $1
+  cd $1
+}

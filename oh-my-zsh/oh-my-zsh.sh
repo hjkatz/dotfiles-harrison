@@ -1,13 +1,13 @@
 # Initializes Oh My Zsh
 
 # add a function path
-fpath=($DOTFILES/oh-my-zsh/functions $DOTFILES/oh-my-zsh/completions $fpath)
+# fpath=($DOTFILES/oh-my-zsh/functions $DOTFILES/oh-my-zsh/completions $fpath)
 
 # Load all of the config files in ~/oh-my-zsh that end in .zsh
 # TIP: Add files you don't want in git to .gitignore
-for config_file ($DOTFILES/oh-my-zsh/lib/*.zsh); do
-  source $config_file
-done
+#for config_file ($DOTFILES/oh-my-zsh/lib/*.zsh); do
+#  source $config_file
+#done
 
 is_plugin() {
   local base_dir=$1

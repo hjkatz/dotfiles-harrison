@@ -14,15 +14,47 @@ alias cl='clear && ls '
 alias tree='tree -lFC'
 alias treee='tree -alFC -pug'
 
-# typos and fixups for cd
+# directory aliases
 alias ..='cd ..'
-alias 'cd..=cd ..'
+alias cd..='cd ..'
+alias -- -='cd -'
+
+alias -g ...='../..'
+alias -g ....='../../..'
+alias -g .....='../../../..'
+alias -g ......='../../../../..'
+
+alias 1='cd -'
+alias 2='cd -2'
+alias 3='cd -3'
+alias 4='cd -4'
+alias 5='cd -5'
+alias 6='cd -6'
+alias 7='cd -7'
+alias 8='cd -8'
+alias 9='cd -9'
+
+alias md='mkdir -p'
+alias rd=rmdir
+alias d='dirs -v | head -10'
+
+# quick history
+alias history='fc -il1'
 
 # aliases for quick editing dotfiles
 alias vimrc='vim ~/.dotfiles-harrison/vimrc'
 alias vim='vim -u ~/.dotfiles-harrison/vimrc'
 alias zshrc='vim ~/.dotfiles-harrison/zshrc'
 alias gitconfig='vim ~/.dotfiles-harrison/gitconfig'
+
+# nocorrect aliases
+alias gist='nocorrect gist'
+alias heroku='nocorrect heroku'
+alias man='nocorrect man'
+alias mkdir='nocorrect mkdir'
+alias mv='nocorrect mv'
+alias mysql='nocorrect mysql'
+alias sudo='nocorrect sudo'
 
 # re-source my profiles
 alias resource='source zshrc'
