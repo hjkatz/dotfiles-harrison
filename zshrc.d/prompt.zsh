@@ -1,3 +1,5 @@
+# setup the prompt
+
 local ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ %s)"
 PROMPT='%{$fg_bold[yellow]%}%# ${ret_status}%{$fg_bold[white]%}%n@%m %{$fg[cyan]%}%c %{$fg_bold[blue]%}$(git_prompt_info)%{$fg_bold[blue]%} % %{$reset_color%}'
 

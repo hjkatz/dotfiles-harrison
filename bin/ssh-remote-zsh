@@ -20,20 +20,18 @@ do
        shift
 done
 
-# check if ~/.ssh/id_rsa.pub is in the file REMOTE:~/.ssh/authorized_keys
-# if not, then "ssh-copy-id REMOTE"
-
-if ssh -A $1 "[[ ! -e ~/.dotfiles-harrison/$DOTFILES_VERSION.version ]]" # assuming bash-like is the default shell
+# check for out of date dotfiles on remote server
+if ssh -A $1 'cat ~/.dotfiles-harrison/VERSION | grep -q -P "^$DOTFILES_VERSION"'
 then
-    echo "Transferring files..."
+    color_echo yellow "Transferring files..."
     tar c -C${HOME} -h -z --exclude-vcs --exclude '.plugin_list' --exclude '.vim/*' .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME} --no-same-owner --overwrite --recursive-unlink' > /dev/null 2>&1
-    echo "Updated to $DOTFILES_VERSION"
+    color_echo green "Updated to $DOTFILES_VERSION"
 fi
 
 # maybe check if zsh is installed and if not install it? Or return an error?
 
 if [ $NO_FORWARD == true ] ; then
-    ssh $FLAG -t $1 "ZDOTDIR=~/.dotfiles-harrison/ $(which zsh)"
+    ssh $FLAG -t $1 "ZDOTDIR=~/.dotfiles-harrison/ $(which zsh)" || color_echo red "Zsh is not available on the remote system!"
 else
-    ssh $FLAG -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ $(which zsh)"
+    ssh $FLAG -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ $(which zsh)" || color_echo red "Zsh is not available on the remote system!"
 fi

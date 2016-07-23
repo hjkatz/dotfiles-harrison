@@ -1,4 +1,4 @@
-# This is my colors file
+# Define colors for ease of use
 
 # normal
 black="%{^[[0;30m%}"

@@ -1,11 +1,11 @@
 # Initializes Oh My Zsh
 
 # add a function path
-fpath=($ZSH/functions $ZSH/completions $fpath)
+fpath=($DOTFILES/oh-my-zsh/functions $DOTFILES/oh-my-zsh/completions $fpath)
 
 # Load all of the config files in ~/oh-my-zsh that end in .zsh
 # TIP: Add files you don't want in git to .gitignore
-for config_file ($ZSH/lib/*.zsh); do
+for config_file ($DOTFILES/oh-my-zsh/lib/*.zsh); do
   source $config_file
 done
 
@@ -18,7 +18,7 @@ is_plugin() {
 # Add all defined plugins to fpath. This must be done
 # before running compinit.
 for plugin ($plugins); do
-    fpath=($ZSH/plugins/$plugin $fpath)
+    fpath=($DOTFILES/oh-my-zsh/plugins/$plugin $fpath)
 done
 
 # Figure out the SHORT hostname
@@ -38,19 +38,5 @@ compinit -i -d "${ZSH_COMPDUMP}"
 
 # Load all of the plugins that were defined in ~/.zshrc
 for plugin ($plugins); do
-    source $ZSH/plugins/$plugin/$plugin.plugin.zsh
+    source $DOTFILES/oh-my-zsh/plugins/$plugin/$plugin.plugin.zsh
 done
-
-# Load the theme
-if [ "$ZSH_THEME" = "random" ]; then
-  themes=($ZSH/themes/*zsh-theme)
-  N=${#themes[@]}
-  ((N=(RANDOM%N)+1))
-  RANDOM_THEME=${themes[$N]}
-  source "$RANDOM_THEME"
-  echo "[oh-my-zsh] Random theme '$RANDOM_THEME' loaded..."
-else
-  if [ ! "$ZSH_THEME" = ""  ]; then
-      source "$ZSH/themes/$ZSH_THEME.zsh-theme"
-  fi
-fi
