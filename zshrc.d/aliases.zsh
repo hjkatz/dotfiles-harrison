@@ -40,7 +40,7 @@ alias rd=rmdir
 alias d='dirs -v | head -10'
 
 # quick history
-alias history='fc -il1'
+alias history='fc -il 1'
 
 # aliases for quick editing dotfiles
 alias vimrc='vim ~/.dotfiles-harrison/vimrc'

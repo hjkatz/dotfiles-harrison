@@ -18,7 +18,7 @@ setopt COMPLETE_IN_WORD
 setopt ALWAYS_TO_END
 
 # Correction
-setopt CORRECT_ALL
+setopt CORRECT
 
 # History
 setopt APPEND_HISTORY
