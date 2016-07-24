@@ -11,10 +11,13 @@ export GLOBALS__DOTFILES_UPDATED=false
 export GLOBALS__SHOULD_RUN_CHPWD=true
 
 # servers to alert when connected
-export GLOBALS__CAUTON_SERVERS=(
+GLOBALS__CAUTON_SERVERS=(
     ".*[.]thdises[.]com"
     ".*[.]neadwerx[.]com"
 )
+
+# export on separate line to prevent "unknown file attribute" error in older versions of Zsh
+export GLOBALS__CAUTON_SERVERS
 
 # figure out which distro is currently loaded
 #
@@ -24,38 +27,31 @@ function which_distro ()
     release_info=`cat /etc/*-release`
 
     echo "$release_info" | grep -i -q 'ubuntu' && {
-        echo "ubuntu"
-        exit 0
+        echo "ubuntu" && return 0
     }
 
     echo "$release_info" | grep -i -q 'debian' && {
-        echo "debian"
-        exit 0
+        echo "debian" && return 0
     }
 
     echo "$release_info" | grep -i -q 'centos' && {
-        echo "centos"
-        exit 0
+        echo "centos" && return 0
     }
 
     echo "$release_info" | grep -i -q 'redhat' && {
-        echo "redhat"
-        exit 0
+        echo "redhat" && return 0
     }
 
     echo "$release_info" | grep -i -q 'red hat' && {
-        echo "redhat"
-        exit 0
+        echo "redhat" && return 0
     }
 
     echo "$release_info" | grep -i -q 'rhel' && {
-        echo "rhel"
-        exit 0
+        echo "rhel" && return 0
     }
 
     echo "$release_info" | grep -i -q 'fedora' && {
-        echo "fedora"
-        exit 0
+        echo "fedora" && return 0
     }
 
     echo ""
