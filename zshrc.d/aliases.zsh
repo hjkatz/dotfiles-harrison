@@ -42,6 +42,9 @@ alias d='dirs -v | head -10'
 # quick history
 alias history='fc -il 1'
 
+# quick dotfile access
+alias dotfiles='cd $DOTFILES'
+
 # aliases for quick editing dotfiles
 alias vimrc='vim ~/.dotfiles-harrison/vimrc'
 alias vim='vim -u ~/.dotfiles-harrison/vimrc'
