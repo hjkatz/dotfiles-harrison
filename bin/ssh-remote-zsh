@@ -1,5 +1,33 @@
 #!/bin/bash
 
+# echos out with color
+#
+# Called:
+#   `color_echo red "My Error"`
+#   `color_echo yellow "My Warning"`
+#   `color_echo green "My Success"`
+function color_echo () {
+    case $1 in
+     red)     
+          color=31
+          ;;
+     green)
+          color=32
+          ;;
+     yellow)
+          color=33
+          ;;
+     *)  
+          color=$1
+          ;;
+    esac
+
+    # remove $1
+    shift
+
+    echo -e "\033[1;${color}m$@\033[0m"
+}
+
 FLAG=""
 NO_FORWARD=false
 
@@ -21,8 +49,7 @@ do
 done
 
 # check for out of date dotfiles on remote server
-if ssh -A $1 'cat ~/.dotfiles-harrison/VERSION | grep -q -P "^$DOTFILES_VERSION"'
-then
+if ssh -A $1 '[[ ! -f ~/.dotfiles-harrison/VERSION ]] || cat ~/.dotfiles-harrison/VERSION | grep -v -q -P "^$DOTFILES_VERSION"' ; then
     color_echo yellow "Transferring files..."
     tar c -C${HOME} -h -z --exclude-vcs --exclude '.plugin_list' --exclude '.vim/*' .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME} --no-same-owner --overwrite --recursive-unlink' > /dev/null 2>&1
     color_echo green "Updated to $DOTFILES_VERSION"
