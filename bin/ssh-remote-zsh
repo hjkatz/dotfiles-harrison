@@ -51,7 +51,7 @@ done
 # check for out of date dotfiles on remote server
 if ssh -A $1 '[[ ! -f ~/.dotfiles-harrison/VERSION ]] || cat ~/.dotfiles-harrison/VERSION | grep -v -q -P "^$DOTFILES_VERSION"' ; then
     color_echo yellow "Transferring files..."
-    tar c -C${HOME} -h -z --exclude-vcs --exclude '.plugin_list' --exclude '.vim/*' .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME} --no-same-owner --overwrite --recursive-unlink' > /dev/null 2>&1
+    tar c -C${HOME} -h -z --exclude-vcs --exclude '.plugin_list' --exclude '.vim/*' .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME} --no-same-owner --overwrite' > /dev/null 2>&1
     color_echo green "Updated to $DOTFILES_VERSION"
 fi
 
