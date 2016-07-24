@@ -117,7 +117,7 @@ function setup_vim_plugins () {
 
     if [[ -n $do_plugin_setup ]] ; then
         color_echo yellow 'Setting up vim plugins...'
-        vim -u "$DOTFILES/vimrc" +PlugInstall +PlugUpdate +qall #>/dev/null 2>&1 </dev/null
+        vim -u "$DOTFILES/vimrc" +PlugInstall +PlugUpdate +qall >/dev/null 2>&1
 
         eval $plugin_list_cmd > $plugin_list_file
         color_echo green 'Done.'
