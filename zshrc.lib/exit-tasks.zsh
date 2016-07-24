@@ -49,3 +49,6 @@ case "$GLOBALS__DISTRO" in
         echo "Distro '$GLOBALS__DISTRO' is unrecognized"
         ;;
 esac
+
+# ensure the exit code of startup is 0
+echo "" >/dev/null 2>&1
