@@ -32,7 +32,7 @@ FLAG=""
 NO_FORWARD=false
 
 if [ $# -eq 0 ] ; then
-    echo "Missing Hostname"
+    color_echo red "Missing Hostname"
     exit 1
 fi
 
@@ -47,6 +47,71 @@ do
        esac
        shift
 done
+
+if [[ -f ~/.ssh/config ]] ; then
+    # parse .ssh/config and find print user@hostname:port info
+
+    # config parser written in awk, prints out lines like
+    #     host:hostname:port:user
+    ssh_config_parser_awk='
+$1 == "Host" {
+    host = $2;
+    next;
+}
+$1 == "HostName" {
+    hostname = $2;
+    next;
+}
+$1 == "Port" {
+    port = $2;
+    next;
+}
+$1 == "User" {
+    user = $2;
+    next;
+}
+$1 == "IdentityFile" {
+    printf "%s:%s:%s:%s\n", host, hostname, port, user;
+    host     = "";
+    hostname = "";
+    port     = "";
+    user     = "";
+    next;
+}
+'
+
+    # parse the config
+    ssh_config_parsed=`awk $ssh_config_parser_awk ~/.ssh/config`
+    ssh_config_match=`echo "$ssh_config_parsed" | grep -P "^\\Q$1\\E:"`
+
+    # check for a match in the config
+    if [[ -n "$ssh_config_match" ]] ; then
+        # match exists
+        user=`echo "$ssh_config_match" | cut -d: -f4`
+        port=`echo "$ssh_config_match" | cut -d: -f3`
+        hostname=`echo "$ssh_config_match" | cut -d: -f2`
+
+        # print correct parts if they exist (hostname will always exist)
+        # print yellow then cyan using ansi color codes
+        if [[ -n "$user" ]] && [[ -n "$port" ]] ; then
+            color_echo yellow "Connecting to \033[1;36m$user@$hostname:$port\033[0m"
+        elif [[ -n "$user" ]] && [[ -z "$port" ]] ; then
+            color_echo yellow "Connecting to \033[1;36m$user@$hostname\033[0m"
+        elif [[ -z "$user" ]] && [[ -n "$port" ]] ; then
+            color_echo yellow "Connecting to \033[1;36m$hostname:$port\033[0m"
+        elif [[ -z "$user" ]] && [[ -z "$port" ]] ; then
+            color_echo yellow "Connecting to \033[1;36m$hostname\033[0m"
+        else
+            color_echo red "Impossible case"
+        fi
+    else
+        # no match found in config, print whatever was passed in
+        color_echo yellow "Connecting to \033[1;36m$1\033[0m"
+    fi
+else
+    # no ssh config, print whatever was passed in
+    color_echo yellow "Connecting to \033[1;36m$1\033[0m"
+fi
 
 # check for out of date dotfiles on remote server
 if ssh -A $1 "[[ ! -f $DOTFILES/VERSION ]] || cat $DOTFILES/VERSION | grep -v -q -P '^$DOTFILES_VERSION'" ; then
