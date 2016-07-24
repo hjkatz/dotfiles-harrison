@@ -21,6 +21,9 @@ export DOTFILES_VERSION=`cat $DOTFILES/VERSION`
 # setup the environment variables
 source $DOTFILES/zshrc.lib/environment.zsh
 
+# turn on the completion engine
+compinit -i -d "$ZSH_COMPDUMP"
+
 # source zshrc.d files
 for file in $DOTFILES/zshrc.d/* ; do
     source $file
@@ -30,9 +33,6 @@ done
 for plugin in $DOTFILES/zshrc.plugins/* ; do
     fpath=( $plugin $fpath )
 done
-
-# turn on the completion engine
-compinit -i -d "${ZSH_COMPDUMP}"
 
 # source omz compatible plugins
 plugin_list=( `/bin/ls -d -1 $DOTFILES/zshrc.plugins/* | sed 's/^\(\/[^\/]\+\)\+\///' | tr '\n' ' '` )
