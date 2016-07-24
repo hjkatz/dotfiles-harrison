@@ -18,7 +18,6 @@ unsetopt MENU_COMPLETE    # do not autoselect the first completion entry
 
 # Expansion and Globbing
 setopt EXTENDED_GLOB # turn on extended globbing :)
-setopt MARK_DIRS     # append a '/' to all matched directories
 
 # History
 setopt APPEND_HISTORY         # every zsh session appends to the histfile instead of overwriting
