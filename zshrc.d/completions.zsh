@@ -99,9 +99,6 @@ zstyle ':completion:*:reserved-words' list-colors "=*=$color[red]"
 ### colorize hostname completion
 zstyle ':completion:*:*:*:*:hosts' list-colors "=*=$color[cyan];$color[bg-black]"
 
-# Disable completion of usernames
-zstyle ':completion:*' users off
-
 ## add colors to processes for kill completion
 zstyle ':completion:*:*:kill:*' verbose yes
 zstyle ':completion:*:*:kill:*:processes' list-colors "=(#b) #([0-9]#) #([^ ]#)*=$color[cyan]=$color[yellow]=$color[green]"
