@@ -1,5 +1,4 @@
 .viminfo
 *.swp
 .vim/*
-oh-my-zsh/cache/*
 .plugin_list
