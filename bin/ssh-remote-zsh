@@ -113,10 +113,30 @@ else
     color_echo yellow "Connecting to \033[1;36m$1\033[0m"
 fi
 
+# construct a list of excluded files for the tar transfer
+tar_exclude_list=(
+    '.plugin_list'
+    '.vim/*'
+    '.viminfo'
+    '*.swp'
+    '.zcompdump*'
+    '*.md'
+    'zsh-syntax-highlighting/docs/*'
+    'zsh-syntax-highlighting/images/*'
+    'zsh-syntax-highlighting/tests/*'
+    'zsh-syntax-highlighting/Makefile'
+)
+
+tar_excludes=""
+
+for exclude in $tar_exclude_list ; do
+    tar_excludes="$tar_excludes --exclude '$exclude'"
+done
+
 # check for out of date dotfiles on remote server
 if ssh -A $1 "[[ ! -f $DOTFILES/VERSION ]] || cat $DOTFILES/VERSION | grep -v -q -P '^$DOTFILES_VERSION'" ; then
     color_echo yellow "Transferring files..."
-    tar c -C${HOME} --gzip --exclude-vcs --exclude '.plugin_list' --exclude '.vim/*' --exclude '.viminfo' --exclude '*.swp' .dotfiles-harrison | ssh $1 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
+    tar c -C${HOME} --gzip --exclude-vcs $tar_excludes .dotfiles-harrison | ssh $1 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
     color_echo green "Updated to $DOTFILES_VERSION"
 fi
 
