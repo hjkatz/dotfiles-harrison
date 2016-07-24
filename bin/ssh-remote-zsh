@@ -124,26 +124,30 @@ tar_exclude_list=(
     'zsh-syntax-highlighting/docs/*'
     'zsh-syntax-highlighting/images/*'
     'zsh-syntax-highlighting/tests/*'
+    'zsh-syntax-highlighting/**/test-data*'
     'zsh-syntax-highlighting/Makefile'
 )
 
-tar_excludes=""
-
+tar_excludes=()
+# add tar flags as an array of separate arguments becuase tar is picky...
 for exclude in $tar_exclude_list ; do
-    tar_excludes="$tar_excludes --exclude '$exclude'"
+    tar_excludes+='--exclude'
+    tar_excludes+="$exclude"
 done
 
+REMOTE_DOTFILES='~/.dotfiles-harrison/'
+
 # check for out of date dotfiles on remote server
-if ssh -A $1 "[[ ! -f $DOTFILES/VERSION ]] || cat $DOTFILES/VERSION | grep -v -q -P '^$DOTFILES_VERSION'" ; then
+if ssh -A $1 "[[ ! -f $REMOTE_DOTFILES/VERSION ]] || cat $REMOTE_DOTFILES/VERSION | grep -v -q -P '^$DOTFILES_VERSION'" ; then
     color_echo yellow "Transferring files..."
-    tar c -C${HOME} --gzip --exclude-vcs $tar_excludes .dotfiles-harrison | ssh $1 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
+    tar c -C${HOME} --gzip --exclude-vcs ${tar_excludes} .dotfiles-harrison | ssh $1 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
     color_echo green "Updated to $DOTFILES_VERSION"
 fi
 
 # maybe check if zsh is installed and if not install it? Or return an error?
 
 if [ $NO_FORWARD = true ] ; then
-    ssh $FLAG -t $1 "ZDOTDIR=$DOTFILES $(which zsh)"
+    ssh $FLAG -t $1 "ZDOTDIR=$REMOTE_DOTFILES $(which zsh)"
 else
-    ssh $FLAG -A -t $1 "ZDOTDIR=$DOTFILES $(which zsh)"
+    ssh $FLAG -A -t $1 "ZDOTDIR=$REMOTE_DOTFILES $(which zsh)"
 fi
