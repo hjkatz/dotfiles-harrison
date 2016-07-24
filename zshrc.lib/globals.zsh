@@ -57,4 +57,5 @@ function which_distro ()
     echo ""
 }
 
+# which distro the dotfiles thinks is running
 export GLOBALS__DISTRO=`which_distro`
