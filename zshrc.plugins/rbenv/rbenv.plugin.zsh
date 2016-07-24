@@ -7,7 +7,7 @@
 #   - prompt: rbenv_prompt_info
 
 FOUND_RBENV=0
-
+rbenvdirs=("$HOME/.rbenv" "/usr/local/rbenv" "/opt/rbenv" "/usr/local/opt/rbenv")
 for rbenvdir in "${rbenvdirs[@]}" ; do
     if [ -d $rbenvdir/bin -a $FOUND_RBENV -eq 0 ] ; then
         FOUND_RBENV=1
