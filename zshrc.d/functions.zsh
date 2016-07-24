@@ -91,11 +91,10 @@ function check_for_caution_server () {
     for server in $GLOBALS__CAUTION_SERVERS ; do
         if [[ $hostname =~ $server ]] ; then
             # we are on a caution server
+            echo "" # add a blank line before
             color_echo yellow "############################################"
             color_echo red    "  CAUTION: You are on a production server!  "
             color_echo red    "           Please double check the host.    "
-            echo              "                                            "
-            color_echo red    "  HOST: $hostname"
             color_echo yellow "############################################"
         fi
     done

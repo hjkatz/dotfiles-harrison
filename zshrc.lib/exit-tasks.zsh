@@ -17,6 +17,8 @@ setup_vim_plugins
 # warn about caution servers
 check_for_caution_server
 
+color_echo yellow "Remember to delete .dotfiles when upgrading to 3.0.0!"
+
 # set distro specific completions
 # NOTE: Must happen last due to parsing error in _yum case
 case "$GLOBALS__DISTRO" in
@@ -44,6 +46,7 @@ case "$GLOBALS__DISTRO" in
         compdef '_yum_erase' purge
         # NOTE: This causes a parsing error but still must be called, so call it last!
         _yum >/dev/null 2>&1
+        echo "" >/dev/null 2>&1
         ;;
     *)
         echo "Distro '$GLOBALS__DISTRO' is unrecognized"

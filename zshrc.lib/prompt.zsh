@@ -34,8 +34,11 @@ function _hname () {
     done
 
     # else we're on a regular server
-    echo "%{$fg_bold[white]%}@%M%{$reset_color%}"
+    echo "%{$reset_color%}%{$fg[white]%}@%M%{$reset_color%}"
 }
+
+# ensure that the first value of ret_status is a success
+echo "" >/dev/null 2>&1
 
 # previous command return status
 local ret_status="%(?:%{$fg_bold[green]%}➜:%{$fg_bold[red]%}➜)"
