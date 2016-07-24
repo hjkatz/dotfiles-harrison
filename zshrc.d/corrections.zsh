@@ -1,3 +1,5 @@
+# prevent zsh from correcting these commands
+
 alias ebuild='nocorrect ebuild'
 alias gist='nocorrect gist'
 alias heroku='nocorrect heroku'
