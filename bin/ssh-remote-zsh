@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 # echos out with color
 #
@@ -49,16 +49,16 @@ do
 done
 
 # check for out of date dotfiles on remote server
-if ssh -A $1 '[[ ! -f ~/.dotfiles-harrison/VERSION ]] || cat ~/.dotfiles-harrison/VERSION | grep -v -q -P "^$DOTFILES_VERSION"' ; then
+if ssh -A $1 "[[ ! -f $DOTFILES/VERSION ]] || cat $DOTFILES/VERSION | grep -v -q -P '^$DOTFILES_VERSION'" ; then
     color_echo yellow "Transferring files..."
-    tar c -C${HOME} --gzip --exclude-vcs --exclude '.*' .dotfiles-harrison | ssh $1 'tar mxz -C ${HOME} --no-same-owner --overwrite' > /dev/null 2>&1
+    tar c -C${HOME} --gzip --exclude-vcs --exclude '.plugin_list' --exclude '.vim/*' --exclude '.viminfo' --exclude '*.swp' .dotfiles-harrison | ssh $1 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
     color_echo green "Updated to $DOTFILES_VERSION"
 fi
 
 # maybe check if zsh is installed and if not install it? Or return an error?
 
-if [ $NO_FORWARD == true ] ; then
-    ssh $FLAG -t $1 "ZDOTDIR=~/.dotfiles-harrison/ $(which zsh)" || color_echo red "Zsh is not available on the remote system!"
+if [ $NO_FORWARD = true ] ; then
+    ssh $FLAG -t $1 "ZDOTDIR=$DOTFILES $(which zsh)"
 else
-    ssh $FLAG -A -t $1 "ZDOTDIR=~/.dotfiles-harrison/ $(which zsh)" || color_echo red "Zsh is not available on the remote system!"
+    ssh $FLAG -A -t $1 "ZDOTDIR=$DOTFILES $(which zsh)"
 fi

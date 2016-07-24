@@ -23,10 +23,3 @@ function update_dotfiles ()
 
 # check to update
 update_dotfiles
-
-# symlink the required files in place
-if [ $GLOBALS__DOTFILES_UPDATED = true ] ; then
-    for dotfile in $GLOBALS__REQUIRED_SYMLINKS ; do
-        [[ ! -h $DOTFILES/.$dotfile ]] && ln -s $DOTFILES/$dotfile $DOTFILES/.$dotfile
-    done
-fi

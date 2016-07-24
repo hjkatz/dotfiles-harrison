@@ -1,7 +1,7 @@
 # Main Zshrc that loads all other parts of the dotfiles
 
 # Where the dotfiles are located to load
-DOTFILES=$HOME/.dotfiles-harrison
+export DOTFILES=$HOME/.dotfiles-harrison
 
 # turn on zsh options
 source $DOTFILES/zshrc.lib/setopts.zsh
@@ -16,7 +16,7 @@ source $DOTFILES/zshrc.lib/globals.zsh
 source $DOTFILES/zshrc.lib/updater.zsh
 
 # set the version after attempting to update
-DOTFILES_VERSION=`cat $DOTFILES/VERSION`
+export DOTFILES_VERSION=`cat $DOTFILES/VERSION`
 
 # setup the environment variables
 source $DOTFILES/zshrc.lib/environment.zsh
