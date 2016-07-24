@@ -39,8 +39,7 @@ function color_echo () {
 # Checks to see if the pwd is in a git repo, then calls git fetch
 #
 # Called: `check_and_update_git_repo`
-function check_and_update_git_repo ()
-{
+function check_and_update_git_repo () {
     local GITDIR
     GITDIR="$(git rev-parse --show-toplevel 2>/dev/null)"
     if [[ "$GITDIR" == "$(pwd)" ]]; then
@@ -88,7 +87,7 @@ function loop () {
 #
 # Called: `check_for_caution_server`
 function check_for_caution_server () {
-    hostname=`hostname`
+    local hostname=`hostname`
     for server in $GLOBALS__CAUTION_SERVERS ; do
         if [[ $hostname =~ $server ]] ; then
             # we are on a caution server

@@ -5,6 +5,12 @@ if [ $GLOBALS__DOTFILES_UPDATED = true ] ; then
     color_echo green "Updated to $DOTFILES_VERSION"
 fi
 
+# Check for extremely long PATH
+PATH_LENGTH=`echo $PATH | wc -c`
+if [[ $PATH_LENGTH -gt 2000 ]] ; then
+    color_echo yellow "Warning: current PATH length exceeds 2000 characters, perhaps it's time to reopen the terminal?"
+fi
+
 # setup the vim plugins if needed
 setup_vim_plugins
 
