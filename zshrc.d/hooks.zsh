@@ -25,13 +25,15 @@ function periodic () {
 #   - determines the current terminal width (columns - 1)
 #   - truncates the current path into something that fits
 #   - determines the correct lengths for PWDLEN and FILLBAR
+#
+# Literally magic (see:http://aperiodic.net/phil/prompt/)
 function precmd () {
     local TERMWIDTH
+
+    # use one character less because zsh auto puts a
+    # space at the end of the terminal for some reason
     (( TERMWIDTH = ${COLUMNS} - 1 ))
 
-    ###
-    # Truncate the path if it's too long.
-    
     PR_FILLCHAR=""
     PR_PWDLEN=""
     
@@ -39,6 +41,7 @@ function precmd () {
     local promptsize=${#${(%):-- %n@%M [00:00:00]}}
     local pwdsize=${#${(%):-%~}}
     
+    # determine which size to use
     if [[ "$promptsize + $pwdsize" -gt $TERMWIDTH ]]; then
 	    ((PR_PWDLEN=$TERMWIDTH - $promptsize))
     else
