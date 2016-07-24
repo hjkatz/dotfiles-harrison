@@ -9,13 +9,7 @@
 FOUND_RBENV=0
 rbenvdirs=("$HOME/.rbenv" "/usr/local/rbenv" "/opt/rbenv" "/usr/local/opt/rbenv")
 for rbenvdir ($rbenvdirs) ; do
-    if [ -d $rbenvdir/bin -a $FOUND_RBENV -eq 0 ] ; then
-        FOUND_RBENV=1
-        if [[ $RBENV_ROOT = '' ]]; then
-            RBENV_ROOT=$rbenvdir
-        fi
-        export RBENV_ROOT
-        export PATH=${rbenvdir}/bin:$PATH
+    if [ -d $rbenvdir/shims -a $FOUND_RBENV -eq 0 ] ; then
         eval "$(rbenv init --no-rehash - zsh)"
 
         alias rubies="rbenv versions"
@@ -54,5 +48,5 @@ unset rbenvdir
 if [ $FOUND_RBENV -eq 0 ] ; then
     alias rubies='ruby -v'
     function gemsets() { echo 'not supported' }
-    function rbenv_prompt_info() { echo "system: $(ruby -v | cut -f-2 -d ' ')" }
+    function rbenv_prompt_info() { echo "" }
 fi
