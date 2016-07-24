@@ -19,6 +19,16 @@ GLOBALS__CAUTON_SERVERS=(
 # export on separate line to prevent "unknown file attribute" error in older versions of Zsh
 export GLOBALS__CAUTON_SERVERS
 
+# files that require a .dotfile present
+GLOBALS__REQUIRED_SYMLINKS=(
+    gitconfig
+    vimrc
+    zshrc
+)
+
+# export on separate line to prevent "unknown file attribute" error in older versions of Zsh
+export GLOBALS__REQUIRED_SYMLINKS
+
 # figure out which distro is currently loaded
 #
 # Called: `which_distro`
