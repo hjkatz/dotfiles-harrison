@@ -23,18 +23,18 @@ function _hname () {
     local hostname=`hostname`
 
     # we're on a dotfiles source machine with repo enabled
-    [[ -d $DOTFILES/.git ]] && echo "%{$FG[013]%}@%m%{$reset_color%}" && return 0
+    [[ -d $DOTFILES/.git ]] && echo "%{$FG[013]%}@%M%{$reset_color%}" && return 0
 
     # check for caution server
     for server in $GLOBALS__CAUTION_SERVERS ; do
         if [[ $hostname =~ $server ]] ; then
             # we are on a caution server
-            echo "%{$fg_bold[red]%}@%m%{$reset_color%}" && return 0
+            echo "%{$fg_bold[red]%}@%M%{$reset_color%}" && return 0
         fi
     done
 
     # else we're on a regular server
-    echo "%{$fg_bold[white]%}@%m%{$reset_color%}"
+    echo "%{$fg_bold[white]%}@%M%{$reset_color%}"
 }
 
 # previous command return status

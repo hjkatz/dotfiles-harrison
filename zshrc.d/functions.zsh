@@ -99,8 +99,6 @@ function check_for_caution_server () {
             color_echo yellow "############################################"
         fi
     done
-
-    return 1
 }
 
 # Installs, updates, and manages vim plugins upon load through the file GLOBALS__PLUGIN_LIST_FILE.

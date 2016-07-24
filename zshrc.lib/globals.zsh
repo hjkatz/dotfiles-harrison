@@ -11,13 +11,13 @@ export GLOBALS__DOTFILES_UPDATED=false
 export GLOBALS__SHOULD_RUN_CHPWD=true
 
 # servers to alert when connected
-GLOBALS__CAUTON_SERVERS=(
+GLOBALS__CAUTION_SERVERS=(
     ".*[.]thdises[.]com"
     ".*[.]neadwerx[.]com"
 )
 
 # export on separate line to prevent "unknown file attribute" error in older versions of Zsh
-export GLOBALS__CAUTON_SERVERS
+export GLOBALS__CAUTION_SERVERS
 
 # figure out which distro is currently loaded
 #

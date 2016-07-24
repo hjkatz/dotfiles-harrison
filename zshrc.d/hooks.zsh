@@ -36,7 +36,7 @@ function precmd () {
     PR_PWDLEN=""
     
     # use the extra spaces at the end for padding and manual adjustment
-    local promptsize=${#${(%):-- %n@%m [00:00:00]}}
+    local promptsize=${#${(%):-- %n@%M [00:00:00]}}
     local pwdsize=${#${(%):-%~}}
     
     if [[ "$promptsize + $pwdsize" -gt $TERMWIDTH ]]; then
