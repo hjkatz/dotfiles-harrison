@@ -23,6 +23,9 @@ zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-dir
 zstyle ':completion::complete:*' use-cache 1
 zstyle ':completion::complete:*' cache-path $ZSH_CACHE_DIR
 
+# Disable completion of usernames
+zstyle ':completion:*' users
+
 # Don't complete uninteresting users
 zstyle ':completion:*:*:*:users' ignored-patterns \
         adm amanda apache at avahi avahi-autoipd beaglidx bin cacti canna \
@@ -80,9 +83,11 @@ zstyle ':completion:*:hosts' hosts $_ssh_config
 
 # SSH Completion
 zstyle ':completion:*:scp:*' tag-order files 'hosts:-domain:domain'
-zstyle ':completion:*:scp:*' group-order files all-files users hosts-domain hosts-host hosts-ipaddr
+zstyle ':completion:*:scp:*' group-order files all-files hosts-domain hosts-host hosts-ipaddr
+zstyle ':completion:*:scp:*' users off
 zstyle ':completion:*:ssh:*' tag-order 'hosts:-domain:domain'
 zstyle ':completion:*:ssh:*' group-order hosts-domain hosts-host hosts-ipaddr
+zstyle ':completion:*:ssh:*' users off
 
 ### highlight parameters with uncommon names
 zstyle ':completion:*:parameters' list-colors "=[^a-zA-Z]*=$color[red]"
