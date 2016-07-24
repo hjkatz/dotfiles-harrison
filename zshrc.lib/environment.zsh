@@ -15,8 +15,8 @@ export SAVEHIST=10000
 export PAGER="less"
 export LESS="-R"
 
-# ls colors
-export LSCOLORS="Gxfxcxdxbxegedabagacad"
+# ls colors (see:http://geoff.greer.fm/lscolors/)
+export LSCOLORS="ExgxbxdxCxegedabagacad"
 
 # Zsh compdump
 export SHORT_HOST=${HOST/.*/}

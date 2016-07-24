@@ -6,5 +6,5 @@ autoload zmv
 # ls colors
 autoload -U colors && colors
 
-# Load all stock functions
+# pre load completion engine
 autoload -U compaudit compinit
