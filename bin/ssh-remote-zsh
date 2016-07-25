@@ -54,23 +54,24 @@ if [[ -f ~/.ssh/config ]] ; then
     # config parser written in awk, prints out lines like
     #     host:hostname:port:user
     ssh_config_parser_awk='
-$1 == "Host" {
+{ IGNORECASE = 1; } # turn on case insensitivity
+/\<Host\>/ {
     host = $2;
     next;
 }
-$1 == "HostName" {
+/\<HostName\>/ {
     hostname = $2;
     next;
 }
-$1 == "Port" {
+/\<Port\>/ {
     port = $2;
     next;
 }
-$1 == "User" {
+/\<User\>/ {
     user = $2;
     next;
 }
-$1 == "IdentityFile" {
+/\<IdentityFile\>/ {
     printf "%s:%s:%s:%s\n", host, hostname, port, user;
     host     = "";
     hostname = "";
@@ -78,6 +79,7 @@ $1 == "IdentityFile" {
     user     = "";
     next;
 }
+/.*/ { next; } # default
 '
 
     # parse the config
