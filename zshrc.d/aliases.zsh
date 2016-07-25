@@ -51,9 +51,6 @@ alias vim='vim -u ~/.dotfiles-harrison/vimrc'
 alias zshrc='vim ~/.dotfiles-harrison/zshrc'
 alias gconfig='vim ~/.dotfiles-harrison/gitconfig'
 
-# alias for git and custom gitconfig location
-alias git='HOME=$DOTFILES/ git'
-
 # nocorrect aliases
 alias ebuild='nocorrect ebuild'
 alias gist='nocorrect gist'

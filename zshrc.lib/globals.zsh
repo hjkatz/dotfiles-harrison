@@ -19,6 +19,15 @@ GLOBALS__CAUTION_SERVERS=(
 # export on separate line to prevent "unknown file attribute" error in older versions of Zsh
 export GLOBALS__CAUTION_SERVERS
 
+# servers to overwrite ~/.gitconfig with $DOTFILES/gitconfig
+GLOBALS__GITCONFIG_SERVERS=(
+    "harrison.internal"
+    "harrison-home-ubuntu"
+)
+
+# export on separate line to prevent "unknown file attribute" error in older versions of Zsh
+export GLOBALS__GITCONFIG_SERVERS
+
 # figure out which distro is currently loaded
 #
 # Called: `which_distro`

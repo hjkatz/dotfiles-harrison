@@ -21,6 +21,9 @@ export DOTFILES_VERSION=`cat $DOTFILES/VERSION`
 # setup the environment variables
 source $DOTFILES/zshrc.lib/environment.zsh
 
+# source the gitconfig hack
+source $DOTFILES/zshrc.lib/gitconfig.zsh
+
 # turn on the completion engine
 compinit -i -d "$ZSH_COMPDUMP"
 

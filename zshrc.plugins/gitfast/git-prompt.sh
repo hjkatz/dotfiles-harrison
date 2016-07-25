@@ -472,8 +472,8 @@ __git_ps1 ()
         p=" $p"
     fi
 
-	local f="$w$i$s$u"
-	local gitstring="$c$b${f:+$z$f}$r$p"
+	local f="$w$i$u"
+	local gitstring="$s$c$b${f:+$z$f}$r$p"
 
 	if [ $pcmode = yes ]; then
 		if [ "${__git_printf_supports_v-}" != yes ]; then

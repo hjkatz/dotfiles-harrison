@@ -147,7 +147,7 @@ fi
 # maybe check if zsh is installed and if not install it? Or return an error?
 
 if [ $NO_FORWARD = true ] ; then
-    ssh $FLAG -t $1 "ZDOTDIR=$REMOTE_DOTFILES $(which zsh)"
+    ssh $FLAG -t $1 "export ZDOTDIR=$REMOTE_DOTFILES ; $(which zsh)"
 else
-    ssh $FLAG -A -t $1 "ZDOTDIR=$REMOTE_DOTFILES $(which zsh)"
+    ssh $FLAG -A -t $1 "export ZDOTDIR=$REMOTE_DOTFILES ; $(which zsh)"
 fi
