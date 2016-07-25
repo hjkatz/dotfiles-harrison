@@ -17,7 +17,15 @@ setup_vim_plugins
 # warn about caution servers
 check_for_caution_server
 
-color_echo yellow "Remember to delete .dotfiles when upgrading to 3.0.0!"
+# warn about old dotfiles
+if [[ -d "${DOTFILES}-old" ]] ; then
+    color_echo red "Found ${DOTFILES}-old, this should be removed!"
+fi
+
+# warn about old dotfiles versioning
+if find $DOTFILES -maxdepth 1 -type f -name "*.version" 2>/dev/null | grep -q . ; then
+    color_echo red "Found old version files; remove $DOTFILES for a clean start!"
+fi
 
 # set distro specific completions
 # NOTE: Must happen last due to parsing error in _yum case
