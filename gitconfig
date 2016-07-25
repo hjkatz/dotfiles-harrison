@@ -1,13 +1,69 @@
+# git configuration to be shared across accounts
+
 [user]
+    # personal information
 	email = harrison@neadwerx.com
 	name = Harrison Katz
+
+[color]
+    # turn on auto coloring
+	ui = auto
+	diff = auto
+    branch = auto
+    grep = auto
+    status = auto
+
+[column]
+    # print output in columns ala ls
+    ui = auto,column,nodense
+    branch = auto,column,nodense
+    tag = auto,column,nodense
+
+[diff]
+    # turn on rename and copy detection
+    renames = copy
+
+    # better diffs
+    algorithm = histogram
+
+[fetch]
+    # auto prune refs that are no longer tracking remotes upon `git fetch`
+    prune = true
+
+[log]
+    # show refs, heads, tags, remotes, etc... in log output
+    decorate = auto
+
+    # follow a single file through renames
+    follow = true
+
+[help]
+    # use the suggested git command when misspelled after 1.0 seconds
+	autocorrect = 10
+
+[push]
+    # push the current branch by default when given no arguments
+	default = simple
+
+[status]
+    # use short status
+    short = true
+
+    # show branch info in status
+    branch = true
+
+[rerere]
+    # turn on merge memory
+    enabled = true
+    autoupdate = true
+
 [alias]
+    # aliases for git things
 	st = status
 	co = checkout
-[color]
-	diff = auto
-	ui = true
-[help]
-	autocorrect = 10
-[push]
-	default = simple
+    l = log --oneline
+    lg = log --oneline --decorate --graph
+
+    # custom history log
+    history = log --pretty=format:'%C(yellow)%h%Creset %Cblue<%ae>%Creset %Cgreen(%cr)%Creset | %s %Cred%d%Creset' --graph --date=short
+    hist = log --pretty=format:'%C(yellow)%h%Creset %Cblue<%ae>%Creset %Cgreen(%cr)%Creset | %s %Cred%d%Creset' --graph --date=short
