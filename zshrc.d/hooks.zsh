@@ -47,6 +47,4 @@ function precmd () {
     else
         PR_FILLCHAR="\${(l.(($TERMWIDTH - ($promptsize + $pwdsize))).. .)}"
     fi
-
-    echo $PR_PWDLEN
 }
