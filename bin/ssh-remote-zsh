@@ -83,7 +83,7 @@ if [[ -f ~/.ssh/config ]] ; then
 '
 
     # parse the config
-    ssh_config_parsed=`awk $ssh_config_parser_awk ~/.ssh/config`
+    ssh_config_parsed=`awk $ssh_config_parser_awk ~/.ssh/config | sort | uniq`
     ssh_config_match=`echo "$ssh_config_parsed" | grep -P "^\\Q$1\\E:"`
 
     # check for a match in the config
