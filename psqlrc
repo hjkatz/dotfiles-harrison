@@ -1,0 +1,49 @@
+-- turn quiet on for my prompt setup
+\set QUIET 1
+
+-- setup custom history file and size
+\set HISTFILE ~/.psql_history-harrison- :DBNAME
+\set HISTSIZE 2000
+\set HISTCONTROL ignoredups
+
+-- setup prompt with colors
+\set PROMPT1 '%[%033[0;31m%][%[%033[1;37m%]%m%[%033[0;31m%]]:%[%033[1;31m%]%>%[%033[0m%] %n@%[%033[1;36m%]%/%[%033[0m%]%R%#%x '
+\set PROMPT2 '%[%033[0;31m%][%[%033[1;37m%]%m%[%033[0;31m%]]:%[%033[1;31m%]%>%[%033[0m%] %n@%[%033[1;36m%]%/%[%033[0m%]%R%#%x '
+
+-- turn on interactive error rollbacks
+\set ON_ERROR_ROLLBACK interactive
+
+-- stop on all errors
+\set ON_ERROR_STOP ON
+
+-- null values are empty by default, so print '(null)' instead
+\pset null '(null)'
+
+-- show the timing of every query
+\timing
+
+-- turn on verbose mode for better errors while debugging
+\set VERBOSITY verbose
+
+-- turn on auto display mode for better formatting
+\x auto
+
+-- Custom Commands:
+
+-- :clear -- clears the screen
+\set clear '\\! clear'
+
+-- :pgqueries -- shows information about currently running queries
+\set pgqueries 'select datname, pid, client_addr, date_trunc(''second'', now() - query_start) as runtime, waiting as w, query from pg_stat_activity where state = ''active'' and pid != pg_backend_pid() order by runtime desc nulls last '
+
+-- :email -- get entity by email_address or pk
+\set email 'select * from tb_entity where email_address ilike '
+
+-- :entity -- get entity by pk
+\set entity 'select * from tb_entity where entity = '
+
+-- :roles -- list the roles
+\set roles 'select role,label,description,abbreviation,rank from tb_role order by rank '
+
+-- turn quiet off when we're done
+\set QUIET 0

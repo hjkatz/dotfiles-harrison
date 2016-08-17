@@ -21,3 +21,6 @@ export LSCOLORS="ExgxbxdxCxegedabagacad"
 # Zsh compdump
 export SHORT_HOST=${HOST/.*/}
 export ZSH_COMPDUMP="${ZDOTDIR:-${HOME}}/.zcompdump-${SHORT_HOST}-${ZSH_VERSION}"
+
+# Setup psqlrc location
+export PSQLRC="$DOTFILES/psqlrc"
