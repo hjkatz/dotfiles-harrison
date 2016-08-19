@@ -75,8 +75,8 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     " undo tree viewer and manipulater
     Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 
-    " highlight indents
-    " Plug 'nathanaelkane/vim-indent-guides'
+    " color scheme
+    Plug 'sickill/vim-monokai'
 call plug#end()
 
 filetype plugin indent on    " required
@@ -140,6 +140,16 @@ set wildignore+=*.orig                           " Merge resolution files
 syntax on
 filetype on
 filetype indent on
+
+" color scheme
+colorscheme monokai
+highlight Normal ctermbg=none
+highlight SpecialKey ctermbg=none
+highlight NonText ctermbg=none
+highlight LineNr ctermbg=none ctermfg=11
+highlight StatusLine ctermbg=none
+highlight StatusLineNC ctermbg=none
+highlight Folded ctermfg=14
 
 " <f5> insert date
 nnoremap <F5> "=strftime("%c")<CR>P
