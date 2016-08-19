@@ -147,9 +147,8 @@ highlight Normal ctermbg=none
 highlight SpecialKey ctermbg=none
 highlight NonText ctermbg=none
 highlight LineNr ctermbg=none ctermfg=11
-highlight StatusLine ctermbg=none
-highlight StatusLineNC ctermbg=none
 highlight Folded ctermfg=14
+highlight Visual ctermbg=214
 
 " <f5> insert date
 nnoremap <F5> "=strftime("%c")<CR>P
