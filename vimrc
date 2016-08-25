@@ -700,10 +700,10 @@ hi VertSplit                    ctermfg=241  ctermbg=241  cterm=none
 hi MatchParen                   ctermfg=141  ctermbg=none cterm=underline
 hi StatusLine                   ctermfg=231  ctermbg=241  cterm=bold
 hi StatusLineNC                 ctermfg=231  ctermbg=241  cterm=none
-hi Pmenu                        ctermfg=none ctermbg=none cterm=none
+hi Pmenu                        ctermfg=none ctermbg=238 cterm=none
 hi PmenuSel                     ctermfg=none ctermbg=59   cterm=none
 hi IncSearch                    ctermfg=235  ctermbg=186  cterm=none
-hi Search                       ctermfg=none ctermbg=236  cterm=underline
+hi Search                       ctermfg=none ctermbg=236  cterm=inverse,underline
 hi Directory                    ctermfg=197  ctermbg=none cterm=none
 hi Folded                       ctermfg=14   ctermbg=235  cterm=none
 hi SignColumn                   ctermfg=none ctermbg=237  cterm=none
