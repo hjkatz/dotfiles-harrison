@@ -712,7 +712,7 @@ hi Boolean                      ctermfg=197  ctermbg=none cterm=none
 hi Character                    ctermfg=197  ctermbg=none cterm=none
 hi Comment                      ctermfg=242  ctermbg=none cterm=none
 hi Conditional                  ctermfg=141  ctermbg=none cterm=none
-hi Constant                     ctermfg=none ctermbg=none cterm=none
+hi Constant                     ctermfg=81 ctermbg=none cterm=none
 hi Define                       ctermfg=141  ctermbg=none cterm=none
 hi DiffAdd                      ctermfg=231  ctermbg=64   cterm=bold
 hi DiffDelete                   ctermfg=88   ctermbg=none cterm=none

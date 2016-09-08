@@ -13,7 +13,7 @@ export SAVEHIST=10000
 
 # Set default pager and settings
 export PAGER="less"
-export LESS="-F -I -R"
+export LESS="-F -X -I -R"
 
 # ls colors (see:http://geoff.greer.fm/lscolors/)
 export LSCOLORS="ExgxbxdxCxegedabagacad"
