@@ -33,7 +33,7 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     " text object user denifinitions
     Plug 'kana/vim-textobj-user'
     " text objects for ruby blocks with 'r'
-    Plug 'tek/vim-textobj-ruby'
+    Plug 'tek/vim-textobj-ruby', { 'for': 'ruby' }
     " text object for variable segments with 'v'
     Plug 'Julian/vim-textobj-variable-segment'
 
@@ -43,7 +43,7 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 
     " LaTeX Everything
-    Plug 'LaTeX-Box-Team/LaTeX-Box'
+    Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
 
     " syntax and style checking
     Plug 'scrooloose/syntastic'
