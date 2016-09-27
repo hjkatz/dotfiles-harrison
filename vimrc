@@ -97,7 +97,7 @@ set ts=4                           " tab spacing is 4 spaces
 set sw=4                           " shift width is 4 spaces
 set expandtab                      " expand all tabs to spaces
 set ai                             " autoindent a file based on filetype
-set si                             " smartindent while typing
+set cindent                        " c-style indenting while typing
 set background=dark                " our backdrop is dark
 set number                         " show line numbers
 set ruler                          " show row,col count on bottom bar
