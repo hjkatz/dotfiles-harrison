@@ -44,7 +44,7 @@ echo "" >/dev/null 2>&1
 local ret_status="%(?:%{$fg_bold[green]%}➜:%{$fg_bold[red]%}➜)"
 
 # jen prompt
-PROMPT=$'\n${ret_status} $(_uname)$(_hname)%{$fg_bold[cyan]%} %$PR_PWDLEN<...<%~%<<%{$reset_color%}${(e)PR_FILLCHAR}[%D{%I:%M:%S}]\n%{$fg_bold[yellow]%}%# %{$reset_color%}$(rbenv_prompt_info)$(git_prompt_info)'
+PROMPT=$'\n${ret_status} $(_uname)$(_hname)%{$fg_bold[cyan]%} %$PR_PWDLEN<...<%~%<<%{$reset_color%}${(e)PR_FILLCHAR}[%D{%I:%M:%S}]\n%{$fg_bold[yellow]%}%# %{$reset_color%}$(rbenv_prompt_info)$(git_prompt_info)$(hg_prompt_info)'
 
 # zsh theme settings to work with git-prompt
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg_bold[red]%}"
