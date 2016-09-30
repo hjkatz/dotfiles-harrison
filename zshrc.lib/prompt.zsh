@@ -52,6 +52,11 @@ ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
 ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[blue]%}) %{$fg_bold[yellow]%}✗%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg_bold[blue]%})"
 
+ZSH_THEME_HG_PROMPT_PREFIX="%{$fg_bold[red]%}hg:[%{$fg_bold[blue]%}"
+ZSH_THEME_HG_PROMPT_SUFFIX="%{$fg_bold[red]%}]%{$reset_color%}"
+ZSH_THEME_HG_PROMPT_DIRTY=" %{$fg_bold[yellow]%}✗%{$reset_color%}"
+ZSH_THEME_HG_PROMPT_CLEAN=" %{$fg_bold[green]%}✓%{$reset_color%}"
+
 GIT_PS1_SHOWUPSTREAM="git legacy"
 GIT_PS1_SHOWSTASHSTATE=true
 GIT_PS1_SHOWUNTRACKEDFILES=true
