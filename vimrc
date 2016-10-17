@@ -181,12 +181,26 @@ nnoremap <f9> mzggg?G`z
 nnoremap / /\v
 vnoremap / /\v
 
+" Remap stupid shift letters
+command! Q q
+command! W w
+command! Wq wq
+
 " Leader
 let mapleader = ","
 let maplocalleader = "\\"
 
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cmap w!! w !sudo tee > /dev/null %
+
+" Remove trailing whitespace from code on write
+autocmd BufWritePre * :%s/\s\+$//e
+
+" Disable that fucking 'Entering Ex mode. Type 'visual' to go to Normal mode.'
+map Q <Nop>
+
+" Ctrl-Y by word
+inoremap <expr> <c-y> matchstr(getline(line('.')-1), '\%' . virtcol('.') . 'v\%(\k\+\\|.\)')
 
 " }}}
 " Plugin Config ------------------------ {{{
