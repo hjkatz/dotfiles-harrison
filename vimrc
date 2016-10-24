@@ -74,6 +74,9 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " undo tree viewer and manipulater
     Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
+
+    " whitespace detection and deletion
+    Plug 'ntpeters/vim-better-whitespace'
 call plug#end()
 
 filetype plugin indent on    " required
@@ -193,9 +196,6 @@ let maplocalleader = "\\"
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cmap w!! w !sudo tee > /dev/null %
 
-" Remove trailing whitespace from code on write
-autocmd BufWritePre * :%s/\s\+$//e
-
 " Disable that fucking 'Entering Ex mode. Type 'visual' to go to Normal mode.'
 map Q <Nop>
 
@@ -253,31 +253,31 @@ let g:easy_align_delimiters =
     \       'left_margin'   : 1,
     \       'right_margin'  : 0,
     \       'stick_to_left' : 0
-    \      },  
+    \      },
     \ ']': {
     \       'pattern'       : ']',
     \       'left_margin'   : 1,
     \       'right_margin'  : 0,
     \       'stick_to_left' : 0
-    \      },  
+    \      },
     \ '(': {
     \       'pattern'       : ')',
     \       'left_margin'   : 1,
     \       'right_margin'  : 0,
     \       'stick_to_left' : 0
-    \      },  
+    \      },
     \ ')': {
     \       'pattern'       : ')',
     \       'left_margin'   : 1,
     \       'right_margin'  : 0,
     \       'stick_to_left' : 0
-    \      },  
+    \      },
     \ '{': {
     \       'pattern'       : '}',
     \       'left_margin'   : 1,
     \       'right_margin'  : 0,
     \       'stick_to_left' : 0
-    \      },  
+    \      },
     \ '}': {
     \       'pattern'       : '}',
     \       'left_margin'   : 1,
@@ -311,6 +311,20 @@ let g:undotree_WindowLayout = 2
 
 " give focus to undo tree window on open
 let g:undotree_SetFocusWhenToggle = 1
+
+" }}}
+
+" Better Whitespace ----------------------------- {{{
+
+" wrapper function for deleting whitespace while saving cursor position
+function! Delete_whitespace()
+    let save_pos = getpos(".")
+    :StripWhitespace
+    call setpos(".", save_pos)
+endfunction
+
+" auto-delete whitespace on write
+autocmd BufWritePre * call Delete_whitespace()
 
 " }}}
 
@@ -349,21 +363,21 @@ augroup END
 
 " Folding Fix {{{
 
-" Don't update folds in insert mode 
-aug NoInsertFolding 
-    au! 
-    au InsertEnter * let b:oldfdm = &l:fdm | setl fdm=manual 
-    au InsertLeave * let &l:fdm = b:oldfdm 
-aug END 
+" Don't update folds in insert mode
+aug NoInsertFolding
+    au!
+    au InsertEnter * let b:oldfdm = &l:fdm | setl fdm=manual
+    au InsertLeave * let &l:fdm = b:oldfdm
+aug END
 
 " }}}
 
 " Markdown Filetype {{{
 
 aug MarkdownFiletype
-    au! 
+    au!
     au BufNewFile,BufFilePre,BufRead *.md set filetype=markdown
-aug END 
+aug END
 
 " }}}
 
