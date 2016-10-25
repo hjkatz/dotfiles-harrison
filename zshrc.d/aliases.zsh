@@ -49,7 +49,8 @@ alias dotfiles='cd $DOTFILES'
 alias vimrc='vim ~/.dotfiles-harrison/vimrc'
 alias vim='vim -u ~/.dotfiles-harrison/vimrc'
 alias zshrc='vim ~/.dotfiles-harrison/zshrc'
-alias gconfig='vim ~/.dotfiles-harrison/gitconfig'
+alias gitconfig='vim ~/.dotfiles-harrison/gitconfig'
+alias psqlrc='vim ~/.dotfiles-harrison/psqlrc'
 
 # nocorrect aliases
 alias ebuild='nocorrect ebuild'
