@@ -8,7 +8,7 @@
 #   `color_echo green "My Success"`
 function color_echo () {
     case $1 in
-     red)     
+     red)
           color=31
           ;;
      green)
@@ -17,7 +17,7 @@ function color_echo () {
      yellow)
           color=33
           ;;
-     *)  
+     *)
           color=$1
           ;;
     esac
