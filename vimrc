@@ -77,6 +77,9 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " whitespace detection and deletion
     Plug 'ntpeters/vim-better-whitespace'
+
+    " split windows in a spectacular fashion
+    Plug 'roman/golden-ratio'
 call plug#end()
 
 filetype plugin indent on    " required
