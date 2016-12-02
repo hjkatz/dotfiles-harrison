@@ -16,7 +16,7 @@ function resource () {
 #   `color_echo green "My Success"`
 function color_echo () {
     case $1 in
-     red)     
+     red)
           color=31
           ;;
      green)
@@ -25,7 +25,7 @@ function color_echo () {
      yellow)
           color=33
           ;;
-     *)  
+     *)
           color=$1
           ;;
     esac
@@ -67,6 +67,36 @@ function taila () {
 # Called: `mdless <file.md>`
 function mdless () {
     pandoc -f markdown -t man --smart --normalize --standalone --toc "$*" | man -l -
+}
+
+# Extracts any type of file into a directory with the same name
+#
+# Called: `extract <file>`
+function extract () {
+    # usage
+    if [[ -z "$1" ]] ; then
+        echo "usage: extract <file>"
+        echo "       Extract the file based on the extension."
+    elif [[ -f "$1" ]] ; then
+        case ${(L)1} in
+            *.tar.xz)   tar --extract --verbose --one-top-level --file $1 ;;
+            *.tar.bz2)  tar --extract --verbose --one-top-level --file $1 ;;
+            *.tar.gz)   tar --extract --verbose --one-top-level --file $1 ;;
+            *.tar)      tar --extract --verbose --one-top-level --file $1 ;;
+            *.tbz2)     tar --extract --verbose --one-top-level --file $1 ;;
+            *.tgz)      tar --extract --verbose --one-top-level --file $1 ;;
+            *.jar)      unzip -d $(basename $1)                        $1 ;;
+            *.zip)      unzip -d $(basename $1)                        $1 ;;
+            *.7z)       7za e -o $(basename $1)                        $1 ;;
+            *.(bz2|bz)) bunzip2                                        $1 ;;
+            *.gz)       gunzip                                         $1 ;;
+            *.rar)      unrar x                                        $1 ;;
+            *.z)        uncompress                                     $1 ;;
+            *)          color_echo red "Unable to extract '$1' :: Unknown extension"
+        esac
+    else
+        color_echo red "File '$1' does not exist!"
+    fi
 }
 
 # loops a command for the specified number of sleep time
