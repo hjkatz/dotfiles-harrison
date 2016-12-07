@@ -52,7 +52,7 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'SirVer/ultisnips'
 
     " auto-upcase sql terms
-    Plug 'sql_iabbr.vim'
+    Plug 'hjkatz/sql_iabbr.vim', { 'for': 'sql' }
 
     " extra vim functions to ensure ultisnips and supertab play nice together
     Plug 'tomtom/tlib_vim'
