@@ -78,27 +78,22 @@ function extract () {
         echo "usage: extract <file>"
         echo "       Extract the file based on the extension."
     elif [[ -f "$1" ]] ; then
-        if type unp ; then
-            unp -U $1
-        else
-            color_echo yellow "unp missing, falling back..."
-            case ${(L)1} in
-                *.tar.xz)   tar --extract --verbose --one-top-level --file $1 ;;
-                *.tar.bz2)  tar --extract --verbose --one-top-level --file $1 ;;
-                *.tar.gz)   tar --extract --verbose --one-top-level --file $1 ;;
-                *.tar)      tar --extract --verbose --one-top-level --file $1 ;;
-                *.tbz2)     tar --extract --verbose --one-top-level --file $1 ;;
-                *.tgz)      tar --extract --verbose --one-top-level --file $1 ;;
-                *.jar)      unzip -d $(basename $1)                        $1 ;;
-                *.zip)      unzip -d $(basename $1)                        $1 ;;
-                *.7z)       7za e -o $(basename $1)                        $1 ;;
-                *.(bz2|bz)) bunzip2                                        $1 ;;
-                *.gz)       gunzip                                         $1 ;;
-                *.rar)      unrar x                                        $1 ;;
-                *.z)        uncompress                                     $1 ;;
-                *)          color_echo red "Unable to extract '$1' :: Unknown extension"
-            esac
-        fi
+        case ${(L)1} in
+            *.tar.xz)   tar --extract --verbose --one-top-level --file $1 ;;
+            *.tar.bz2)  tar --extract --verbose --one-top-level --file $1 ;;
+            *.tar.gz)   tar --extract --verbose --one-top-level --file $1 ;;
+            *.tar)      tar --extract --verbose --one-top-level --file $1 ;;
+            *.tbz2)     tar --extract --verbose --one-top-level --file $1 ;;
+            *.tgz)      tar --extract --verbose --one-top-level --file $1 ;;
+            *.jar)      unzip -d $(basename $1)                        $1 ;;
+            *.zip)      unzip -d $(basename $1)                        $1 ;;
+            *.7z)       7za e -o $(basename $1)                        $1 ;;
+            *.(bz2|bz)) bunzip2                                        $1 ;;
+            *.gz)       gunzip                                         $1 ;;
+            *.rar)      unrar x                                        $1 ;;
+            *.z)        uncompress                                     $1 ;;
+            *)          color_echo red "Unable to extract '$1' :: Unknown extension"
+        esac
     else
         color_echo red "File '$1' does not exist!"
     fi
