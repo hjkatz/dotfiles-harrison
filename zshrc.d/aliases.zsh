@@ -78,6 +78,9 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # alias to rename function
 alias remove='purge'
 
+# ubuntu + audio :(
+alias fix_audio='killall pulseaudio; \rm -rf ~/.config/pulse/* ; \rm -rf ~/.pulse*; sleep 10; pulseaudio -k'
+
 # SUFFIX ALIASES
 alias -s txt=vim
 alias -s mp4=vlc
