@@ -80,6 +80,9 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " split windows in a spectacular fashion
     Plug 'roman/golden-ratio'
+
+    " asks which file you meant to open
+    Plug 'EinfachToll/DidYouMean'
 call plug#end()
 
 filetype plugin indent on    " required
