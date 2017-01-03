@@ -88,7 +88,6 @@ call plug#end()
 filetype plugin indent on    " required
 
 " }}}
-
 " Nead Werx Settings {{{
 
 " Test to see if I am on Neadwerx puppet controlled machines or not
@@ -204,6 +203,9 @@ cmap w!! w !sudo tee > /dev/null %
 
 " Disable that fucking 'Entering Ex mode. Type 'visual' to go to Normal mode.'
 map Q <Nop>
+
+" Disable vim command history bullshit
+map q: <Nop>
 
 " Ctrl-Y by word
 inoremap <expr> <c-y> matchstr(getline(line('.')-1), '\%' . virtcol('.') . 'v\%(\k\+\\|.\)')
