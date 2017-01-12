@@ -18,14 +18,14 @@ for rbenvdir ($rbenvdirs) ; do
 
         function rbenv_prompt_info() {
             rbenv_version=`rbenv version`
-            if echo "$rbenv_version" | grep -q -P '[.]ruby-version' ; then
+            if echo "$rbenv_version" | grep -q -P '[.](ruby|rbenv)-version' ; then
                 echo "%{$FX[bold]$FG[207]%}rbenv:[%{$fg_bold[red]%}$(current_ruby)%{$FX[bold]$FG[207]%}]%{$reset_color%} "
             else
                 # don't show system ruby
                 #echo "$(current_ruby)"
-            fi  
-        }   
-    fi  
+            fi
+        }
+    fi
 done
 unset rbenvdir
 
