@@ -85,9 +85,9 @@ function extract () {
             *.tar)      tar --extract --verbose --one-top-level --file $1 ;;
             *.tbz2)     tar --extract --verbose --one-top-level --file $1 ;;
             *.tgz)      tar --extract --verbose --one-top-level --file $1 ;;
-            *.jar)      unzip -d $(basename $1)                        $1 ;;
-            *.zip)      unzip -d $(basename $1)                        $1 ;;
-            *.7z)       7za e -o $(basename $1)                        $1 ;;
+            *.jar)      unzip -d $(basename -s .jar $1)                $1 ;;
+            *.zip)      unzip -d $(basename -s .zip $1)                $1 ;;
+            *.7z)       7za e -o $(basename -s .7z  $1)                $1 ;;
             *.(bz2|bz)) bunzip2                                        $1 ;;
             *.gz)       gunzip                                         $1 ;;
             *.rar)      unrar x                                        $1 ;;
