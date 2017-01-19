@@ -130,25 +130,37 @@ function check_for_caution_server () {
     done
 }
 
-# Installs, updates, and manages vim plugins upon load through the file GLOBALS__PLUGIN_LIST_FILE.
+# Installs, updates, and manages vim plugins upon load.
 #
 # Called: `setup_vim_plugins`
 function setup_vim_plugins () {
+    # filepath to the saved plugin list
     local plugin_list_file="$DOTFILES/.plugin_list"
+
+    # command to list the plugins from the vimrc
     local plugin_list_cmd="cat $DOTFILES/vimrc | grep -P '^\s+Plug\s+' | awk '{print \$2}' | tr -d ','"
+
+    # initialize to 'false'
     local do_plugin_setup=""
 
+    # if the plugin list file does not exist
     if [[ ! -f $plugin_list_file ]] ; then
+        # then list all the plugins from the vimrc, and put them in the plugin list file
         eval $plugin_list_cmd > $plugin_list_file
         do_plugin_setup="1"
+    # else if the plugin list file is different than the plugin list command
     elif ! eval $plugin_list_cmd | diff -q - $plugin_list_file &>/dev/null ; then
         do_plugin_setup="1"
     fi
 
+    # if we should do the plugin setup
     if [[ -n $do_plugin_setup ]] ; then
         color_echo yellow 'Setting up vim plugins...'
+
+        # then, install new plugins, update the plugins, then quit vim
         vim -u "$DOTFILES/vimrc" +PlugInstall +PlugUpdate +qall >/dev/null 2>&1
 
+        # refresh the plugin list file
         eval $plugin_list_cmd > $plugin_list_file
         color_echo green 'Done.'
     fi
