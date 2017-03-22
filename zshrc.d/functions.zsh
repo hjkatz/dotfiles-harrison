@@ -70,28 +70,61 @@ function mdless () {
 }
 
 # Extracts any type of file into a directory with the same name
+# located at a destination.
 #
-# Called: `extract <file>`
+# Called: `extract <file> [<dest>]`
 function extract () {
     # usage
     if [[ -z "$1" ]] ; then
-        echo "usage: extract <file>"
+        echo "usage: extract <file> [<dest>]"
         echo "       Extract the file based on the extension."
     elif [[ -f "$1" ]] ; then
+        # get the basename of the file based on extension
         case ${(L)1} in
-            *.tar.xz)   dir=$(basename -s .tar.xz  $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
-            *.tar.bz2)  dir=$(basename -s .tar.bz2 $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
-            *.tar.gz)   dir=$(basename -s .tar.gz  $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
-            *.tar)      dir=$(basename -s .tar     $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
-            *.tbz2)     dir=$(basename -s .tbz2    $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
-            *.tgz)      dir=$(basename -s .tgz     $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
-            *.jar)      unzip -d $(basename -s .jar $1)                $1 ;;
-            *.zip)      unzip -d $(basename -s .zip $1)                $1 ;;
-            *.7z)       7za e -o $(basename -s .7z  $1)                $1 ;;
-            *.(bz2|bz)) bunzip2                                        $1 ;;
-            *.gz)       gunzip                                         $1 ;;
-            *.rar)      unrar x                                        $1 ;;
-            *.z)        uncompress                                     $1 ;;
+            *.tar.xz)  bname=$(basename -s .tar.xz  $1) ;;
+            *.tar.bz2) bname=$(basename -s .tar.bz2 $1) ;;
+            *.tar.gz)  bname=$(basename -s .tar.gz  $1) ;;
+            *.tar)     bname=$(basename -s .tar     $1) ;;
+            *.tbz2)    bname=$(basename -s .tbz2    $1) ;;
+            *.tgz)     bname=$(basename -s .tgz     $1) ;;
+            *.jar)     bname=$(basename -s .jar     $1) ;;
+            *.zip)     bname=$(basename -s .zip     $1) ;;
+            *.7z)      bname=$(basename -s .7z      $1) ;;
+            *.bz)      bname=$(basename -s .bz      $1) ;;
+            *.bz2)     bname=$(basename -s .bz2     $1) ;;
+            *.gz)      bname=$(basename -s .gz      $1) ;;
+            *.rar)     bname=$(basename -s .rar     $1) ;;
+            *.z)       bname=$(basename -s .z       $1) ;;
+            *)         bname="$1"
+        esac
+
+        # determine the output directory
+        if [[ -z "$2" ]] ; then
+            # no dest supplied, use the bname and current directory
+            dir="$bname"
+        else
+            # dest supplied, use that + the bname
+            dir="$2/$bname"
+        fi
+
+        # ensure the directory exists for extraction
+        mkdir -p $dir
+
+        # extract
+        case ${(L)1} in
+            *.tar.xz)   tar --extract --verbose --directory $dir --file $1 ;;
+            *.tar.bz2)  tar --extract --verbose --directory $dir --file $1 ;;
+            *.tar.gz)   tar --extract --verbose --directory $dir --file $1 ;;
+            *.tar)      tar --extract --verbose --directory $dir --file $1 ;;
+            *.tbz2)     tar --extract --verbose --directory $dir --file $1 ;;
+            *.tgz)      tar --extract --verbose --directory $dir --file $1 ;;
+            *.jar)      unzip -d $dir                                   $1 ;;
+            *.zip)      unzip -d $dir                                   $1 ;;
+            *.7z)       7za e -o $dir                                   $1 ;;
+            *.(bz2|bz)) bunzip2                                         $1 ;;
+            *.gz)       gunzip                                          $1 ;;
+            *.rar)      unrar x                                         $1 ;;
+            *.z)        uncompress                                      $1 ;;
             *)          color_echo red "Unable to extract '$1' :: Unknown extension"
         esac
     else
