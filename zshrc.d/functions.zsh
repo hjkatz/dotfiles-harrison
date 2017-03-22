@@ -79,12 +79,12 @@ function extract () {
         echo "       Extract the file based on the extension."
     elif [[ -f "$1" ]] ; then
         case ${(L)1} in
-            *.tar.xz)   tar --extract --verbose --one-top-level --file $1 ;;
-            *.tar.bz2)  tar --extract --verbose --one-top-level --file $1 ;;
-            *.tar.gz)   tar --extract --verbose --one-top-level --file $1 ;;
-            *.tar)      tar --extract --verbose --one-top-level --file $1 ;;
-            *.tbz2)     tar --extract --verbose --one-top-level --file $1 ;;
-            *.tgz)      tar --extract --verbose --one-top-level --file $1 ;;
+            *.tar.xz)   dir=$(basename -s .tar.xz  $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
+            *.tar.bz2)  dir=$(basename -s .tar.bz2 $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
+            *.tar.gz)   dir=$(basename -s .tar.gz  $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
+            *.tar)      dir=$(basename -s .tar     $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
+            *.tbz2)     dir=$(basename -s .tbz2    $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
+            *.tgz)      dir=$(basename -s .tgz     $1) && mkdir -p $dir && tar --extract --verbose --directory $dir --file $1 ;;
             *.jar)      unzip -d $(basename -s .jar $1)                $1 ;;
             *.zip)      unzip -d $(basename -s .zip $1)                $1 ;;
             *.7z)       7za e -o $(basename -s .7z  $1)                $1 ;;
