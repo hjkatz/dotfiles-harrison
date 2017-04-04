@@ -34,7 +34,7 @@
 \set clear '\\! clear'
 
 -- :pgqueries -- shows information about currently running queries
-\set pgqueries 'select datname, pid, client_addr, date_trunc(''second'', now() - query_start) as runtime, waiting as w, query from pg_stat_activity where state = ''active'' and pid != pg_backend_pid() order by runtime desc nulls last '
+\set pgqueries 'select datname as db, sa.pid, to_char(now() - xact_start, ''MI:SS'') as t_run, to_char(now() - query_start, ''MI:SS'') as q_run, coalesce(''awaiting '' || string_agg( pg_describe_object(coalesce(l.classid, ''pg_class''::regclass::oid), coalesce(l.objid, l.relation), coalesce(l.objsubid, 0)), E''\n'' ) || E''\npids: '' || array_to_string(pg_blocking_pids(sa.pid), E'',''), state) as status, query from pg_stat_activity sa left join pg_locks l on sa.pid = l.pid and l.granted = false where state in (''active'', ''idle in transaction'') and sa.pid != pg_backend_pid() group by sa.datname, sa.pid, sa.query, sa.xact_start, sa.query_start, sa.state order by t_run desc '
 
 -- :email -- get entity by email_address or pk
 \set email 'select * from tb_entity where email_address ilike '
