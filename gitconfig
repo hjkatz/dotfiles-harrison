@@ -69,3 +69,4 @@
     hist = log --pretty=format:'%C(yellow)%h%Creset %Cblue<%ae>%Creset %Cgreen(%cr)%Creset | %s %Cred%d%Creset' --graph --date=short
     tree = log --all --graph --decorate --oneline
     stump = log --all --graph --decorate --oneline --simplify-by-decoration
+    dag = log --graph --decorate --oneline
