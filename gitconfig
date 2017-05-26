@@ -57,6 +57,10 @@
     enabled = true
     autoupdate = true
 
+[tag]
+    # default tag sorting to date authored desc
+    sort = -taggerdate
+
 [alias]
     # aliases for git things
 	st = status
