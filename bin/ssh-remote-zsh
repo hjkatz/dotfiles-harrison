@@ -115,34 +115,35 @@ else
     color_echo yellow "Connecting to \033[1;36m$1\033[0m"
 fi
 
-# construct a list of excluded files for the tar transfer
-tar_exclude_list=(
-    '.plugin_list'
-    '.vim/*'
-    '.viminfo'
-    '*.swp'
-    '.zcompdump*'
-    '*.md'
-    'zsh-syntax-highlighting/docs/*'
-    'zsh-syntax-highlighting/images/*'
-    'zsh-syntax-highlighting/tests/*'
-    'zsh-syntax-highlighting/**/test-data*'
-    'zsh-syntax-highlighting/Makefile'
-)
-
-tar_excludes=()
-# add tar flags as an array of separate arguments becuase tar is picky...
-for exclude in $tar_exclude_list ; do
-    tar_excludes+='--exclude'
-    tar_excludes+="$exclude"
-done
-
 REMOTE_DOTFILES='~/.dotfiles-harrison/'
 
 # check for out of date dotfiles on remote server
-if ssh -A $1 "[[ ! -f $REMOTE_DOTFILES/VERSION ]] || cat $REMOTE_DOTFILES/VERSION | grep -v -q -P '^$DOTFILES_VERSION'" ; then
+if ssh $1 "[[ ! -f $REMOTE_DOTFILES/VERSION ]] || cat $REMOTE_DOTFILES/VERSION | grep -v -q -P '^$DOTFILES_VERSION'" ; then
     color_echo yellow "Transferring files..."
-    tar c -C${HOME} --gzip --exclude-vcs ${tar_excludes} .dotfiles-harrison | ssh $1 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
+
+    # construct a list of excluded files for the tar transfer
+    tar_exclude_list=(
+        '.plugin_list'
+        '.vim/*'
+        '.viminfo'
+        '*.swp'
+        '.zcompdump*'
+        '*.md'
+        'zsh-syntax-highlighting/docs/*'
+        'zsh-syntax-highlighting/images/*'
+        'zsh-syntax-highlighting/tests/*'
+        'zsh-syntax-highlighting/**/test-data*'
+        'zsh-syntax-highlighting/Makefile'
+    )
+
+    # add tar flags as an array of separate arguments becuase tar is picky...
+    tar_excludes=()
+    for exclude in $tar_exclude_list ; do
+        tar_excludes+='--exclude'
+        tar_excludes+="$exclude"
+    done
+
+    tar c -C${HOME} --gzip --exclude-vcs ${tar_excludes} .dotfiles-harrison | ssh 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
     color_echo green "Updated to $DOTFILES_VERSION"
 fi
 
