@@ -8,15 +8,22 @@ rbenvdirs=("$HOME/.rbenv" "/usr/local/rbenv" "/opt/rbenv" "/usr/local/opt/rbenv"
 for rbenvdir ($rbenvdirs) ; do
     if [ -d $rbenvdir/shims -a $FOUND_RBENV -eq 0 ] ; then
         FOUND_RBENV=1
-        eval "$(rbenv init --no-rehash - zsh)"
+        # add some functionality
+
+        # lazy load rbenv
+        function rbenv () {
+            unset -f rbenv
+            eval "$(rbenv init --no-rehash - zsh)"
+            rbenv $@
+        }
 
         alias rubies="rbenv versions"
 
-        function current_ruby() {
+        function current_ruby () {
             echo "$(rbenv version-name)"
         }
 
-        function rbenv_prompt_info() {
+        function rbenv_prompt_info () {
             rbenv_version=`rbenv version`
             if echo "$rbenv_version" | grep -q -P '[.](ruby|rbenv)-version' ; then
                 echo "%{$FX[bold]$FG[207]%}rbenv:[%{$fg_bold[red]%}$(current_ruby)%{$FX[bold]$FG[207]%}]%{$reset_color%} "
