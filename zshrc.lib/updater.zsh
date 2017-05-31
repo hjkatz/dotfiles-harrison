@@ -20,6 +20,12 @@ function update_dotfiles ()
     # don't update if check for updates is false
     [ $GLOBALS__CHECK_FOR_UPDATES = false ] && return 0
 
+    # don't update if we've checked recently
+    local last_updated_path="$DOTFILES/.last_updated_at"
+    last_updated_at=`head -n 1 $last_updated_path`
+    : ${last_updated_at:="0"} # default to the beginning of time
+    [[ $(( `date +%s` - $last_updated_at )) -lt $UPDATE_CHECK_INTERVAL_SECONDS ]] && return 0
+
     # don't update if there's no internet
     has_internet || return 0
 
@@ -48,6 +54,9 @@ function update_dotfiles ()
             export GLOBALS__DOTFILES_UPDATED=true
         fi
     fi
+
+    # record the time that we checked
+    echo `date +%s` > $last_updated_path
 
     # return to the previous cwd
     cd $cwd

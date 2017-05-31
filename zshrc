@@ -3,6 +3,9 @@
 # prints debugging info
 ENABLE_DEBUGGING=false
 
+# how long in seconds to wait between update checks
+UPDATE_CHECK_INTERVAL_SECONDS=86400
+
 # Where the dotfiles are located to load
 export DOTFILES=$HOME/.dotfiles-harrison
 
