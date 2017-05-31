@@ -143,7 +143,7 @@ if ssh $1 "[[ ! -f $REMOTE_DOTFILES/VERSION ]] || cat $REMOTE_DOTFILES/VERSION |
         tar_excludes+="$exclude"
     done
 
-    tar c -C${HOME} --gzip --exclude-vcs ${tar_excludes} .dotfiles-harrison | ssh 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
+    tar c -C${HOME} --gzip --exclude-vcs ${tar_excludes} .dotfiles-harrison | ssh $1 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
     color_echo green "Updated to $DOTFILES_VERSION"
 fi
 
