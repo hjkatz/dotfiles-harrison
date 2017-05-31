@@ -25,7 +25,7 @@ source $DOTFILES/zshrc.lib/globals.zsh
 source $DOTFILES/zshrc.lib/updater.zsh
 
 # set the version after attempting to update
-export DOTFILES_VERSION=`cat $DOTFILES/VERSION`
+export DOTFILES_VERSION=`head -n 1 $DOTFILES/VERSION`
 
 # setup the environment variables
 source $DOTFILES/zshrc.lib/environment.zsh
