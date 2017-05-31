@@ -14,13 +14,13 @@ function setup_git_config () {
     for server in $GLOBALS__GITCONFIG_SERVERS ; do
         if [[ $hostname =~ $server ]] ; then
             # replace the gitconfig
-            cp -f $DOTFILES/gitconfig ~/.gitconfig >/dev/null 2>&1
+            \cp -f $DOTFILES/gitconfig ~/.gitconfig >/dev/null 2>&1
         fi
     done
 
     # copy gitconfig if this host contains a .git copy of the dotfiles
     if [[ -d $DOTFILES/.git ]] ; then
-        cp -f $DOTFILES/gitconfig ~/.gitconfig >/dev/null 2>&1
+        \cp -f $DOTFILES/gitconfig ~/.gitconfig >/dev/null 2>&1
     fi
 }
 
