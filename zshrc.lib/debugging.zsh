@@ -47,7 +47,6 @@ function zsh_debug () {
 
         # skip any line that doesn't match our debugging pattern
         if ! echo "$line" | grep -q -P '^\d+\s.*:\d+\>' ; then
-            previous_line="$line"
             continue
         fi
 
@@ -64,8 +63,12 @@ function zsh_debug () {
         if [[ $timing -gt $timing_threshold ]] ; then
             # print timing
             color_echo yellow "...$timing"
-            color_echo red "$previous_line"
-            color_echo green "$line"
+
+            # trim the lines to print
+            trim_previous_line=`echo $previous_line | cut -c1-120`
+            trim_line=`echo $line | cut -c1-120`
+            color_echo red "$trim_previous_line"
+            color_echo green "$trim_line"
         fi
 
         # update the previous vars
@@ -73,4 +76,9 @@ function zsh_debug () {
         previous_section="$current_section"
         previous_line="$line"
     done < $GLOBALS__DEBUGGING_PATH
+
+    # print the total time
+    debugging_end_time=`echo $previous_line | awk '{print $1}'`
+    total_time=$(( $debugging_end_time - $debugging_start_time ))
+    color_echo yellow "Total Time: $total_time"
 }
