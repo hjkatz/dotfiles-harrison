@@ -27,6 +27,12 @@ if find $DOTFILES -maxdepth 1 -type f -name "*.version" 2>/dev/null | grep -q . 
     color_echo red "Found old version files; remove $DOTFILES for a clean start!"
 fi
 
+# turn off debugging if it was on
+if [[ "$ENABLE_DEBUGGING" == true ]]; then
+    unsetopt xtrace
+    exec 2>&3 3>&-
+fi
+
 # set distro specific completions
 # NOTE: Must happen last due to parsing error in _yum case
 case "$GLOBALS__DISTRO" in

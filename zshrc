@@ -1,7 +1,13 @@
 # Main Zshrc that loads all other parts of the dotfiles
 
+# prints debugging info
+ENABLE_DEBUGGING=false
+
 # Where the dotfiles are located to load
 export DOTFILES=$HOME/.dotfiles-harrison
+
+# run the debugging, if enabled
+source $DOTFILES/zshrc.lib/debugging.zsh
 
 # turn on zsh options
 source $DOTFILES/zshrc.lib/setopts.zsh

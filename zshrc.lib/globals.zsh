@@ -27,6 +27,10 @@ GLOBALS__GITCONFIG_SERVERS=(
 # export on separate line to prevent "unknown file attribute" error in older versions of Zsh
 export GLOBALS__GITCONFIG_SERVERS
 
+# where should we store our debug information
+# export GLOBALS__DEBUGGING_PATH="/tmp/.dotfiles-harrison-debugging"
+# Note: This is *actually* defined in zshrc.lib/debugging.zsh
+
 # figure out which distro is currently loaded
 #
 # Called: `which_distro`
