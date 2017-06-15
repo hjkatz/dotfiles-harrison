@@ -75,4 +75,4 @@
     stump = log --all --graph --decorate --oneline --simplify-by-decoration
     dag = log --graph --decorate --oneline
     oldest-ancestor = !bash -c 'diff --old-line-format='' --new-line-format='' <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | head -1' -
-    branch-point = oldest-ancestor
+    branch-point = !bash -c 'diff --old-line-format='' --new-line-format='' <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | head -1' -
