@@ -113,6 +113,8 @@ set backspace=eol,start,indent     " backspace wraps around indents, start of li
 set ignorecase                     " ignore case when searching
 set smartcase                      " ...unless we have atleast 1 capital letter
 set incsearch                      " search incrementally
+set infercase                      " infer the case of the completion word
+set synmaxcol=200                  " only syntax highlight to 200 columns
 set formatoptions=tcqronj          " see :help fo-table for more information
 set pastetoggle=<F12>              " sets <F12> to toggle paste mode
 set hlsearch                       " highlight search results
@@ -391,6 +393,18 @@ aug MarkdownFiletype
     au!
     au BufNewFile,BufFilePre,BufRead *.md set filetype=markdown
 aug END
+
+" }}}
+
+" Auto Save and Read {{{
+
+set autoread
+
+augroup autoSaveAndRead
+    autocmd!
+    autocmd TextChanged,InsertLeave,FocusLost * silent! wall
+    autocmd CursorHold * silent! checktime
+augroup END
 
 " }}}
 
