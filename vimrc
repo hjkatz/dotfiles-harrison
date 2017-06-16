@@ -114,7 +114,6 @@ set ignorecase                     " ignore case when searching
 set smartcase                      " ...unless we have atleast 1 capital letter
 set incsearch                      " search incrementally
 set infercase                      " infer the case of the completion word
-set synmaxcol=200                  " only syntax highlight to 200 columns
 set formatoptions=tcqronj          " see :help fo-table for more information
 set pastetoggle=<F12>              " sets <F12> to toggle paste mode
 set hlsearch                       " highlight search results
