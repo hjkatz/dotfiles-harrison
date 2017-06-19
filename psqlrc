@@ -37,7 +37,7 @@
 \set clear '\\! clear'
 
 -- :pgqueries -- shows information about currently running queries
-\set pgqueries 'select db, pid, t_run, q_run, status, application_name, query from vw_queries;
+\set pgqueries 'select db, pid, t_run, q_run, status, application_name, query from vw_queries;'
 
 -- :email -- get entity by email_address or pk
 \set email 'select * from tb_entity where email_address ilike '
