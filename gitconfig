@@ -45,6 +45,14 @@
     # push the current branch by default when given no arguments
 	default = simple
 
+[merge]
+    # set the default tool to vimdiff
+    tool = vimdiff
+
+[mergetool]
+    # do not keep around the backup .orig files
+    keepBackup = false
+
 [status]
     # use short status
     short = true
