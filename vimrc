@@ -668,6 +668,9 @@ augroup ft_php
     " Make {<cr> insert a pair of brackets
     au Filetype php inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
     " }fixes syntax highlighting
+
+    " set commentary string for php to use hash comments
+    au Filetype php setlocal commentstring=#\ %s
 augroup END
 
 " }}}
