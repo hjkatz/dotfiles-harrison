@@ -133,15 +133,19 @@ function extract () {
 }
 
 # loops a command for the specified number of sleep time
-# TODO: get this to work
+#
+# Called: `loop [<sec>] '<commands...>'`
 function loop () {
-    seconds="$1"
-    shift
-    command="$@"
-    while :
-    do
+    if [[ ! $1 =~ [[:digit:]]+ ]] ; then
+        seconds="1"
+    else
+        seconds="$1"
+        shift
+    fi
+
+    while true ; do
         clear
-        $command
+        eval "$@"
         sleep $seconds
     done
 }
