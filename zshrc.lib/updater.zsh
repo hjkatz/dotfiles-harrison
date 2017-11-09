@@ -22,7 +22,7 @@ function update_dotfiles ()
 
     # don't update if we've checked recently
     local last_updated_path="$DOTFILES/.last_updated_at"
-    last_updated_at=`head -n 1 $last_updated_path`
+    last_updated_at=`head -n 1 $last_updated_path 2>/dev/null`
     : ${last_updated_at:="0"} # default to the beginning of time
     [[ $(( `date +%s` - $last_updated_at )) -lt $UPDATE_CHECK_INTERVAL_SECONDS ]] && return 0
 
