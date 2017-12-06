@@ -129,3 +129,30 @@ zstyle ':completion:*:functions' ignored-patterns '_*'
 
 # set completion definitions
 compdef ssh-remote-zsh=ssh
+
+# aws cli completion
+function _get_aws_completion_path () {
+    # try and find the executable in the PATH
+    _aws_completion_path=`which aws_zsh_completer.sh 2>/dev/null`
+
+    if [[ $? == 0 ]] ; then
+        echo $_aws_completion_path
+    # sometimes it's here?
+    elif [[ -x "/usr/share/zsh/site-functions/aws_zsh_completer.sh" ]] ; then
+        echo "/usr/share/zsh/site-functions/aws_zsh_completer.sh"
+    else
+        # try to locate it in the system (note: very slow)
+        _aws_completion_path=`locate aws_zsh_completer.sh 2>/dev/null | head -1`
+
+        if [[ -n $_aws_completion_path ]] ; then
+            echo $_aws_completion_path
+        fi
+    fi
+}
+
+# try to source the aws zsh completion, if it exists
+_aws_completion_path=`_get_aws_completion_path`
+if [[ -n $_aws_completion_path ]] ; then
+    source $_aws_completion_path
+    unset _aws_completion_path
+fi
