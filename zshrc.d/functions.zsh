@@ -8,34 +8,6 @@ function resource () {
     source $DOTFILES/zshrc
 }
 
-# echos out with color
-#
-# Called:
-#   `color_echo red "My Error"`
-#   `color_echo yellow "My Warning"`
-#   `color_echo green "My Success"`
-function color_echo () {
-    case $1 in
-     red)
-          color=31
-          ;;
-     green)
-          color=32
-          ;;
-     yellow)
-          color=33
-          ;;
-     *)
-          color=$1
-          ;;
-    esac
-
-    # remove $1
-    shift
-
-    echo -e "\033[1;${color}m$@\033[0m"
-}
-
 # Checks to see if the pwd is in a git repo, then calls git fetch
 #
 # Called: `check_and_update_git_repo`
