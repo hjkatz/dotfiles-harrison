@@ -83,9 +83,6 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " asks which file you meant to open
     Plug 'EinfachToll/DidYouMean'
-
-    " search and destroy (s<text-obj><text>, then . to repeat or n for next)
-    Plug 'hauleth/sad.vim'
 call plug#end()
 
 filetype plugin indent on    " required

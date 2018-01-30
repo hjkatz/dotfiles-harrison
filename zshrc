@@ -47,7 +47,7 @@ for plugin in $DOTFILES/zshrc.plugins/* ; do
 done
 
 # source omz compatible plugins
-plugin_list=( `/bin/ls -d -1 $DOTFILES/zshrc.plugins/* | sed 's/^\(\/[^\/]\+\)\+\///' | tr '\n' ' '` )
+plugin_list=( `/bin/ls -d -1 $DOTFILES/zshrc.plugins/* | xargs basename | tr '\n' ' '` )
 for plugin in $plugin_list ; do
     source $DOTFILES/zshrc.plugins/$plugin/$plugin.plugin.zsh
 done

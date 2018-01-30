@@ -34,6 +34,9 @@ function install () {
         redhat)
             sudo yum install "$@"
             ;;
+        darwin)
+            brew install "$@"
+            ;;
         *)
             echo "Distro '$GLOBALS__DISTRO' is unrecognized"
             ;;
@@ -62,6 +65,9 @@ function purge () {
             ;&
         redhat)
             sudo yum remove "$@"
+            ;;
+        darwin)
+            brew uninstall "$@"
             ;;
         *)
             echo "Distro '$GLOBALS__DISTRO' is unrecognized"
@@ -92,6 +98,9 @@ function update () {
         redhat)
             sudo yum update
             ;;
+        darwin)
+            brew update
+            ;;
         *)
             echo "Distro '$GLOBALS__DISTRO' is unrecognized"
             ;;
@@ -120,6 +129,9 @@ function search () {
             ;&
         redhat)
             sudo yum search "$@"
+            ;;
+        darwin)
+            brew search "$@"
             ;;
         *)
             echo "Distro '$GLOBALS__DISTRO' is unrecognized"

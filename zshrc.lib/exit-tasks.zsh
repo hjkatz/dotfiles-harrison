@@ -36,6 +36,9 @@ fi
 # set distro specific completions
 # NOTE: Must happen last due to parsing error in _yum case
 case "$GLOBALS__DISTRO" in
+    darwin)
+        # fall through
+        ;&
     ubuntu)
         # fall through
         ;&

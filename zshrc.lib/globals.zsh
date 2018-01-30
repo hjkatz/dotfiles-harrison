@@ -36,6 +36,12 @@ export GLOBALS__GITCONFIG_SERVERS
 # Called: `which_distro`
 function which_distro ()
 {
+    if [[ $OSTYPE == darwin* ]] ; then
+        # on mac
+        echo "darwin" && return 0
+    fi
+
+    # otherwise, continue doing it this way
     release_info=`cat /etc/*-release`
 
     echo "$release_info" | grep -i -q 'ubuntu' && {
