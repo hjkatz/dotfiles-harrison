@@ -7,6 +7,9 @@ alias rm='rm -i'
 alias mv='mv -i'
 alias cp='cp -i'
 
+# rip g script :(
+alias g="git"
+
 # various listing aliases
 alias ls='ls -G'
 alias ll='ls -alF'
