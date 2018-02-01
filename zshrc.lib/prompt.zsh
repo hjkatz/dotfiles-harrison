@@ -43,10 +43,7 @@ echo "" >/dev/null 2>&1
 # previous command return status
 local ret_status="%(?:%{$fg_bold[green]%}➜:%{$fg_bold[red]%}➜)"
 
-# jen prompt
-PROMPT=$'\n${ret_status} $(_uname)$(_hname)%{$fg_bold[cyan]%} %$PR_PWDLEN<...<%~%<<%{$reset_color%}${(e)PR_FILLCHAR}[%D{%I:%M:%S}]\n%{$fg_bold[yellow]%}%# %{$reset_color%}$(rbenv_prompt_info)$(git_prompt_info)$(hg_prompt_info)'
-
-# zsh theme settings to work with git-prompt
+# zsh theme settings for prompt sections
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg_bold[red]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
 ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg_bold[blue]%}) %{$fg_bold[yellow]%}✗%{$reset_color%}"
@@ -57,7 +54,13 @@ ZSH_THEME_HG_PROMPT_SUFFIX="%{$fg_bold[red]%}]%{$reset_color%}"
 ZSH_THEME_HG_PROMPT_DIRTY=" %{$fg_bold[yellow]%}✗%{$reset_color%}"
 ZSH_THEME_HG_PROMPT_CLEAN=" %{$fg_bold[green]%}✓%{$reset_color%}"
 
+ZSH_THEME_VIRTUALENV_PREFIX="%{$fg_bold[green]%}[%{$FX[no-bold]%}"
+ZSH_THEME_VIRTUALENV_SUFFIX="%{$fg[green]%}%{$FX[bold]%}]%{$reset_color%} "
+
 GIT_PS1_SHOWUPSTREAM="git legacy"
 GIT_PS1_SHOWSTASHSTATE=true
 GIT_PS1_SHOWUNTRACKEDFILES=true
 GIT_PS1_STATESEPARATOR=""
+
+# jen prompt
+PROMPT=$'\n${ret_status} $(_uname)$(_hname)%{$fg_bold[cyan]%} %$PR_PWDLEN<...<%~%<<%{$reset_color%}${(e)PR_FILLCHAR}[%D{%I:%M:%S}]\n%{$fg_bold[yellow]%}%# %{$reset_color%}$(rbenv_prompt_info)$(virtualenv_prompt_info)$(git_prompt_info)$(hg_prompt_info)'
