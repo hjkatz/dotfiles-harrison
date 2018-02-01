@@ -7,7 +7,7 @@
 # us = start underline
 # ue = stop underline
 
-man() {
+function man () {
 	env \
 		LESS_TERMCAP_mb=$(printf "${fg_bold[magenta]}") \
 		LESS_TERMCAP_md=$(printf "${fg_bold[green]}") \
