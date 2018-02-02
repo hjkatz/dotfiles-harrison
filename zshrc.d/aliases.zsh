@@ -49,11 +49,11 @@ alias history='fc -il 1'
 alias dotfiles='cd $DOTFILES'
 
 # aliases for quick editing dotfiles
-alias vimrc='vim ~/.dotfiles-harrison/vimrc'
-alias vim='vim -u ~/.dotfiles-harrison/vimrc'
-alias zshrc='vim ~/.dotfiles-harrison/zshrc'
-alias gitconfig='vim ~/.dotfiles-harrison/gitconfig'
-alias psqlrc='vim ~/.dotfiles-harrison/psqlrc'
+alias vim="vim -u $DOTFILES/vimrc"
+alias vimrc="vim $DOTFILES/vimrc"
+alias zshrc="vim $DOTFILES/zshrc"
+alias gitconfig="vim $GLOBALS__DOTFILES_TEMPLATES_PATH/gitconfig.template"
+alias psqlrc="vim $DOTFILES/psqlrc"
 
 # nocorrect aliases
 alias ebuild='nocorrect ebuild'

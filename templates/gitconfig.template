@@ -6,6 +6,10 @@
 	email = {{GIT_EMAIL}}
 	name = {{GIT_NAME}}
 
+[core]
+    # fixes some filesystems that distinguish case, but don't ignore it
+    ignorecase = false
+
 [color]
     # turn on auto coloring
 	ui = auto
