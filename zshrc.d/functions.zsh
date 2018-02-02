@@ -16,7 +16,11 @@ function check_and_update_git_repo () {
     GITDIR="$(git rev-parse --show-toplevel 2>/dev/null)"
     if [[ "$GITDIR" == "$(pwd)" ]]; then
         # Fetch changes for current branch
+        color_echo yellow "Updating git repo..."
         git fetch
+        color_echo yellow "Pruning local branches..."
+        git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print $1}' | xargs git branch -d
+        color_echo green "Done."
     fi
 }
 
