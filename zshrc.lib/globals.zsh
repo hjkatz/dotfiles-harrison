@@ -27,6 +27,10 @@ GLOBALS__GITCONFIG_SERVERS=(
 # export on separate line to prevent "unknown file attribute" error in older versions of Zsh
 export GLOBALS__GITCONFIG_SERVERS
 
+# templates configuration
+export GLOBALS__DOTFILES_TEMPLATES_PATH="$DOTFILES/templates"
+export GLOBALS__DOTFILES_COMPILED_PATH="$DOTFILES/compiled"
+
 # where should we store our debug information
 # export GLOBALS__DEBUGGING_PATH="/tmp/.dotfiles-harrison-debugging"
 # Note: This is *actually* defined in zshrc.lib/debugging.zsh

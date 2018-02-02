@@ -3,14 +3,14 @@
 # prints debugging info
 ENABLE_DEBUGGING=false
 
-# how long in seconds to wait between update checks
-UPDATE_CHECK_INTERVAL_SECONDS=86400
-
 # Where the dotfiles are located to load
 export DOTFILES=$HOME/.dotfiles-harrison
 
 # run the debugging, if enabled
 source $DOTFILES/zshrc.lib/debugging.zsh
+
+# source user settings
+source $DOTFILES/zshrc.lib/user.zsh
 
 # turn on zsh options
 source $DOTFILES/zshrc.lib/setopts.zsh
@@ -29,6 +29,14 @@ export DOTFILES_VERSION=`head -n 1 $DOTFILES/VERSION`
 
 # setup the environment variables
 source $DOTFILES/zshrc.lib/environment.zsh
+
+# Source any local files for custom environments
+if [ -f $HOME/.zshrc_local ] ; then
+    source $HOME/.zshrc_local
+fi
+
+# source the templater
+source $DOTFILES/zshrc.lib/templater.zsh
 
 # source the gitconfig hack
 source $DOTFILES/zshrc.lib/gitconfig.zsh
@@ -51,11 +59,6 @@ plugin_list=( `/bin/ls -d -1 $DOTFILES/zshrc.plugins/* | xargs basename | tr '\n
 for plugin in $plugin_list ; do
     source $DOTFILES/zshrc.plugins/$plugin/$plugin.plugin.zsh
 done
-
-# Source any local files for custom environments
-if [ -f $HOME/.zshrc_local ] ; then
-    source $HOME/.zshrc_local
-fi
 
 # source zsh syntax highlighting settings
 source $DOTFILES/zshrc.lib/syntax-highlighting-settings.zsh

@@ -1,0 +1,88 @@
+# git configuration to be shared across accounts
+# vim: ft=gitconfig
+
+[user]
+    # personal information
+	email = {{GIT_EMAIL}}
+	name = {{GIT_NAME}}
+
+[color]
+    # turn on auto coloring
+	ui = auto
+	diff = auto
+    branch = auto
+    grep = auto
+    status = auto
+
+[column]
+    # print output in columns ala ls
+    ui = auto,column,nodense
+    branch = auto,column,nodense
+    tag = auto,column,nodense
+
+[diff]
+    # turn on rename and copy detection
+    renames = copy
+
+    # better diffs
+    algorithm = histogram
+
+[fetch]
+    # auto prune refs that are no longer tracking remotes upon `git fetch`
+    prune = true
+
+[log]
+    # show refs, heads, tags, remotes, etc... in log output
+    decorate = auto
+
+    # follow a single file through renames
+    follow = true
+
+[help]
+    # use the suggested git command when misspelled after 1.0 seconds
+	autocorrect = 10
+
+[push]
+    # push the current branch by default when given no arguments
+	default = simple
+
+[merge]
+    # set the default tool to vimdiff
+    tool = vimdiff
+
+[mergetool]
+    # do not keep around the backup .orig files
+    keepBackup = false
+
+[status]
+    # use short status
+    short = true
+
+    # show branch info in status
+    branch = true
+
+[rerere]
+    # turn on merge memory
+    enabled = true
+    autoupdate = true
+
+[tag]
+    # default tag sorting to date authored desc
+    sort = -taggerdate
+
+[alias]
+    # aliases for git things
+	st = status
+    stl = status --long
+	co = checkout
+    l = log --oneline
+    lg = log --oneline --decorate --graph
+
+    # custom history log
+    history = log --pretty=format:'%C(yellow)%h%Creset %Cblue<%ae>%Creset %Cgreen(%cr)%Creset | %s %Cred%d%Creset' --graph --date=short
+    hist = log --pretty=format:'%C(yellow)%h%Creset %Cblue<%ae>%Creset %Cgreen(%cr)%Creset | %s %Cred%d%Creset' --graph --date=short
+    tree = log --all --graph --decorate --oneline
+    stump = log --all --graph --decorate --oneline --simplify-by-decoration
+    dag = log --graph --decorate --oneline
+    oldest-ancestor = !bash -c 'diff --old-line-format='' --new-line-format='' <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | head -1' -
+    branch-point = !bash -c 'diff --old-line-format='' --new-line-format='' <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | head -1' -
