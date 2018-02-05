@@ -1,9 +1,18 @@
 # ENV exports
 
+# adds dir to $PATH if it does not already contain it
+function add_to_path () {
+    dir="$1"
+
+    if ! [[ ":$PATH:" == *":$dir:"* ]] ; then
+        path+=( "$dir" )
+    fi
+}
+
 # build the PATH
-path+=( "/usr/local/git/bin" )
-path+=( "$DOTFILES/bin" )
-path+=( "$HOME/.local/bin" )
+add_to_path "/usr/local/git/bin"
+add_to_path "$DOTFILES/bin"
+add_to_path "$HOME/.local/bin"
 export PATH
 
 # Set default editor
