@@ -31,6 +31,9 @@ export GLOBALS__GITCONFIG_SERVERS
 export GLOBALS__DOTFILES_TEMPLATES_PATH="$DOTFILES/templates"
 export GLOBALS__DOTFILES_COMPILED_PATH="$DOTFILES/compiled"
 
+# custom / vendor completions path
+export GLOBALS__DOTFILES_COMPLETIONS_PATH="$DOTFILES/.completions"
+
 # where should we store our debug information
 # export GLOBALS__DEBUGGING_PATH="/tmp/.dotfiles-harrison-debugging"
 # Note: This is *actually* defined in zshrc.lib/debugging.zsh

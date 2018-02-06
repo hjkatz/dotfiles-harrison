@@ -41,6 +41,10 @@ source $DOTFILES/zshrc.lib/templater.zsh
 # source the gitconfig hack
 source $DOTFILES/zshrc.lib/gitconfig.zsh
 
+# add custom / vendor completions to fpath (loaded by compinit in zshrc)
+fpath+=( "$GLOBALS__DOTFILES_COMPLETIONS_PATH" )
+export fpath
+
 # turn on the completion engine
 compinit -i -d "$ZSH_COMPDUMP"
 
@@ -51,8 +55,9 @@ done
 
 # add omz compatible functions to the fpath
 for plugin in $DOTFILES/zshrc.plugins/* ; do
-    fpath=( $plugin $fpath )
+    fpath+=( $plugin )
 done
+export fpath
 
 # source omz compatible plugins
 plugin_list=( `/bin/ls -d -1 $DOTFILES/zshrc.plugins/* | xargs basename | tr '\n' ' '` )
