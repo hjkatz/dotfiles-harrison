@@ -48,7 +48,7 @@
 
 [push]
     # push the current branch by default when given no arguments
-	default = simple
+	default = current
 
 [merge]
     # set the default tool to vimdiff
