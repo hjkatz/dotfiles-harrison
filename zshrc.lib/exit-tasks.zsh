@@ -1,5 +1,14 @@
 # Exit Tasks for Zshrc
 
+# run any exit task local functions if it exists
+type $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION && {
+    # call the function
+    $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION
+
+    # remove the function
+    unset -f $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION
+}
+
 # Echo updated message after sourcing files
 if [ $GLOBALS__DOTFILES_UPDATED = true ] ; then
     color_echo green "Updated to $DOTFILES_VERSION"
