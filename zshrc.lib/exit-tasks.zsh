@@ -1,7 +1,7 @@
 # Exit Tasks for Zshrc
 
 # run any exit task local functions if it exists
-type $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION && {
+type $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION >/dev/null 2>&1 && {
     # call the function
     $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION
 

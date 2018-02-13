@@ -35,7 +35,7 @@ export GLOBALS__DOTFILES_COMPILED_PATH="$DOTFILES/compiled"
 export GLOBALS__DOTFILES_COMPLETIONS_PATH="$DOTFILES/.completions"
 
 # exit task hook function name for zshrc_local
-export GLOBALS__DOTFILES_EXIT_HOOK_FUNCTON="_local_exit_function"
+export GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION="_local_exit_function"
 
 # where should we store our debug information
 # export GLOBALS__DEBUGGING_PATH="/tmp/.dotfiles-harrison-debugging"
