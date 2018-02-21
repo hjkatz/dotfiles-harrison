@@ -41,6 +41,8 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'sheerun/vim-polyglot'
     " adds folding, fancy settings, and more!
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+    " go!
+    Plug 'fatih/vim-go', { 'for': 'go' }
 
     " LaTeX Everything
     Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
@@ -79,25 +81,16 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'ntpeters/vim-better-whitespace'
 
     " split windows in a spectacular fashion
-    Plug 'roman/golden-ratio'
+    " Plug 'roman/golden-ratio'
 
     " asks which file you meant to open
     Plug 'EinfachToll/DidYouMean'
+
+    " quickfix/location list taming
+    Plug 'romainl/vim-qf'
 call plug#end()
 
 filetype plugin indent on    " required
-
-" }}}
-" Nead Werx Settings {{{
-
-" Test to see if I am on Neadwerx puppet controlled machines or not
-let neadwerx_vim=expand('/etc/profile.d/vimrc/neadwerx_vimrc')
-if( filereadable(neadwerx_vim) )
-    source /etc/profile.d/vimrc/neadwerx_vimrc
-    source /etc/profile.d/vimrc/plugins/syntastic.vim
-    source /etc/profile.d/vimrc/plugins/easy_align.vim
-    source /etc/profile.d/vimrc/plugins/ultisnips.vim
-endif
 
 " }}}
 " 'Set'ings ---------------------------- {{{
@@ -121,6 +114,7 @@ set wrap                           " wrap lines
 set scrolloff=10                   " leave at least 10 lines at the bottom/top of screen when scrolling
 set sidescrolloff=15               " leave at least 15 lines at the right/left of screen when scrolling
 set sidescroll=1                   " scroll sidways 1 character at a time
+set autowrite                      " autowrite on things like :next, :prev, :etc...
 set lazyredraw                     " redraw the screen lazily
 " Wildmenu completion {{{
 
@@ -148,10 +142,14 @@ filetype on
 filetype indent on
 
 " easy file reloading
-nnoremap <F10> :w<CR>:so %<CR>
+" nnoremap <F10> :w<CR>:so %<CR>
 
-" <f5> insert date
-nnoremap <F5> "=strftime("%c")<CR>P
+" show the syntax highlighting group of the object under the cursor
+map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+" <F5> insert date
 inoremap <F5> <C-R>=strftime("%c")<CR>
 
 " keep search pattern in center of screen
@@ -196,8 +194,8 @@ command! W w
 command! Wq wq
 
 " Leader
-let mapleader = ","
-let maplocalleader = "\\"
+let mapleader = ','
+let maplocalleader = ","
 
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cmap w!! w !sudo tee > /dev/null %
@@ -213,6 +211,13 @@ inoremap <expr> <c-y> matchstr(getline(line('.')-1), '\%' . virtcol('.') . 'v\%(
 
 " }}}
 " Plugin Config ------------------------ {{{
+
+" golden ratio ----------------------------- {{{
+
+" don't resize nonmodifiable windows like quickfix/location/tag lists
+" let g:golden_ratio_exclude_nonmodifiable = 1
+
+" }}}
 
 " LatexBox ----------------------------- {{{
 let g:LatexBox_latexmk_options              = "-pdf -pvc"
@@ -339,6 +344,37 @@ endfunction
 
 " auto-delete whitespace on write
 autocmd BufWritePre * call Delete_whitespace()
+
+" }}}
+
+" vim-qf ----------------------------- {{{
+
+" Mappings for location list movement
+nmap <Home> <Plug>qf_qf_previous
+nmap <End>  <Plug>qf_qf_next
+
+nmap <C-Home> <Plug>qf_loc_previous
+nmap <C-End>  <Plug>qf_loc_next
+
+nmap <F5> <Plug>qf_qf_toggle
+
+let g:qf_auto_resize = 0
+let g:qf_save_win_view = 1
+
+" }}}
+
+" vim-go ----------------------------- {{{
+
+" Mappings for jump to definition
+nmap <C-n> gd
+nmap <C-p> <C-t>
+
+" }}}
+
+" Syntastic ----------------------------- {{{
+
+" Only use quickfix lists
+let g:syntastic_use_quickfix_lists = 1
 
 " }}}
 
@@ -536,6 +572,88 @@ augroup ft_css
     au Filetype css inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
     " }fixes syntax highlighting
 
+augroup END
+
+" }}}
+" Go {{{
+
+augroup ft_go
+    au!
+
+    " turn on folding
+    au FileType go setlocal foldmethod=syntax
+
+    " Recursive toggle
+    au FileType go nnoremap <Space> zA
+    au FileType go vnoremap <Space> zA
+
+    " use experimental mode for go fmt
+    au FileType go let g:go_fmt_experimental = 1
+    au FileType go let g:go_fmt_command = 'goimports'
+    au FileType go let g:go_metalinter_autosave = 0
+    au FileType go let g:go_metalinter_enabled = [ 'vet', 'deadcode', 'varcheck', 'structcheck', 'dupl', 'ineffassign', 'goconst', 'golint', 'errcheck' ]
+
+    " add some missing Plug mappings
+    nnoremap <silent> <Plug>(go-toggle-same-ids) :<C-u>call go#guru#ToggleSameIds()<CR>
+
+    " automatic stuff
+    au FileType go let g:go_auto_type_info = 1
+    au FileType go let g:go_auto_sameids = 0
+    au FileType go let g:go_fmt_autosave = 1
+    au FileType go let g:go_updatetime = 800 "ms
+
+    " adjust the highlighting
+    au FileType go let g:go_highlight_array_whitespace_error = 1
+    au FileType go let g:go_highlight_space_tab_error = 1
+    au FileType go let g:go_highlight_operators = 1
+    au FileType go let g:go_highlight_functions = 1
+    au FileType go let g:go_highlight_function_arguments = 1
+    au FileType go let g:go_highlight_function_calls = 1
+    au FileType go let g:go_highlight_types = 1
+    au FileType go let g:go_highlight_extra_types = 1
+    au FileType go let g:go_highlight_fields = 1
+    au FileType go let g:go_highlight_string_spellcheck = 1
+    au FileType go let g:go_highlight_format_strings = 1
+    au FileType go let g:go_highlight_variable_declarations = 1
+    au FileType go let g:go_highlight_variable_assignments = 1
+
+    " Alternate Alternate commands
+    au Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+    au Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+    au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+    au Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
+
+    " run :GoBuild or :GoTestCompile based on the go file
+    function! s:build_go_files()
+      let l:file = expand('%')
+      if l:file =~# '^\f\+_test\.go$'
+        call go#test#Test(0, 1)
+      elseif l:file =~# '^\f\+\.go$'
+        call go#cmd#Build(0)
+      endif
+    endfunction
+
+    " setup some leaders
+    au FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+    au FileType go nmap <F4> <Plug>(go-run)
+    au FileType go nmap <Leader>t <Plug>(go-test)
+    au FileType go nmap <Leader>tf <Plug>(go-test-func)
+    au FileType go nmap <Leader>i <Plug>(go-imports)
+    au FileType go nmap <Leader><space> <Plug>(go-toggle-same-ids)
+    au FileType go nmap <Leader>a <Plug>(go-alternate)
+    au FileType go nmap <Leader>n <Plug>(go-alternate)
+    au FileType go nmap <Leader>d <Plug>(go-doc)
+    au FileType go nmap <Leader>c zR<Plug>(go-coverage-toggle)
+    au FileType go nmap <Leader>r <Plug>(go-rename)
+    au FileType go nmap <F6> zR<Plug>(go-metalinter)
+    au FileType go nmap <F7> zR<Plug>(go-coverage-toggle)
+
+    " abbreviations
+    au FileType go iabbrev === :=
+    au FileType go iabbrev !! !=
+
+    " only use the quicklist
+    au FileType go let g:go_list_type = 'quickfix'
 augroup END
 
 " }}}
@@ -843,5 +961,7 @@ hi cssClassName                 ctermfg=148  ctermbg=none cterm=none
 hi cssValueLength               ctermfg=197  ctermbg=none cterm=none
 hi cssCommonAttr                ctermfg=81   ctermbg=none cterm=none
 hi cssBraces                    ctermfg=none ctermbg=none cterm=none
+hi goLabel ctermfg=200
+hi goFunctionCall ctermfg=148
 
 " }}}
