@@ -77,9 +77,19 @@ zstyle ':completion:*:prefix:*' add-space true
 zstyle ':completion::*:(git|less|rm|emacs)' ignore-line true
 
 # add .ssh/config hosts to completion
-zstyle -s ':completion:*:hosts' hosts _ssh_config
 [[ -r ~/.ssh/config ]] && _ssh_config+=($(cat ~/.ssh/config | sed -ne 's/Host[=\t ]//p'))
-zstyle ':completion:*:hosts' hosts $_ssh_config
+[[ -r ~/.ssh/known_hosts ]] && _ssh_hosts=(${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:#[\|]*}%%\ *}%%,*}) || _ssh_hosts=()
+[[ -r /etc/hosts ]] && : ${(A)_etc_hosts:=${(s: :)${(ps:\t:)${${(f)~~"$(</etc/hosts)"}%%\#*}##[:blank:]#[^[:blank:]]#}}} || _etc_hosts=()
+
+hosts=(
+  "$_ssh_config[@]"
+  "$_ssh_hosts[@]"
+  "$_etc_hosts[@]"
+  "$HOST"
+  localhost
+)
+
+zstyle ':completion:*:hosts' hosts $hosts
 
 # SSH Completion
 zstyle ':completion:*:scp:*' tag-order files 'hosts:-domain:domain'
