@@ -88,6 +88,9 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " quickfix/location list taming
     Plug 'romainl/vim-qf'
+
+    " git gutter
+    Plug 'airblade/vim-gitgutter'
 call plug#end()
 
 filetype plugin indent on    " required
@@ -116,6 +119,7 @@ set sidescrolloff=15               " leave at least 15 lines at the right/left o
 set sidescroll=1                   " scroll sidways 1 character at a time
 set autowrite                      " autowrite on things like :next, :prev, :etc...
 set lazyredraw                     " redraw the screen lazily
+set updatetime=400                 " set vim's updatetime to 400ms
 " Wildmenu completion {{{
 
 set wildmenu " turn on globing for opening files
