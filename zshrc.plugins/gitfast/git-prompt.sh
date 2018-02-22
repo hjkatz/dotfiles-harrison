@@ -440,7 +440,7 @@ __git_ps1 ()
 		   git rev-parse --verify --quiet refs/stash >/dev/null
 		then
             # check exit status of the command
-            if ( exit $(git stash list | grep -q "On $(git rev-parse --symbolic-full-name --abbrev-ref "@{u}" 2>/dev/null | sed 's#\w*/##'):") ) ; then
+            if ( exit $(git stash list | grep -q "On $(git rev-parse --symbolic-full-name --abbrev-ref HEAD 2>/dev/null):") ) ; then
                 s="%{$fg_bold[green]%}$%{$fg_bold[red]%}"
             else
                 s="%{$fg_bold[magenta]%}$%{$fg_bold[red]%}"
