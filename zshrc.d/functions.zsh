@@ -171,12 +171,25 @@ function setup_vim_plugins () {
         color_echo yellow 'Setting up vim plugins...'
 
         # then, install new plugins, update the plugins, then quit vim
-        vim -u "$DOTFILES/vimrc" +PlugInstall +PlugUpdate +qall >/dev/null 2>&1
+        command vim -u "$DOTFILES/vimrc" +PlugInstall +PlugUpdate +qall >/dev/null 2>&1
 
         # refresh the plugin list file
         eval $plugin_list_cmd > $plugin_list_file
         color_echo green 'Done.'
     fi
+
+    # set a global for this shell session
+    export _setup_vim_plugins_ran=true
+}
+
+# Simple wrapper for vim to install plugins if not already installed
+#
+# Called: `vim <args>`
+function vim () {
+    if [[ $_setup_vim_plugins_ran != true ]] ; then
+        setup_vim_plugins
+    fi
+    command vim -u "$DOTFILES/vimrc" "$@"
 }
 
 # Prints a list of zsh command statistics

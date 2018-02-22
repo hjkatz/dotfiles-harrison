@@ -123,12 +123,16 @@ if ssh $1 "[[ ! -f $REMOTE_DOTFILES/VERSION ]] || cat $REMOTE_DOTFILES/VERSION |
 
     # construct a list of excluded files for the tar transfer
     tar_exclude_list=(
+        '.git/*'
+        '.gitignore'
+        '.last_updated_at'
         '.plugin_list'
         '.vim/*'
         '.viminfo'
         '*.swp'
         '.zcompdump*'
         '*.md'
+        'compiled/*'
         'zsh-syntax-highlighting/docs/*'
         'zsh-syntax-highlighting/images/*'
         'zsh-syntax-highlighting/tests/*'
@@ -143,14 +147,14 @@ if ssh $1 "[[ ! -f $REMOTE_DOTFILES/VERSION ]] || cat $REMOTE_DOTFILES/VERSION |
         tar_excludes+="$exclude"
     done
 
-    tar c -C${HOME} --gzip --exclude-vcs ${tar_excludes} .dotfiles-harrison | ssh $1 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
+    tar c -C${HOME} --gzip ${tar_excludes} .dotfiles-harrison | ssh $1 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
     color_echo green "Updated to $DOTFILES_VERSION"
 fi
 
 # maybe check if zsh is installed and if not install it? Or return an error?
 
 if [ $NO_FORWARD = true ] ; then
-    ssh $FLAG -t $1 "export ZDOTDIR=$REMOTE_DOTFILES ; $(which zsh)"
+    ssh $FLAG -t $1 "export ZDOTDIR=$REMOTE_DOTFILES ; zsh"
 else
-    ssh $FLAG -A -t $1 "export ZDOTDIR=$REMOTE_DOTFILES ; $(which zsh)"
+    ssh $FLAG -A -t $1 "export ZDOTDIR=$REMOTE_DOTFILES ; zsh"
 fi

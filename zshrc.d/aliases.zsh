@@ -49,7 +49,6 @@ alias history='fc -il 1'
 alias dotfiles='cd $DOTFILES'
 
 # aliases for quick editing dotfiles
-alias vim="vim -u $DOTFILES/vimrc"
 alias vimrc="vim $DOTFILES/vimrc"
 alias zshrc="vim $DOTFILES/zshrc"
 alias gitconfig="vim $GLOBALS__DOTFILES_TEMPLATES_PATH/gitconfig.template"

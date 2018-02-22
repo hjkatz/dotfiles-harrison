@@ -20,21 +20,14 @@ if [[ $PATH_LENGTH -gt 2000 ]] ; then
     color_echo yellow "Warning: current PATH length exceeds 2000 characters, perhaps it's time to reopen the terminal?"
 fi
 
-# setup the vim plugins if needed
-setup_vim_plugins
+# setup the vim plugins automatically for git local dotfiles
+# otherwise this is done on the first call to vim
+if [[ $GLOBALS__DOTFILES_IS_GIT_LOCAL == true ]] ; then
+    setup_vim_plugins
+fi
 
 # warn about caution servers
 check_for_caution_server
-
-# warn about old dotfiles
-if [[ -d "${DOTFILES}-old" ]] ; then
-    color_echo red "Found ${DOTFILES}-old, this should be removed!"
-fi
-
-# warn about old dotfiles versioning
-if find $DOTFILES -maxdepth 1 -type f -name "*.version" 2>/dev/null | grep -q . ; then
-    color_echo red "Found old version files; remove $DOTFILES for a clean start!"
-fi
 
 # turn off debugging if it was on
 if [[ "$ENABLE_DEBUGGING" == true ]]; then

@@ -14,6 +14,8 @@ export GLOBALS__SHOULD_RUN_CHPWD=true
 GLOBALS__CAUTION_SERVERS=(
     ".*[.]thdises[.]com"
     ".*[.]neadwerx[.]com"
+    ".*prod[.]squarespace[.]net"
+    ".*corp[.]squarespace[.]net"
 )
 
 # export on separate line to prevent "unknown file attribute" error in older versions of Zsh
@@ -26,6 +28,13 @@ GLOBALS__GITCONFIG_SERVERS=(
 
 # export on separate line to prevent "unknown file attribute" error in older versions of Zsh
 export GLOBALS__GITCONFIG_SERVERS
+
+# know whether this set of dotfiles is git controlled or not
+if [[ -d "$DOTFILES/.git" ]] ; then
+    export GLOBALS__DOTFILES_IS_GIT_LOCAL=true
+else
+    export GLOBALS__DOTFILES_IS_GIT_LOCAL=false
+fi
 
 # templates configuration
 export GLOBALS__DOTFILES_TEMPLATES_PATH="$DOTFILES/templates"

@@ -23,7 +23,9 @@ function _hname () {
     local hostname=`hostname`
 
     # we're on a dotfiles source machine with repo enabled
-    [[ -d $DOTFILES/.git ]] && echo "%{$FG[013]%}@%M%{$reset_color%}" && return 0
+    if [[ $GLOBALS__DOTFILES_IS_GIT_LOCAL == true ]] ; then
+        echo "%{$FG[013]%}@%M%{$reset_color%}" && return 0
+    fi
 
     # check for caution server
     for server in $GLOBALS__CAUTION_SERVERS ; do
