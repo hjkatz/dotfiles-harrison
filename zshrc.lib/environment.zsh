@@ -30,6 +30,7 @@ export LESS="-F -X -I -R"
 
 # ls colors (see:http://geoff.greer.fm/lscolors/)
 export LSCOLORS="ExgxbxdxCxegedabagacad"
+export CLICOLOR=1 # for *BSD/darwin
 
 # Zsh compdump
 export SHORT_HOST=${HOST/.*/}

@@ -11,9 +11,19 @@ alias cp='cp -i'
 alias g="git"
 
 # various listing aliases
-alias ls='ls -G'
-alias ll='ls -alF'
-alias l='ls -CF'
+if ls --color=auto &> /dev/null ; then
+    # --color is valid
+    local _color='--color=auto'
+else
+    # CLICOLOR is used instead (see: https://superuser.com/questions/183876/how-do-i-get-ls-color-auto-to-work-on-mac-os-x)
+    local _color=''
+fi
+
+alias ls="ls $_color"
+alias ll="ls -alF $_color"
+alias l="ls -CF $_color"
+unset _color
+
 alias cl='clear && ls '
 alias tree='tree -lFC'
 alias treee='tree -alFC -pug'
