@@ -3,12 +3,12 @@
 # REGULAR ALIASES
 
 # safety first!
-alias rm='rm -i'
-alias mv='mv -i'
-alias cp='cp -i'
+alias rm='rm -i '
+alias mv='mv -i '
+alias cp='cp -i '
 
 # rip g script :(
-alias g="git"
+alias g="git "
 
 # various listing aliases
 if ls --color=auto &> /dev/null ; then
@@ -19,14 +19,14 @@ else
     local _color=''
 fi
 
-alias ls="ls $_color"
-alias ll="ls -alF $_color"
-alias l="ls -CF $_color"
+alias ls="ls $_color "
+alias ll="ls -alF $_color "
+alias l="ls -CF $_color "
 unset _color
 
 alias cl='clear && ls '
-alias tree='tree -lFC'
-alias treee='tree -alFC -pug'
+alias tree='tree -lFC '
+alias treee='tree -alFC -pug '
 
 # directory aliases
 alias ..='cd ..'
@@ -48,8 +48,8 @@ alias 7='cd -7'
 alias 8='cd -8'
 alias 9='cd -9'
 
-alias md='mkdir -p'
-alias rd=rmdir
+alias md='mkdir -p '
+alias rd='rmdir '
 alias d='dirs -v | head -10'
 
 # quick history
@@ -65,22 +65,22 @@ alias gitconfig="vim $GLOBALS__DOTFILES_TEMPLATES_PATH/gitconfig.template"
 alias psqlrc="vim $DOTFILES/psqlrc"
 
 # nocorrect aliases
-alias ebuild='nocorrect ebuild'
-alias gist='nocorrect gist'
-alias heroku='nocorrect heroku'
-alias hpodder='nocorrect hpodder'
-alias man='nocorrect man'
-alias mkdir='nocorrect mkdir'
-alias mysql='nocorrect mysql'
-alias sudo='nocorrect sudo'
+alias ebuild='nocorrect ebuild '
+alias gist='nocorrect gist '
+alias heroku='nocorrect heroku '
+alias hpodder='nocorrect hpodder '
+alias man='nocorrect man '
+alias mkdir='nocorrect mkdir '
+alias mysql='nocorrect mysql '
+alias sudo='nocorrect sudo '
 
 # show a keyboard on screen for presentations
 alias show_keyboard='key-mon --theme=clear-ubuntu --nomouse --scale=1.5 --old-keys=3 --decorated >/dev/null 2>&1 &'
 
 # zmv and friends
-alias zmv='noglob zmv -W'
-alias zcp='noglob zmv -W -C'
-alias zln='noglob zmv -W -L'
+alias zmv='noglob zmv -W '
+alias zcp='noglob zmv -W -C '
+alias zln='noglob zmv -W -L '
 alias zsy='noglob zmv -W -Ls'
 
 # Add an "alert" alias for long running commands.  Use like so:
