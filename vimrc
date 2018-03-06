@@ -43,6 +43,8 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
     " go!
     Plug 'fatih/vim-go', { 'for': 'go' }
+    " ansible
+    Plug 'pearofducks/ansible-vim'
 
     " LaTeX Everything
     Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }

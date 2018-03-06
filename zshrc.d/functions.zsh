@@ -206,3 +206,12 @@ function take() {
   mkdir -p $1
   cd $1
 }
+
+# Replace a search term with a replacement in all files found below the current directory
+#
+# Called: `replace <search|regex> <replace>`
+function replace() {
+    search="$1"
+    replace="$2"
+    perl -p -i -e "s/$search/$replace/g" $(rg "$search" -l)
+}
