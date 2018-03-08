@@ -24,6 +24,8 @@ for rbenvdir ($rbenvdirs) ; do
         }
 
         function rbenv_prompt_info () {
+            [[ ${GLOBALS__SHOW_PROMPT_HASH[rbenv]} != true ]] && return
+
             rbenv_version=`rbenv version`
             if echo "$rbenv_version" | grep -q -P '[.](ruby|rbenv)-version' ; then
                 echo "%{$FX[bold]$FG[207]%}rbenv:[%{$fg_bold[red]%}$(current_ruby)%{$FX[bold]$FG[207]%}]%{$reset_color%} "

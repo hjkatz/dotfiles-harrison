@@ -39,6 +39,50 @@ function _hname () {
     echo "%{$reset_color%}%{$fg[white]%}@%M%{$reset_color%}"
 }
 
+# Sets the visibility of the prompt to true.
+#
+# called: `show_prompt <prompt>`
+function show_prompt () {
+    prompt_name="$1"
+
+    if [[ -z $1 ]] ; then
+        color_echo red "Missing prompt!"
+        return 1
+    fi
+
+    # test if key exists in array using arithmetic and name expansion
+    # [see: http://zshwiki.org/home/scripting/array]
+    (( ${+GLOBALS__SHOW_PROMPT_HASH[$prompt_name]} )) || {
+        color_echo red "No prompt '$prompt_name' found!"
+        return 1
+    }
+
+    # turn the prompt "on"
+    GLOBALS__SHOW_PROMPT_HASH[$prompt_name]=true
+}
+
+# Sets the visibility of the prompt to false.
+#
+# called: `hide_prompt <prompt>`
+function hide_prompt () {
+    prompt_name="$1"
+
+    if [[ -z $1 ]] ; then
+        color_echo red "Missing prompt!"
+        return 1
+    fi
+
+    # test if key exists in array using arithmetic and name expansion
+    # [see: http://zshwiki.org/home/scripting/array]
+    (( ${+GLOBALS__SHOW_PROMPT_HASH[$prompt_name]} )) || {
+        color_echo red "No prompt '$prompt_name' found!"
+        return 1
+    }
+
+    # turn the prompt "off"
+    GLOBALS__SHOW_PROMPT_HASH[$prompt_name]=false
+}
+
 # ensure that the first value of ret_status is a success
 echo "" >/dev/null 2>&1
 
@@ -59,10 +103,13 @@ ZSH_THEME_HG_PROMPT_CLEAN=" %{$fg_bold[green]%}✓%{$reset_color%}"
 ZSH_THEME_VIRTUALENV_PREFIX="%{$fg_bold[green]%}[%{$FX[no-bold]%}"
 ZSH_THEME_VIRTUALENV_SUFFIX="%{$fg[green]%}%{$FX[bold]%}]%{$reset_color%} "
 
+ZSH_THEME_KUBECTL_PREFIX="%{$fg_bold[cyan]%}{%{$FX[no-bold]%}%{$fg[white]%}"
+ZSH_THEME_KUBECTL_SUFFIX="%{$fg_bold[cyan]%}}%{$reset_color%} "
+
 GIT_PS1_SHOWUPSTREAM="git legacy"
 GIT_PS1_SHOWSTASHSTATE=true
 GIT_PS1_SHOWUNTRACKEDFILES=true
 GIT_PS1_STATESEPARATOR=""
 
 # jen prompt
-PROMPT=$'\n${ret_status} $(_uname)$(_hname)%{$fg_bold[cyan]%} %$PR_PWDLEN<...<%~%<<%{$reset_color%}${(e)PR_FILLCHAR}[%D{%I:%M:%S}]\n%{$fg_bold[yellow]%}%# %{$reset_color%}$(rbenv_prompt_info)$(virtualenv_prompt_info)$(git_prompt_info)$(hg_prompt_info)'
+PROMPT=$'\n${ret_status} $(_uname)$(_hname)%{$fg_bold[cyan]%} %$PR_PWDLEN<...<%~%<<%{$reset_color%}${(e)PR_FILLCHAR}[%D{%I:%M:%S}]\n%{$fg_bold[yellow]%}%# %{$reset_color%}$(kubectl_prompt_info)$(rbenv_prompt_info)$(virtualenv_prompt_info)$(git_prompt_info)$(hg_prompt_info)'

@@ -46,6 +46,16 @@ export GLOBALS__DOTFILES_COMPLETIONS_PATH="$DOTFILES/completions"
 # exit task hook function name for zshrc_local
 export GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION="_local_exit_function"
 
+# default prompt visibility states
+typeset -A GLOBALS__SHOW_PROMPT_HASH=(
+    git        true
+    rbenv      true
+    virtualenv true
+    hg         true
+    kubectl    false
+)
+export GLOBALS__SHOW_PROMPT_HASH
+
 # where should we store our debug information
 # export GLOBALS__DEBUGGING_PATH="/tmp/.dotfiles-harrison-debugging"
 # Note: This is *actually* defined in zshrc.lib/debugging.zsh
