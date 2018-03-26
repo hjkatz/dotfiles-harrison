@@ -100,10 +100,13 @@ alias -s mp4=vlc
 # GLOBAL ALIASES
 
 # sort and uniq
-alias -g USORT=' | sort | uniq '
+alias -g USORT=' sort | uniq '
 
 # count lines in outpub
-alias -g COUNT=' | wc -l'
+alias -g COUNT=' wc -l '
+
+# fix typos for git's HEAD
+alias -g EHAD='HEAD'
 
 # resolves to the current matching stash in `git stash list` for the current branch, i.e. "stash@{1}"
 alias -g GCURRENT='$(git stash list | grep $(git rev-parse --symbolic-full-name --abbrev-ref "@{u}" | sed "s#\w*/##") | sed "s/\(stash@{.*}\):.*/\1/")'

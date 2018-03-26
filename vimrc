@@ -967,7 +967,9 @@ hi cssClassName                 ctermfg=148  ctermbg=none cterm=none
 hi cssValueLength               ctermfg=197  ctermbg=none cterm=none
 hi cssCommonAttr                ctermfg=81   ctermbg=none cterm=none
 hi cssBraces                    ctermfg=none ctermbg=none cterm=none
-hi goLabel ctermfg=200
+hi goStatement ctermfg=200
+hi goBuiltins ctermfg=200
+" hi goLabel ctermfg=200
 hi goFunctionCall ctermfg=148
 
 " }}}
