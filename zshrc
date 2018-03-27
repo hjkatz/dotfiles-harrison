@@ -9,6 +9,9 @@ export DOTFILES=$HOME/.dotfiles-harrison
 # run the debugging, if enabled
 source $DOTFILES/zshrc.lib/debugging.zsh
 
+# source core functions
+source $DOTFILES/zshrc.lib/core_functions.zsh
+
 # source user settings
 source $DOTFILES/zshrc.lib/user.zsh
 

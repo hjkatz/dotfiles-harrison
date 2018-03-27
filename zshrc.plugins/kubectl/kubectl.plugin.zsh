@@ -1,5 +1,7 @@
 #### ALIASES / FUNCTIONS ####
 
+command_exists "kubectl" || return
+
 alias kb="kubectl "
 alias kube="kubectl "
 

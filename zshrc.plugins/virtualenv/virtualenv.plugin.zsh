@@ -1,5 +1,7 @@
 # [see: https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/virtualenv/virtualenv.plugin.zsh]
 
+command_exists "virtualenv" || return
+
 # configure:
 #   - ZSH_THEME_VIRTUALENV_PREFIX : prefix for prompt
 #   - ZSH_THEME_VIRTUALENV_SUFFIX : suffix for prompt
