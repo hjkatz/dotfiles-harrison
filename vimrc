@@ -206,6 +206,9 @@ let maplocalleader = ","
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cmap w!! w !sudo tee > /dev/null %
 
+" because saving the ';' file is so useful...
+cmap w; wq
+
 " Disable that fucking 'Entering Ex mode. Type 'visual' to go to Normal mode.'
 map Q <Nop>
 
