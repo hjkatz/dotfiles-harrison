@@ -111,5 +111,37 @@ GIT_PS1_SHOWSTASHSTATE=true
 GIT_PS1_SHOWUNTRACKEDFILES=true
 GIT_PS1_STATESEPARATOR=""
 
+# display the content from a prompt command, or nothing
+function display_prompt () {
+    prompt_command="$1"
+
+    if command_exists "$prompt_command" ; then
+        $prompt_command
+        return
+    else
+        echo ""
+        return
+    fi
+
+    # unreachable
+}
+
+# add something to the prompt
+function build_prompt () {
+    PROMPT+="$@"
+}
+
 # jen prompt
-PROMPT=$'\n${ret_status} $(_uname)$(_hname)%{$fg_bold[cyan]%} %$PR_PWDLEN<...<%~%<<%{$reset_color%}${(e)PR_FILLCHAR}[%D{%I:%M:%S}]\n%{$fg_bold[yellow]%}%# %{$reset_color%}$(kubectl_prompt_info)$(rbenv_prompt_info)$(virtualenv_prompt_info)$(git_prompt_info)$(hg_prompt_info)'
+PROMPT="" # reset prompt before building
+build_prompt $'\n' # start with a newline
+build_prompt '${ret_status} ' # show the return code status from the last command
+build_prompt '$(_uname)$(_hname)' # user@host
+build_prompt '%{$fg_bold[cyan]%} %$PR_PWDLEN<...<%~%<<%{$reset_color%}${(e)PR_FILLCHAR}[%D{%I:%M:%S}]' # don't ask
+build_prompt $'\n' # second line!
+build_prompt '%{$fg_bold[yellow]%}%# ' # the prompt separator/privilege indicator
+build_prompt '%{$reset_color%}'
+build_prompt '$(display_prompt "kubectl_prompt_info")'
+build_prompt '$(display_prompt "rbenv_prompt_info")'
+build_prompt '$(display_prompt "virtualenv_prompt_info")'
+build_prompt '$(display_prompt "git_prompt_info")'
+build_prompt '$(display_prompt "hg_prompt_info")'
