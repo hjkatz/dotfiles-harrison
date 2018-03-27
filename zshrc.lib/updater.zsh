@@ -3,12 +3,12 @@
 # tests if the current shell has internet connectivity
 function has_internet ()
 {
-    local test_site='http://google.com'
+    local test_site='google.com'
 
-    if ping -q -w 1 -c 1 "$test_site" >/dev/null 2>&1 ; then
-        return 1
-    else
+    if ping -q -c 1 "$test_site" >/dev/null 2>&1 ; then
         return 0
+    else
+        return 1
     fi
 
     # unreachable

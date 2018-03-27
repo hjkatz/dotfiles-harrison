@@ -14,7 +14,12 @@ function resource () {
 function check_and_update_git_repo () {
     local GITDIR
     GITDIR="$(git rev-parse --show-toplevel 2>/dev/null)"
-    if [[ "$GITDIR" == "$(pwd)" ]]; then
+    if [[ "$GITDIR" == "$(pwd)" ]] ; then
+        if ! has_internet ; then
+            color_echo yellow "No internet, skipping git pull..."
+            return
+        fi
+
         # Fetch changes for current branch
         color_echo yellow "Updating git repo..."
         git fetch
