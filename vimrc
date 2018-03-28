@@ -209,6 +209,9 @@ cmap w!! w !sudo tee > /dev/null %
 " because saving the ';' file is so useful...
 cmap w; wq
 
+" I don't think I ever want to use ;
+cmap ; q
+
 " Disable that fucking 'Entering Ex mode. Type 'visual' to go to Normal mode.'
 map Q <Nop>
 
