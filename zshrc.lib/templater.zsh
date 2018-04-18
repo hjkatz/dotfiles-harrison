@@ -31,8 +31,7 @@ function compile_file () {
     vars=$(cat "$compiled" | \
            \grep -o -P "{{\w+}}" | \
            \grep -o -P "\w+" | \
-           tr "\n" " " # replace newlines with spaces to use in loop below
-    )
+           tr "\n" " " ) # replace newlines with spaces to use in loop below
 
     # for each var, replace it in the file
     for var in $(echo ${vars[@]}) ; do # please ignore this echo hack
