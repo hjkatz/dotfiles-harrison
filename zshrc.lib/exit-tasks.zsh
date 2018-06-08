@@ -9,6 +9,8 @@ type $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION >/dev/null 2>&1 && {
     unset -f $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION
 }
 
+add_to_path "./bin" true
+
 # Echo updated message after sourcing files
 if [ $GLOBALS__DOTFILES_UPDATED = true ] ; then
     color_echo green "Updated to $DOTFILES_VERSION"

@@ -3,9 +3,14 @@
 # adds dir to $PATH if it does not already contain it
 function add_to_path () {
     dir="$1"
+    front="$2"
 
     if ! [[ ":$PATH:" == *":$dir:"* ]] ; then
-        path+=( "$dir" )
+        if [[ "$front" == true ]] ; then
+            PATH="$dir:$PATH"
+        else
+            path+=( "$dir" )
+        fi
     fi
 }
 

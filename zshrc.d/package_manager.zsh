@@ -99,7 +99,7 @@ function update () {
             sudo yum update
             ;;
         darwin)
-            brew update
+            brew update && brew upgrade
             ;;
         *)
             echo "Distro '$GLOBALS__DISTRO' is unrecognized"

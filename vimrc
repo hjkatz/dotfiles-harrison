@@ -42,7 +42,7 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     " adds folding, fancy settings, and more!
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
     " go!
-    Plug 'fatih/vim-go', { 'for': 'go' }
+    Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoUpdateBinaries' }
     " ansible
     Plug 'pearofducks/ansible-vim'
 
@@ -54,6 +54,10 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " snippets for code insertion
     Plug 'SirVer/ultisnips'
+    " Common snippets for many languages
+    Plug 'honza/vim-snippets'
+    " Golang Ginkgo snippets
+    Plug 'trayo/vim-ginkgo-snippets', { 'for': 'go' }
 
     " auto-upcase sql terms
     Plug 'hjkatz/sql_iabbr.vim', { 'for': 'sql' }
@@ -211,6 +215,8 @@ cmap w; wq
 
 " I don't think I ever want to use ;
 cmap ; q
+" except for sometimes
+cnoremap :: ;
 
 " Disable that fucking 'Entering Ex mode. Type 'visual' to go to Normal mode.'
 map Q <Nop>
@@ -354,21 +360,30 @@ function! Delete_whitespace()
     call setpos(".", save_pos)
 endfunction
 
+
 " auto-delete whitespace on write
 autocmd BufWritePre * call Delete_whitespace()
+
+" }}}
+
+" Ultisnips -------------------------- {{{
+
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
 " }}}
 
 " vim-qf ----------------------------- {{{
 
 " Mappings for location list movement
-nmap <Home> <Plug>qf_qf_previous
-nmap <End>  <Plug>qf_qf_next
+nmap <Home> <Plug>(qf_qf_previous)
+nmap <End>  <Plug>(qf_qf_next)
 
-nmap <C-Home> <Plug>qf_loc_previous
-nmap <C-End>  <Plug>qf_loc_next
+nmap <C-Home> <Plug>(qf_loc_previous)
+nmap <C-End>  <Plug>(qf_loc_next)
 
-nmap <F5> <Plug>qf_qf_toggle
+nmap <F5> <Plug>(qf_qf_toggle)
 
 let g:qf_auto_resize = 0
 let g:qf_save_win_view = 1
@@ -387,6 +402,11 @@ nmap <C-p> <C-t>
 
 " Only use quickfix lists
 let g:syntastic_use_quickfix_lists = 1
+
+let g:syntastic_mode_map = {
+    \ "mode": "active",
+    \ "passive_filetypes": ["go"]
+    \}
 
 " }}}
 
@@ -603,6 +623,17 @@ augroup ft_go
     au FileType go let g:go_fmt_experimental = 1
     au FileType go let g:go_fmt_command = 'goimports'
     au FileType go let g:go_metalinter_autosave = 0
+    au FileType go let g:go_metalinter_command = '--tests --vendor --exclude=vendor
+                                                \ --enable vet
+                                                \ --enable deadcode
+                                                \ --enable varcheck
+                                                \ --enable structcheck
+                                                \ --enable errcheck
+                                                \ --enable dupl
+                                                \ --enable ineffassign
+                                                \ --enable goconst
+                                                \ --enable golint
+                                                \'
     au FileType go let g:go_metalinter_enabled = [ 'vet', 'deadcode', 'varcheck', 'structcheck', 'dupl', 'ineffassign', 'goconst', 'golint', 'errcheck' ]
 
     " add some missing Plug mappings
@@ -652,13 +683,15 @@ augroup ft_go
     au FileType go nmap <Leader>tf <Plug>(go-test-func)
     au FileType go nmap <Leader>i <Plug>(go-imports)
     au FileType go nmap <Leader><space> <Plug>(go-toggle-same-ids)
-    au FileType go nmap <Leader>a <Plug>(go-alternate)
-    au FileType go nmap <Leader>n <Plug>(go-alternate)
+    au FileType go nmap <Leader>a :call go#alternate#Switch('', 'edit')<CR>
+    au FileType go nmap <Leader>s :call go#alternate#Switch('', 'split')<CR>
+    au FileType go nmap <Leader>v :call go#alternate#Switch('', 'vsplit')<CR>
     au FileType go nmap <Leader>d <Plug>(go-doc)
     au FileType go nmap <Leader>c zR<Plug>(go-coverage-toggle)
     au FileType go nmap <Leader>r <Plug>(go-rename)
     au FileType go nmap <F6> zR<Plug>(go-metalinter)
     au FileType go nmap <F7> zR<Plug>(go-coverage-toggle)
+    au FileType go nmap <F8> zR<Plug>(go-breakpoint-toggle)
 
     " abbreviations
     au FileType go iabbrev === :=
