@@ -613,22 +613,22 @@ augroup END
 " }}}
 " Coffeescript {{{
 
-augroup ft_coffeescript
+augroup ft_coffee
     au!
 
-    au FileType coffeescript setlocal ts=2
-    au FileType coffeescript setlocal sw=2
-    au FileType coffeescript setlocal expandtab
+    au FileType coffee setlocal ts=2
+    au FileType coffee setlocal sw=2
+    au FileType coffee setlocal expandtab
 
-    au FileType coffeescript setlocal foldmethod=marker
-    au FileType coffeescript setlocal foldmarker={,}
+    au FileType coffee setlocal foldmethod=marker
+    au FileType coffee setlocal foldmarker={,}
 
     " Recursive toggle
-    au FileType coffeescript nnoremap <Space> zA
-    au FileType coffeescript vnoremap <Space> zA
+    au FileType coffee nnoremap <Space> zA
+    au FileType coffee vnoremap <Space> zA
 
     " Make {<cr> insert a pair of brackets
-    au Filetype coffeescript inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
+    au Filetype coffee inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
     " }fixes syntax highlighting
 augroup END
 
