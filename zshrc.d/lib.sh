@@ -72,6 +72,8 @@ function q () {
 
     # add the missing newline
     echo ""
+
+    return 0
 }
 
 # [see: https://superuser.com/questions/276531/clear-stdin-before-reading]
@@ -89,7 +91,7 @@ function ask () {
     echo -e -n "\033[1;33m$question [y/n]: \033[0m"
 
     turn_on_keyboard
-    read -n 1 ANSWER
+    read -k 1 ANSWER
     turn_off_keyboard
 
     # add the missing newline
@@ -101,12 +103,20 @@ function ask () {
         echo -e -n "\033[1;33m[y/n]: \033[0m"
 
         turn_on_keyboard
-        read -n 1 ANSWER
+        read -k 1 ANSWER
         turn_off_keyboard
 
         # add the missing newline
         echo ""
     done
+
+    if [[ $ANSWER == y ]] ; then
+        return 0
+    else
+        return 1
+    fi
+
+    # unreachable
 }
 
 # asks the user for input in the form of a [y/n] question
@@ -121,7 +131,7 @@ function ask_with_timeout () {
     echo -e -n "\033[1;33mAssuming \"$default\" in $timeout secs: \033[0m"
 
     turn_on_keyboard
-    read -t $timeout -n 1 ANSWER
+    read -t $timeout -k 1 ANSWER
     read_exit_code="$?"
     turn_off_keyboard
 
@@ -138,13 +148,21 @@ function ask_with_timeout () {
             echo -e -n "\033[1;33m[y/n]: \033[0m"
 
             turn_on_keyboard
-            read -n 1 ANSWER
+            read -k 1 ANSWER
             turn_off_keyboard
 
             # add the missing newline
             echo ""
         done
     fi
+
+    if [[ $ANSWER == y ]] ; then
+        return 0
+    else
+        return 1
+    fi
+
+    # unreachable
 }
 
 # Matches an element against an array of bash regexes

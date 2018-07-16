@@ -51,6 +51,15 @@ export fpath
 # turn on the completion engine
 compinit -i -d "$ZSH_COMPDUMP"
 
+# turn on bash completions too
+autoload bashcompinit
+bashcompinit
+
+# source bash completions
+for file in $GLOBALS__DOTFILES_COMPLETIONS_PATH.bash/* ; do
+    source $file
+done
+
 # source zshrc.d files
 for file in $DOTFILES/zshrc.d/* ; do
     source $file

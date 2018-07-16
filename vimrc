@@ -18,6 +18,9 @@ filetype off                  " required, turns off automatic filetype detection
 source ~/.dotfiles-harrison/plug.vim
 
 call plug#begin(expand(s:vim_directory.'plugged'))
+    " repeat everything with '.'
+    Plug 'tpope/vim-repeat'
+
     " better .swp file handling
     Plug 'chrisbra/Recover.vim'
 
@@ -73,9 +76,6 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " git in vim
     Plug 'tpope/vim-fugitive'
-
-    " repeat everything with '.'
-    Plug 'tpope/vim-repeat'
 
     " act on surrounding items like quotes, tags, braces, etc...
     Plug 'tpope/vim-surround'
@@ -206,6 +206,10 @@ command! Wq wq
 " Leader
 let mapleader = ','
 let maplocalleader = ","
+
+" Prettify a hunk of JSON with <localleader>j
+nnoremap <buffer> <localleader>j ^vg_:!python -m json.tool<cr>
+vnoremap <buffer> <localleader>j :!python -m json.tool<cr>
 
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cmap w!! w !sudo tee > /dev/null %
@@ -607,6 +611,28 @@ augroup ft_css
 augroup END
 
 " }}}
+" Coffeescript {{{
+
+augroup ft_coffeescript
+    au!
+
+    au FileType coffeescript setlocal ts=2
+    au FileType coffeescript setlocal sw=2
+    au FileType coffeescript setlocal expandtab
+
+    au FileType coffeescript setlocal foldmethod=marker
+    au FileType coffeescript setlocal foldmarker={,}
+
+    " Recursive toggle
+    au FileType coffeescript nnoremap <Space> zA
+    au FileType coffeescript vnoremap <Space> zA
+
+    " Make {<cr> insert a pair of brackets
+    au Filetype coffeescript inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
+    " }fixes syntax highlighting
+augroup END
+
+" }}}
 " Go {{{
 
 augroup ft_go
@@ -739,10 +765,6 @@ augroup ft_javascript
     au FileType javascript nnoremap <Space> zA
     au FileType javascript vnoremap <Space> zA
 
-    " Prettify a hunk of JSON with <localleader>p
-    au FileType javascript nnoremap <buffer> <localleader>p ^vg_:!python -m json.tool<cr>
-    au FileType javascript vnoremap <buffer> <localleader>p :!python -m json.tool<cr>
-
     " Make {<cr> insert a pair of brackets
     au Filetype javascript inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
     " }fixes syntax highlighting
@@ -759,10 +781,6 @@ augroup ft_json
     " Recursive toggle
     au FileType json nnoremap <Space> zA
     au FileType json vnoremap <Space> zA
-
-    " Prettify a hunk of JSON with <localleader>p
-    au FileType json nnoremap <buffer> <localleader>p ^vg_:!python -m json.tool<cr>
-    au FileType json vnoremap <buffer> <localleader>p :!python -m json.tool<cr>
 
     " Make {<cr> insert a pair of brackets
     au Filetype json inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
@@ -795,9 +813,6 @@ augroup ft_markdown
     au Filetype markdown nnoremap <buffer> <localleader>2 yypVr-:redraw<cr>
     au Filetype markdown nnoremap <buffer> <localleader>3 mzI###<space><esc>`zllll
     au Filetype markdown nnoremap <buffer> <localleader>4 mzI####<space><esc>`zlllll
-
-    au Filetype markdown nnoremap <buffer> <localleader>p VV:'<,'>!python -m json.tool<cr>
-    au Filetype markdown vnoremap <buffer> <localleader>p :!python -m json.tool<cr>
 augroup END
 
 " }}}

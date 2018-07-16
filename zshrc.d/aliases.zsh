@@ -75,6 +75,7 @@ alias mysql='nocorrect mysql '
 alias sudo='nocorrect sudo '
 alias pry='nocorrect pry '
 alias yard='nocorrect yard '
+alias rspec='nocorrect rspec '
 
 # show a keyboard on screen for presentations
 alias show_keyboard='key-mon --theme=clear-ubuntu --nomouse --scale=1.5 --old-keys=3 --decorated >/dev/null 2>&1 &'

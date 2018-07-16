@@ -8,14 +8,9 @@ rbenvdirs=("$HOME/.rbenv" "/usr/local/rbenv" "/opt/rbenv" "/usr/local/opt/rbenv"
 for rbenvdir ($rbenvdirs) ; do
     if [ -d $rbenvdir/shims -a $FOUND_RBENV -eq 0 ] ; then
         FOUND_RBENV=1
-        # add some functionality
 
-        # lazy load rbenv
-        function rbenv () {
-            unset -f rbenv
-            eval "$(rbenv init --no-rehash - zsh)"
-            rbenv $@
-        }
+        # init
+        [[ $PATH == *.rbenv* ]] || eval "$(rbenv init --no-rehash - zsh)"
 
         alias rubies="rbenv versions"
 

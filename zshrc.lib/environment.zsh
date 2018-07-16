@@ -33,3 +33,8 @@ export PSQLRC="$DOTFILES/psqlrc"
 # report how long a command took, only if > 10 seconds
 # Note: time is calculated by user + system (does not include cpu)
 export REPORTTIME=10
+
+# set the zsh WORDCHARS for zle forward-word and backward-word (<ctrl>-w)
+# Default: *?_-.[]~=/&;!#$%^(){}<>
+# Removed: / =
+export WORDCHARS='*.?_-[]~&;!#$%^(){}<>'
