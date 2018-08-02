@@ -35,7 +35,7 @@ function compile_file () {
 
     # for each var, replace it in the file
     for var in $(echo ${vars[@]}) ; do # please ignore this echo hack
-        perl -p -i -e "s/\Q{{$var}}\E/q{${(P)var}}/e" $compiled
+        perl -p -i -e "s;\Q{{$var}}\E;q{${(P)var}};e" $compiled
     done
 
     # all done!

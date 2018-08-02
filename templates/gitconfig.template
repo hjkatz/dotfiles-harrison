@@ -105,3 +105,20 @@
 
     # prune local branches
     # fresh = "!bash -c 'git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print $1}' | xargs git branch -D' #"
+
+    # git go (go get) [See: https://regex101.com/r/0akEWc/2]
+    # git clone <repo> into a path determined by the repo' domain, owner, and name
+    # given repos like:
+    #   https://bitbucket.org/some_owner/some_project.git
+    #   git@bitbucket.org:some_owner/some_project.git
+    #   https://hkatz@code.squarespace.net/scm/some_owner/some_project.git
+    #   git@github.com:some_owner/some_project.git
+    #   https://github.com/some_owner/some_project.git
+    #
+    # git go will properly call git clone <repo> /Some/path/to/code/<site>/<owner>/<project>/
+    #
+    # For example:
+    #   git go ssh://git@code.squarespace.net:7999/some_owner/some_project.git
+    # Becomes:
+    #   git clone ssh://git@code.squarespace.net:7999/some_owner/some_project.git /Some/path/to/Code/code.squarespace.net/some_owner/some_project/
+    go = "!f(){ git clone \"$1\" $(echo \"$1\"|perl -pe 's{^(https?|git|ssh)(://|@)(?:[^@/:]+@)?([^/:]+)[/:](?:scm|\\d+)?/?([^/:]+)/(.+?)(.git)?$}{{{GIT_CODE_DIR}}/\\3/\\4/\\5}');};f"
