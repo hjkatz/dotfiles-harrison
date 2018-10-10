@@ -40,12 +40,12 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     " text object for variable segments with 'v'
     Plug 'Julian/vim-textobj-variable-segment'
 
+    " go! must be before vim-polyglot
+    Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoUpdateBinaries' }
     " Filetype Plugins
     Plug 'sheerun/vim-polyglot'
     " adds folding, fancy settings, and more!
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-    " go!
-    Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoUpdateBinaries' }
     " ansible
     Plug 'pearofducks/ansible-vim'
 
@@ -670,10 +670,6 @@ augroup ft_go
     " turn on folding
     au FileType go setlocal foldmethod=syntax
 
-    " Recursive toggle
-    au FileType go nnoremap <Space> zA
-    au FileType go vnoremap <Space> zA
-
     " use experimental mode for go fmt
     au FileType go let g:go_fmt_experimental = 1
     au FileType go let g:go_fmt_command = 'goimports'
@@ -1060,6 +1056,7 @@ hi cssValueLength               ctermfg=197  ctermbg=none cterm=none
 hi cssCommonAttr                ctermfg=81   ctermbg=none cterm=none
 hi cssBraces                    ctermfg=none ctermbg=none cterm=none
 hi goStatement ctermfg=200
+hi goLabel ctermfg=141
 hi goBuiltins ctermfg=200
 " hi goLabel ctermfg=200
 hi goFunctionCall ctermfg=148
