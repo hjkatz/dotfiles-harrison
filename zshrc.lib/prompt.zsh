@@ -103,6 +103,11 @@ ZSH_THEME_HG_PROMPT_CLEAN=" %{$fg_bold[green]%}✓%{$reset_color%}"
 ZSH_THEME_VIRTUALENV_PREFIX="%{$fg_bold[green]%}[%{$FX[no-bold]%}"
 ZSH_THEME_VIRTUALENV_SUFFIX="%{$fg[green]%}%{$FX[bold]%}]%{$reset_color%} "
 
+ZSH_THEME_PYENV_PREFIX="%{$fg_bold[green]%}[%{$FX[no-bold]%}"
+ZSH_THEME_PYENV_SUFFIX="%{$fg[green]%}%{$FX[bold]%}]%{$reset_color%} "
+ZSH_THEME_PYENV_NAME="py"
+ZSH_THEME_PYENV_SEP=":"
+
 ZSH_THEME_KUBECTL_PREFIX="%{$fg_bold[cyan]%}{%{$FX[no-bold]%}%{$fg[white]%}"
 ZSH_THEME_KUBECTL_SUFFIX="%{$fg_bold[cyan]%}}%{$reset_color%} "
 
@@ -142,6 +147,7 @@ build_prompt '%{$fg_bold[yellow]%}%# ' # the prompt separator/privilege indicato
 build_prompt '%{$reset_color%}'
 build_prompt '$(display_prompt "kubectl_prompt_info")'
 build_prompt '$(display_prompt "rbenv_prompt_info")'
+build_prompt '$(display_prompt "pyenv_prompt_info")'
 build_prompt '$(display_prompt "virtualenv_prompt_info")'
 build_prompt '$(display_prompt "git_prompt_info")'
 build_prompt '$(display_prompt "hg_prompt_info")'
