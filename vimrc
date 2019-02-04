@@ -410,7 +410,7 @@ let g:syntastic_use_quickfix_lists = 1
 
 let g:syntastic_mode_map = {
     \ "mode": "active",
-    \ "passive_filetypes": ["go"]
+    \ "passive_filetypes": ["go", "python", "ansible"]
     \}
 
 " }}}
