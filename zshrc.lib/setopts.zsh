@@ -3,7 +3,6 @@
 # in order on the options page
 
 # Changing directories
-setopt AUTO_CD           # auto cd to directories without needing to type cd
 setopt AUTO_PUSHD        # auto push directories onto the directory stack
 setopt CDABLE_VARS       # if the cd command doesn't exist, try ~/command
 setopt PUSHD_IGNORE_DUPS # don't push duplicates onto the directory stack
