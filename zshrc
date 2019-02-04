@@ -49,7 +49,17 @@ fpath+=( "$GLOBALS__DOTFILES_COMPLETIONS_PATH" )
 export fpath
 
 # turn on the completion engine
-compinit -i -d "$ZSH_COMPDUMP"
+# Speeds up load time
+# Perform compinit only once a day.
+autoload -Uz compinit
+for dump in $ZSH_COMPDUMP(#qN.m1); do
+  compinit
+  if [[ -s "$dump" && (! -s "$dump.zwc" || "$dump" -nt "$dump.zwc") ]]; then
+    zcompile "$dump"
+  fi
+  color_echo yellow "Initializing Completions..."
+done
+compinit -C
 
 # turn on bash completions too
 autoload bashcompinit
