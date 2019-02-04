@@ -7,6 +7,11 @@
 #   `color_echo yellow "My Warning"`
 #   `color_echo green "My Success"`
 function color_echo() {
+    if [[ "$1" == "-n" ]] ; then
+        n_flag="-n"
+        shift
+    fi
+
     case $1 in
      red)
           color="1;31"
@@ -37,7 +42,7 @@ function color_echo() {
     # remove $1
     shift
 
-    echo -e "\033[${color}m$@\033[0m"
+    echo -e $n_flag "\033[${color}m$@\033[0m"
 }
 
 # begin reading from the keyboard
