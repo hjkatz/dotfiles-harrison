@@ -112,7 +112,7 @@ zstyle ':completion:*:original' list-colors "=*=$color[red];$color[bold]"
 zstyle ':completion:*:reserved-words' list-colors "=*=$color[red]"
 
 ### colorize hostname completion
-zstyle ':completion:*:*:*:*:hosts' list-colors "=*=$color[cyan];$color[bg-black]"
+# zstyle ':completion:*:*:*:*:hosts' list-colors "=*=$color[cyan];$color[bg-black]"
 
 ## add colors to processes for kill completion
 zstyle ':completion:*:*:kill:*' verbose yes

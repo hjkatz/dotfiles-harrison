@@ -4,6 +4,8 @@ command_exists "kubectl" || return
 
 alias kb="kubectl "
 alias kube="kubectl "
+alias kctx="kubectx "
+alias kns="kubens "
 
 alias -g kall="all,configmaps,deployments.apps,servicemonitors,secrets"
 

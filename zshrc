@@ -52,14 +52,13 @@ export fpath
 # Speeds up load time
 # Perform compinit only once a day.
 autoload -Uz compinit
-for dump in $ZSH_COMPDUMP(#qN.m1); do
-  compinit
-  if [[ -s "$dump" && (! -s "$dump.zwc" || "$dump" -nt "$dump.zwc") ]]; then
-    zcompile "$dump"
-  fi
+if [[ -n $ZSH_COMPDUMP(#qN.mh+24) ]] ; then
   color_echo yellow "Initializing Completions..."
-done
-compinit -C
+  compinit -i -d $ZSH_COMPDUMP
+  compdump
+else
+  compinit -C -d $ZSH_COMPDUMP
+fi
 
 # turn on bash completions too
 autoload bashcompinit
