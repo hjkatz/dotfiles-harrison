@@ -2,6 +2,28 @@
 
 command_exists "kubectl" || return
 
+# kube-ps1 local sourcing
+function kube_ps1_cluster_function () {
+    cluster="$1"
+
+    # flag prod clusters
+    if [[ $cluster == *prod* ]] ; then
+        color_echo red "$cluster"
+    else
+        echo "$cluster"
+    fi
+}
+export KUBE_PS1_PREFIX="{"
+export KUBE_PS1_SUFFIX="} "
+export KUBE_PS1_SYMBOL_ENABLE=false
+export KUBE_PS1_DIVIDER="/"
+export KUBE_PS1_CTX_COLOR=cyan
+export KUBE_PS1_NS_COLOR=cyan
+export KUBE_PS1_CLUSTER_FUNCTION=kube_ps1_cluster_function
+
+dir=$(dirname $0)
+source $dir/kube_ps1.sh
+
 alias kb="kubectl "
 alias kube="kubectl "
 alias kctx="kubectx "
