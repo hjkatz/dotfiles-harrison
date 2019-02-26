@@ -8,10 +8,12 @@ function kube_ps1_cluster_function () {
 
     # flag prod clusters
     if [[ $cluster == *prod* ]] ; then
-        color_echo red "$cluster"
+        echo "%{$fg_bold[red]%}$cluster%{$reset_color%}"
     else
         echo "$cluster"
     fi
+
+    # unreachable
 }
 export KUBE_PS1_PREFIX="{"
 export KUBE_PS1_SUFFIX="} "
