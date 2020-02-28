@@ -7,7 +7,7 @@ add_to_path "$HOME/.local/bin"
 export PATH
 
 # Set default editor
-export EDITOR=/usr/bin/vim
+export EDITOR='nvim'
 
 # Setup zsh history tracking
 export HISTFILE=$HOME/.zsh_history
