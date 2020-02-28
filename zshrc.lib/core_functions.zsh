@@ -287,3 +287,9 @@ print_lines () {
         echo -e $prefix $line
     done <<< "$@"
 }
+
+# echo the command and run
+echo_run () {
+    echo "> $1"
+    eval $1
+}
