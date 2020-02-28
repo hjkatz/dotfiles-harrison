@@ -31,7 +31,10 @@ alias kube="kubectl "
 alias kctx="kubectx "
 alias kns="kubens "
 
-alias -g kall="all,configmaps,deployments.apps,servicemonitors,secrets"
+alias -g kall="all,configmaps,deployments.apps,servicemonitors,secrets,limits,resourcequotas"
+
+# add kubectl completion
+source <(kubectl completion zsh)
 
 # set completion
 compdef kb=kubectl
@@ -129,4 +132,9 @@ function kb_get_labels () {
     done
 
     echo "$labels" | tr ' ' '\n' | sort | uniq
+}
+
+function kb_get_env () {
+    pod="$1"
+    kubectl exec -it "$pod" env | grep -P -v "(PORT|HOST|HOME|PATH|TERM|JAVA_OPTS)" | sed 's///g' | perl -p -e "s/(\w+)=(.*)/export \1='\2'/"
 }
