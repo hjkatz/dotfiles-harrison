@@ -24,9 +24,6 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     " better .swp file handling
     Plug 'chrisbra/Recover.vim'
 
-    " more intuitive tab completion
-    Plug 'ervandew/supertab'
-
     " easy alignment
     Plug 'junegunn/vim-easy-align'
 
@@ -48,6 +45,8 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
     " ansible
     Plug 'pearofducks/ansible-vim'
+    " v
+    Plug 'lcolaholicl/vim-v', { 'for': 'v' }
 
     " LaTeX Everything
     Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
@@ -55,8 +54,11 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     " syntax and style checking
     Plug 'scrooloose/syntastic'
 
+    " autocomplete
+    Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+
     " snippets for code insertion
-    Plug 'SirVer/ultisnips'
+    " Plug 'SirVer/ultisnips'
     " Common snippets for many languages
     Plug 'honza/vim-snippets'
     " Golang Ginkgo snippets
@@ -64,9 +66,6 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " auto-upcase sql terms
     Plug 'hjkatz/sql_iabbr.vim', { 'for': 'sql' }
-
-    " extra vim functions to ensure ultisnips and supertab play nice together
-    Plug 'tomtom/tlib_vim'
 
     " comment command with 'gc'
     Plug 'tpope/vim-commentary'
@@ -97,6 +96,9 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " git gutter
     Plug 'airblade/vim-gitgutter'
+
+    " tagbar
+    Plug 'majutsushi/tagbar'
 call plug#end()
 
 filetype plugin indent on    " required
@@ -125,11 +127,11 @@ set sidescrolloff=15               " leave at least 15 lines at the right/left o
 set sidescroll=1                   " scroll sidways 1 character at a time
 set autowrite                      " autowrite on things like :next, :prev, :etc...
 set lazyredraw                     " redraw the screen lazily
-set updatetime=400                 " set vim's updatetime to 400ms
+set updatetime=300                 " set vim's updatetime
 " Wildmenu completion {{{
 
 set wildmenu " turn on globing for opening files
-set wildmode=list:longest " see :help wildmode for more information
+set wildmode=longest:full,full " see :help wildmode for more information
 
 set wildignore+=.hg,.git,.svn                    " Version control
 set wildignore+=*.aux,*.out,*.toc                " LaTeX intermediate files
@@ -144,6 +146,92 @@ set wildignore+=*.orig                           " Merge resolution files
 " }}}
 
 " }}}
+" Functions ---------------------------- {{{
+
+" Pulse Line {{{
+
+function! s:Pulse()
+    redir => old_hi
+        silent execute 'hi CursorLine'
+    redir END
+    let old_hi = split(old_hi, '\n')[0]
+    let old_hi = substitute(old_hi, 'xxx', '', '')
+
+    let steps = 8
+    let width = 1
+    let start = width
+    let end = steps * width
+    let color = 233
+
+    for i in range(start, end, width)
+        execute "hi CursorLine ctermbg=" . (color + i)
+        redraw
+        sleep 6m
+    endfor
+    for i in range(end, start, -1 * width)
+        execute "hi CursorLine ctermbg=" . (color + i)
+        redraw
+        sleep 6m
+    endfor
+
+    execute 'hi ' . old_hi
+endfunction
+command! -nargs=0 Pulse call s:Pulse()
+
+" }}}
+
+" Persistant undo {{{
+
+if has('persistent_undo')
+  " create undodir
+  if isdirectory( s:vim_directory . 'undo' ) == 0
+    exec 'silent !mkdir -p ' . s:vim_directory . 'undo > /dev/null 2>&1'
+  endif
+
+  let &undodir = expand( s:vim_directory . 'undo' )
+  set undofile
+endif
+
+" }}}
+
+" substring {{{
+" from https://gist.github.com/tyru/984296
+" Substitute a:from => a:to by string.
+" To substitute by pattern, use substitute() instead.
+function! s:substring(str, from, to)
+  if a:str ==# '' || a:from ==# ''
+      return a:str
+  endif
+  let str = a:str
+  let idx = stridx(str, a:from)
+  while idx !=# -1
+      let left  = idx ==# 0 ? '' : str[: idx - 1]
+      let right = str[idx + strlen(a:from) :]
+      let str = left . a:to . right
+      let idx = stridx(str, a:from)
+  endwhile
+  return str
+endfunction
+
+" }}}
+
+" chomp {{{
+function! s:chomp(string)
+  return substitute(a:string, '\n\+$', '', '')
+endfunction
+
+" }}}
+
+" check_back_space {{{
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" }}}
+
+" }}}
 " Misc --------------------------------- {{{
 
 " turn on syntax coloring and indentation based on the filetype
@@ -153,6 +241,14 @@ filetype indent on
 
 " easy file reloading
 " nnoremap <F10> :w<CR>:so %<CR>
+
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 " show the syntax highlighting group of the object under the cursor
 map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
@@ -335,6 +431,9 @@ let g:easy_align_delimiters =
 " do not conceal markdown links
 let g:vim_markdown_conceal = 0
 
+" [See: https://github.com/plasticboy/vim-markdown/issues/414]
+let g:vim_markdown_folding_style_pythonic = 1
+
 " }}}
 
 " Undo Tree ----------------------------- {{{
@@ -372,10 +471,10 @@ autocmd BufWritePre * call Delete_whitespace()
 
 " Ultisnips -------------------------- {{{
 
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-let g:UltiSnipsSnippetDirectories=[$HOME.'/.dotfiles-harrison/UltiSnips', 'UltiSnips']
+" let g:UltiSnipsExpandTrigger="<tab>"
+" let g:UltiSnipsJumpForwardTrigger="<tab>"
+" let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+" let g:UltiSnipsSnippetDirectories=[$HOME.'/.dotfiles-harrison/UltiSnips', 'UltiSnips']
 
 " }}}
 
@@ -397,9 +496,9 @@ let g:qf_save_win_view = 1
 
 " vim-go ----------------------------- {{{
 
-" Mappings for jump to definition
-nmap <C-n> gd
-nmap <C-p> <C-t>
+" disable vim-go :GoDef short cut (gd)
+" this is handled by LanguageClient [LC]
+let g:go_def_mapping_enabled = 0
 
 " }}}
 
@@ -412,6 +511,47 @@ let g:syntastic_mode_map = {
     \ "mode": "active",
     \ "passive_filetypes": ["go", "python", "ansible"]
     \}
+
+" }}}
+
+" CoC ----------------------------- {{{
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+" inoremap <expr> <cr> pumvisible() ? '\<C-y>' : '\<C-g>u\<CR>'
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" " Mappings for jump to definition
+nmap <C-n> gd
+nmap <C-t> <C-o>
+
+" Remap for rename current word
+nmap <leader>r <Plug>(coc-rename)
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? coc#_select_confirm() :
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+
+let g:coc_snippet_next = '<tab>'
+
+" }}}
+
+" tagbar ----------------------------- {{{
+
+nnoremap <silent> <F2> :TagbarToggle<CR>
+
+let g:tagbar_map_togglefold = '<Space>'
+let g:tagbar_autofocus = 1
 
 " }}}
 
@@ -477,83 +617,6 @@ augroup autoSaveAndRead
     autocmd TextChanged,InsertLeave,FocusLost * silent! wall
     autocmd CursorHold * silent! checktime
 augroup END
-
-" }}}
-
-" }}}
-" Functions ---------------------------- {{{
-
-" Pulse Line {{{
-
-function! s:Pulse()
-    redir => old_hi
-        silent execute 'hi CursorLine'
-    redir END
-    let old_hi = split(old_hi, '\n')[0]
-    let old_hi = substitute(old_hi, 'xxx', '', '')
-
-    let steps = 8
-    let width = 1
-    let start = width
-    let end = steps * width
-    let color = 233
-
-    for i in range(start, end, width)
-        execute "hi CursorLine ctermbg=" . (color + i)
-        redraw
-        sleep 6m
-    endfor
-    for i in range(end, start, -1 * width)
-        execute "hi CursorLine ctermbg=" . (color + i)
-        redraw
-        sleep 6m
-    endfor
-
-    execute 'hi ' . old_hi
-endfunction
-command! -nargs=0 Pulse call s:Pulse()
-
-" }}}
-
-" Persistant undo {{{
-
-if has('persistent_undo')
-  " create undodir
-  if isdirectory( s:vim_directory . 'undo' ) == 0
-    exec 'silent !mkdir -p ' . s:vim_directory . 'undo > /dev/null 2>&1'
-  endif
-
-  let &undodir = expand( s:vim_directory . 'undo' )
-  set undofile
-endif
-
-" }}}
-
-" substring {{{
-" from https://gist.github.com/tyru/984296
-" Substitute a:from => a:to by string.
-" To substitute by pattern, use substitute() instead.
-function! s:substring(str, from, to)
-  if a:str ==# '' || a:from ==# ''
-      return a:str
-  endif
-  let str = a:str
-  let idx = stridx(str, a:from)
-  while idx !=# -1
-      let left  = idx ==# 0 ? '' : str[: idx - 1]
-      let right = str[idx + strlen(a:from) :]
-      let str = left . a:to . right
-      let idx = stridx(str, a:from)
-  endwhile
-  return str
-endfunction
-
-" }}}
-
-" chomp {{{
-function! s:chomp(string)
-  return substitute(a:string, '\n\+$', '', '')
-endfunction
 
 " }}}
 
@@ -667,8 +730,15 @@ augroup END
 augroup ft_go
     au!
 
+    " allow deoplete to complete via the omnifunc and vim-go
+    " call deoplete#custom#option('omni_patterns', { 'go': '[^. *\t]\.\w*' })
+
     " turn on folding
     au FileType go setlocal foldmethod=syntax
+
+    " Recursive toggle
+    au FileType go nnoremap <Space> zA
+    au FileType go vnoremap <Space> zA
 
     " use experimental mode for go fmt
     au FileType go let g:go_fmt_experimental = 1
@@ -697,6 +767,7 @@ augroup ft_go
     au FileType go let g:go_updatetime = 800 "ms
 
     " adjust the highlighting
+    au FileType go let g:go_highlight_build_constraints = 1
     au FileType go let g:go_highlight_array_whitespace_error = 1
     au FileType go let g:go_highlight_space_tab_error = 1
     au FileType go let g:go_highlight_operators = 1
@@ -751,11 +822,15 @@ augroup ft_go
     au FileType go nmap <Leader>r <Plug>(go-rename)
     au FileType go nmap <F6> zR<Plug>(go-metalinter)
     au FileType go nmap <F7> zR<Plug>(go-coverage-toggle)
-    au FileType go nmap <F8> zR<Plug>(go-breakpoint-toggle)
+    " au FileType go nmap <F8> zR<Plug>(go-breakpoint-toggle)
+    au FileType go nnoremap <F8> Ortime.Breakpoint()<esc>/import<cr>ortime "runtime"<esc><c-o>
 
     " abbreviations
     au FileType go iabbrev === :=
     au FileType go iabbrev !! !=
+    au FileType go iabbrev importlogrus log "github.com/sirupsen/logrus"
+    au FileType go iabbrev importlog log "github.com/sirupsen/logrus"
+    au FileType go iabbrev importspew "github.com/davecgh/go-spew/spew"
 
     " only use the quicklist
     au FileType go let g:go_list_type = 'quickfix'
