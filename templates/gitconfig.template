@@ -122,3 +122,9 @@
     # Becomes:
     #   git clone ssh://git@code.squarespace.net:7999/some_owner/some_project.git /Some/path/to/Code/code.squarespace.net/some_owner/some_project/
     go = "!f(){ git clone \"$1\" $(echo \"$1\"|perl -pe 's{^(https?|git|ssh)(://|@)(?:[^@/:]+@)?([^/:]+)[/:](?:scm|\\d+)?/?([^/:]+)/(.+?)(.git)?$}{{{GIT_CODE_DIR}}/\\3/\\4/\\5}');};f"
+
+    format = !bash -c './gradlew format && git commit -am "Formatting"'
+
+    co-release = !bash -c 'git checkout -b $USER/release-$(date +%s) origin/release'
+    release = !bash -c 'git fetch && git co-release'
+    release-master = !bash -c 'git release && git merge origin/master && git push origin HEAD && git checkout master && git pull'
