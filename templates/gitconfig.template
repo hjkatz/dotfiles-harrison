@@ -104,7 +104,7 @@
     branch-point = !bash -c 'diff --old-line-format='' --new-line-format='' <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | head -1' -
 
     # prune local branches
-    # fresh = "!bash -c 'git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print $1}' | xargs git branch -D' #"
+    fresh = !git remote prune origin && git branch -vv | grep ': gone]' | awk '{print $1}' | xargs -r git branch -D
 
     # git go (go get) [See: https://regex101.com/r/0akEWc/2]
     # git clone <repo> into a path determined by the repo' domain, owner, and name
