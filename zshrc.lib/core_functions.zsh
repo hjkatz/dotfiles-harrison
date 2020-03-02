@@ -28,7 +28,9 @@ function add_to_path () {
 function has_internet () {
     local test_site='google.com'
 
-    if ping -q -w 1 -c 1 "$test_site" &>/dev/null ; then
+    if ping -q -w 1 -c 1 "$test_site" &>/dev/null || # some pings have -t others -w, catch both cases
+       ping -q -t 1 -c 1 "$test_site" &>/dev/null
+    then
         return 0
     else
         return 1
