@@ -22,7 +22,7 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'tpope/vim-repeat'
 
     " better .swp file handling
-    Plug 'chrisbra/Recover.vim'
+    " Plug 'chrisbra/Recover.vim'
 
     " easy alignment
     Plug 'junegunn/vim-easy-align'
@@ -47,12 +47,14 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'pearofducks/ansible-vim'
     " v
     Plug 'lcolaholicl/vim-v', { 'for': 'v' }
+    " jsonnet
+    Plug 'google/vim-jsonnet', { 'for': 'jsonnet' }
 
     " LaTeX Everything
     Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
 
     " syntax and style checking
-    Plug 'scrooloose/syntastic'
+    " Plug 'scrooloose/syntastic'
 
     " autocomplete
     Plug 'neoclide/coc.nvim', { 'branch': 'release' }
@@ -823,7 +825,7 @@ augroup ft_go
     au FileType go nmap <F6> zR<Plug>(go-metalinter)
     au FileType go nmap <F7> zR<Plug>(go-coverage-toggle)
     " au FileType go nmap <F8> zR<Plug>(go-breakpoint-toggle)
-    au FileType go nnoremap <F8> Ortime.Breakpoint()<esc>/import<cr>ortime "runtime"<esc><c-o>
+    au FileType go nnoremap <F8> Ortime.Breakpoint()<esc>/import<cr>Oimport rtime "runtime"<esc><c-o>:w<cr>
 
     " abbreviations
     au FileType go iabbrev === :=
@@ -831,6 +833,7 @@ augroup ft_go
     au FileType go iabbrev importlogrus log "github.com/sirupsen/logrus"
     au FileType go iabbrev importlog log "github.com/sirupsen/logrus"
     au FileType go iabbrev importspew "github.com/davecgh/go-spew/spew"
+    au FileType go iabbrev importmetav1 metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
     " only use the quicklist
     au FileType go let g:go_list_type = 'quickfix'
@@ -845,6 +848,16 @@ augroup ft_html
     au FileType html setlocal ts=2
     au FileType html setlocal sw=2
     au FileType html setlocal expandtab
+augroup END
+
+" }}}
+" Helm (yaml) {{{
+
+augroup ft_helm
+    au!
+
+    " use # for comments instead of default /* ... */
+    au FileType helm setlocal commentstring=#\ %s
 augroup END
 
 " }}}
@@ -893,6 +906,33 @@ augroup ft_json
 
     " Make {<cr> insert a pair of brackets
     au Filetype json inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
+    " }fixes syntax highlighting
+augroup END
+
+" }}}
+" jsonnet {{{
+
+augroup ft_jsonnet
+    au!
+
+    au FileType jsonnet setlocal ts=2
+    au FileType jsonnet setlocal sw=2
+    au FileType jsonnet setlocal expandtab
+
+    au FileType jsonnet setlocal foldmethod=indent
+
+    " Recursive toggle
+    au FileType jsonnet nnoremap <Space> zA
+    au FileType jsonnet vnoremap <Space> zA
+
+    " no c-style indenting because it messes up the indenting
+    au FileType jsonnet setlocal nocindent
+
+    " use # for comments instead of default //
+    au FileType jsonnet setlocal commentstring=#\ %s
+
+    " Make {<cr> insert a pair of brackets
+    au Filetype jsonnet inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
     " }fixes syntax highlighting
 augroup END
 
