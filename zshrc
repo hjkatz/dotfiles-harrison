@@ -94,3 +94,8 @@ source $DOTFILES/zshrc.lib/prompt.zsh
 
 # source all exit tasks
 source $DOTFILES/zshrc.lib/exit-tasks.zsh
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/terraform terraform
+
+complete -o nospace -C /Users/hkatz/.local/bin/tf tf
