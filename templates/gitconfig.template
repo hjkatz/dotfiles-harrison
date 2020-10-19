@@ -10,6 +10,9 @@
     # fixes some filesystems that distinguish case, but don't ignore it
     ignorecase = false
 
+	# use global gitattributes
+	attributesFile = {{DOTFILES}}/gitattributes
+
 [color]
     # turn on auto coloring
 	ui = auto
