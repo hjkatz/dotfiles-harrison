@@ -35,6 +35,14 @@ alias -g kall="all,configmaps,deployments.apps,servicemonitors,secrets,limits,re
 
 # add kubectl completion
 source <(kubectl completion zsh)
+# lazy load the completions
+# function kubectl() {
+#     if ! type __start_kubectl >/dev/null 2>&1; then
+#         source <(command kubectl completion zsh)
+#     fi
+
+#     command kubectl "$@"
+# }
 
 # set completion
 compdef kb=kubectl
