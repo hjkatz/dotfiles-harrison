@@ -220,3 +220,16 @@ function replace() {
     replace="$2"
     perl -p -i -e "s/$search/$replace/g" $(rg "$search" -l)
 }
+
+# Description : cert_details displays the certificate details without memorizing openssl commands
+#
+# Example: cert_details gabeochoa.com
+function cert_details() {
+    cert="$1"
+
+    if ! command_exists "openssl" ; then
+        die "Missing dependency openssl"
+    fi
+
+    openssl s_client -servername "$cert" -connect "$cert":443 < /dev/null 2> /dev/null | openssl x509 -noout -subject -issuer -nameopt multiline -dates
+}
