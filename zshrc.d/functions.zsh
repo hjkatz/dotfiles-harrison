@@ -24,8 +24,7 @@ function check_and_update_git_repo () {
         color_echo yellow "Updating git repo..."
         git fetch
         color_echo yellow "Pruning local branches..."
-        git branch -vv | grep ': gone]' | awk '{print $1}' | xargs -r git branch -D
-        # git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print $1}' | xargs git branch -D
+        git branch -vv | grep -P ': (gone|desaparecido)]' | awk '{print $1}' | xargs -r git branch -D
         color_echo green "Done."
     fi
 }
