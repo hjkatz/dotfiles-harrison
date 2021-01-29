@@ -115,6 +115,9 @@
     cherry-dag = !bash -c 'git log --graph --decorate --oneline HEAD...$(git branch-point)'
     cdag = cherry-dag
 
+	# git commit --fixup by latest matching commit
+	fix = "!f() { git commit --fixup :/$1 ;}; f"
+
     # rebase without interactive and using --autosquash
     # [See: https://stackoverflow.com/questions/29094595/git-interactive-rebase-without-opening-the-editor]
     auto-rebase = "!f() { git fetch && GIT_SEQUENCE_EDITOR=: git rebase --autosquash -i origin/${1:-`git default-branch`} ; }; f"
