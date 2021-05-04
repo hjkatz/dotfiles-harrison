@@ -233,3 +233,10 @@ function cert_details() {
 
     openssl s_client -servername "$cert" -connect "$cert":443 < /dev/null 2> /dev/null | openssl x509 -noout -subject -issuer -nameopt multiline -dates
 }
+
+# Run man in vim!
+#
+# Usage: vman col
+function vman() {
+    man $* | col -b | vim -c 'set ft=man nomod nolist' -
+}
