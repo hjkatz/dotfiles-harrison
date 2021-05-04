@@ -6,6 +6,9 @@
 	email = {{GIT_EMAIL}}
 	name = {{GIT_NAME}}
 
+[url "git@github.com:sqsp"]
+    insteadOf = https://github.com/sqsp
+
 [core]
     # fixes some filesystems that distinguish case, but don't ignore it
     ignorecase = false
