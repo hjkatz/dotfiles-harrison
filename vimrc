@@ -75,8 +75,24 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     " add ending control statements in languages like bash, zsh, vimscript, etc...
     Plug 'tpope/vim-endwise'
 
+    " Abolish
+    "  - Abbreviations: :Abolish {despa,sepe}rat{e,es,ed,ing,ely,ion,ions,or} {despe,sepa}rat{}
+    "  - Sbustitution: :%Subvert (or :%S)  :%S/facilit{y,ies}/building{,s}/g
+    "  - Coercion: fooBar -> foo_bar --> `crs` (coerce to snake_case)
+    "    - snake_case `crs`
+    "    - MixedCase `crm`
+    "    - camelCase `crc`
+    "    - UPPER_CASE `cru`
+    "    - dash-case `cr-`
+    "    - dot.case `cr.`
+    "    - space case `cr<space>`
+    "    - Title Case `crt`
+    Plug 'tpope/vim-abolish'
+
     " git in vim
     Plug 'tpope/vim-fugitive'
+    Plug 'tommcdo/vim-fubitive'
+    Plug 'tpope/vim-rhubarb'
 
     " act on surrounding items like quotes, tags, braces, etc...
     Plug 'tpope/vim-surround'
@@ -501,6 +517,13 @@ let g:qf_save_win_view = 1
 " disable vim-go :GoDef short cut (gd)
 " this is handled by LanguageClient [LC]
 let g:go_def_mapping_enabled = 0
+
+" }}}
+
+" vim-fubitive ----------------------------- {{{
+
+" configure bitbucket for code.squarespace.net
+let g:fubitive_domain_pattern = 'code\.squarespace\.net'
 
 " }}}
 
