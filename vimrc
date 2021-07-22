@@ -965,6 +965,10 @@ augroup END
 augroup ft_latex
     au!
 
+    " Recursive toggle
+    au FileType latex nnoremap <Space> zA
+    au FileType latex vnoremap <Space> zA
+
     " Folding for latex is handled by latexbox
 
     au FileType latex setlocal textwidth=80
