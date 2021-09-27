@@ -227,11 +227,16 @@ function replace() {
 function cert_details() {
     cert="$1"
 
+    # extract domain from cert if a URL was given
+    if [[ "$cert" == https://* ]] ; then
+        cert=`echo "$cert" | awk -F/ '{print $3}'`
+    fi
+
     if ! command_exists "openssl" ; then
         die "Missing dependency openssl"
     fi
 
-    openssl s_client -servername "$cert" -connect "$cert":443 < /dev/null 2> /dev/null | openssl x509 -noout -subject -issuer -nameopt multiline -dates
+    openssl s_client -servername "$cert" -connect "$cert":443 < /dev/null 2> /dev/null | openssl x509 -noout -subject -issuer -nameopt multiline -dates -text
 }
 
 # Run man in vim!

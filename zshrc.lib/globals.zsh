@@ -54,7 +54,7 @@ typeset -A GLOBALS__SHOW_PROMPT_HASH=(
     virtualenv true
     pyenv      false
     hg         true
-    kubectl    false
+    kubectl    true
 )
 export GLOBALS__SHOW_PROMPT_HASH
 
