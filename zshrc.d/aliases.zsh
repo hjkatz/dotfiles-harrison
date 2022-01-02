@@ -114,6 +114,14 @@ alias -g EHAD='HEAD'
 # resolves to the current matching stash in `git stash list` for the current branch, i.e. "stash@{1}"
 alias -g GCURRENT='$(git stash list | grep $(git rev-parse --symbolic-full-name --abbrev-ref "@{u}" | sed "s#\w*/##") | sed "s/\(stash@{.*}\):.*/\1/")'
 
+# expands to the most recent file in a directory
+#
+# vim LATEST
+# less LATEST
+#
+# source: https://stackoverflow.com/a/28370418
+alias -g LATEST='*(om[1])'
+
 # base64 shortcuts
 alias -g encode=' base64 '
 alias -g decode=' base64 -D '
