@@ -16,8 +16,11 @@
 	# use global gitattributes
 	attributesFile = {{DOTFILES}}/gitattributes
 
-    # only convert  newlines to \r\n on commit, not checkout
+    # don't screw with line endings
     autocrlf = input
+
+    # use standard unix line endings "\n"
+    eol = lf
 
 [color]
     # turn on auto coloring
@@ -154,8 +157,8 @@
 
     co-release = !bash -c 'git checkout -b $USER/release-$(date +%s) origin/release'
     release = !bash -c 'git fetch && git co-release'
-    release-master = !bash -c 'git release && git merge origin/master && git push origin HEAD && git create-release-pr && git checkout master && git pull'
-    release-main = !bash -c 'git release && git merge origin/main && git push origin HEAD && git create-pr release main && git checkout main && git pull'
-    create-pr = "!f() { to=${1:-`git default-branch`} ; from=${2:-`git current-branch`} ; open \"https://github.com/sqsp/kubespace/compare/${to}...${from}?expand=1\" ; }; f"
-    create-release-pr = create-pr release
-    create-master-pr = create-pr master
+    release-master = !bash -c 'git release && git merge origin/master && git push origin HEAD && git pr-release && git checkout master && git pull'
+    release-main = !bash -c 'git release && git merge origin/main && git push origin HEAD && git pr release main && git checkout main && git pull'
+    pr = "!f() { to=${1:-`git default-branch`} ; from=${2:-`git current-branch`} ; repo=$(basename `git rev-parse --show-toplevel`) ; open \"https://github.com/sqsp/${repo}/compare/${to}...${from}?expand=1\" ; }; f"
+    pr-release = pr release
+    pr-master = pr master
