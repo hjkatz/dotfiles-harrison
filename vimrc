@@ -260,14 +260,6 @@ filetype indent on
 " easy file reloading
 " nnoremap <F10> :w<CR>:so %<CR>
 
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
 " show the syntax highlighting group of the object under the cursor
 map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
 \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
@@ -541,12 +533,26 @@ let g:syntastic_mode_map = {
 
 " CoC ----------------------------- {{{
 
+" see: https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources
+
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
 
+" Remap i_ctrl-k from digraphs (see :help i_ctrl-k)
+" to trigger coc (kde plasma doesn't have a way to ignore/change ctrl-space for just konsole)
+inoremap <silent><expr> <c-k> coc#refresh()
+
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
-" inoremap <expr> <cr> pumvisible() ? '\<C-y>' : '\<C-g>u\<CR>'
+" see: https://github.com/tpope/vim-endwise/issues/125
+inoremap <silent> <CR> <C-r>=<SID>coc_confirm()<CR>
+function! s:coc_confirm() abort
+  if pumvisible()
+    return coc#_select_confirm()
+  else
+    return "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+  endif
+endfunction
 
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
@@ -561,6 +567,8 @@ nmap <C-t> <C-o>
 " Remap for rename current word
 nmap <leader>r <Plug>(coc-rename)
 
+" use <tab> for trigger completion and navigate to the next complete item
+" see: https://github.com/neoclide/coc-snippets
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? coc#_select_confirm() :
       \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
@@ -568,6 +576,9 @@ inoremap <silent><expr> <TAB>
       \ coc#refresh()
 
 let g:coc_snippet_next = '<tab>'
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " }}}
 
@@ -616,10 +627,16 @@ augroup END
 " Folding Fix {{{
 
 " Don't update folds in insert mode
+" see: https://vi.stackexchange.com/a/22460
 aug NoInsertFolding
     au!
-    au InsertEnter * let b:oldfdm = &l:fdm | setl fdm=manual
-    au InsertLeave * let &l:fdm = b:oldfdm
+    au InsertEnter * let w:oldfdm = &l:foldmethod | setlocal foldmethod=manual
+    au InsertLeave *
+          \ if exists('w:oldfdm') |
+          \   let &l:foldmethod = w:oldfdm |
+          \   unlet w:oldfdm |
+          \ endif |
+          \ normal! zv
 aug END
 
 " }}}
@@ -793,6 +810,7 @@ augroup ft_go
 
     " adjust the highlighting
     au FileType go let g:go_highlight_build_constraints = 1
+    au FileType go let g:go_highlight_generate_tags = 1
     au FileType go let g:go_highlight_array_whitespace_error = 1
     au FileType go let g:go_highlight_space_tab_error = 1
     au FileType go let g:go_highlight_operators = 1
@@ -834,7 +852,6 @@ augroup ft_go
 
     " setup some leaders
     au FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
-    au FileType go nmap <F4> <Plug>(go-run)
     au FileType go nmap <Leader>t <Plug>(go-test)
     au FileType go nmap <Leader>tf <Plug>(go-test-func)
     au FileType go nmap <Leader>i <Plug>(go-imports)
@@ -845,6 +862,7 @@ augroup ft_go
     au FileType go nmap <Leader>d <Plug>(go-doc)
     au FileType go nmap <Leader>c zR<Plug>(go-coverage-toggle)
     au FileType go nmap <Leader>r <Plug>(go-rename)
+    au FileType go nmap <F4> <Plug>(go-run)
     au FileType go nmap <F6> zR<Plug>(go-metalinter)
     au FileType go nmap <F7> zR<Plug>(go-coverage-toggle)
     " au FileType go nmap <F8> zR<Plug>(go-breakpoint-toggle)
