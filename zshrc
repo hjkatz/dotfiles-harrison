@@ -44,8 +44,18 @@ source $DOTFILES/zshrc.lib/templater.zsh
 # source the gitconfig hack
 source $DOTFILES/zshrc.lib/gitconfig.zsh
 
+# Note: Completion init must occur in the zshrc file
+
 # add custom / vendor completions to fpath (loaded by compinit in zshrc)
 fpath+=( "$GLOBALS__DOTFILES_COMPLETIONS_PATH" )
+
+# add M1 Mac homebrew site-functions
+if [[ $GLOBALS__DISTRO == "darwin" ]] ; then
+    fpath+=( /opt/homebrew/share/zsh/site-functions/ )
+    fpath+=( /opt/homebrew/share/zsh-completions/ )
+fi
+
+# tell the world where our completion functions exist
 export fpath
 
 # turn on the completion engine
@@ -68,6 +78,9 @@ bashcompinit
 for file in $GLOBALS__DOTFILES_COMPLETIONS_PATH.bash/* ; do
     source $file
 done
+
+# source completion config
+source $DOTFILES/zshrc.lib/completions.zsh
 
 # source zshrc.d files
 for file in $DOTFILES/zshrc.d/* ; do

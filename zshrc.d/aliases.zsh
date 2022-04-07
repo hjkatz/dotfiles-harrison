@@ -58,6 +58,9 @@ alias history='fc -il 1'
 # quick dotfile access
 alias dotfiles='cd $DOTFILES'
 
+# quick path introspection
+alias path='echo $PATH | tr ':' "\n"'
+
 # aliases for quick editing dotfiles
 alias vimrc="vim $DOTFILES/vimrc"
 alias zshrc="vim $DOTFILES/zshrc"

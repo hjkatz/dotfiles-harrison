@@ -148,8 +148,11 @@ function _get_aws_completion_path () {
     if [[ $? == 0 ]] ; then
         echo $_aws_completion_path
     # sometimes it's here?
-    elif [[ -x "/usr/share/zsh/site-functions/aws_zsh_completer.sh" ]] ; then
+    elif [[ -f "/usr/share/zsh/site-functions/aws_zsh_completer.sh" ]] ; then
         echo "/usr/share/zsh/site-functions/aws_zsh_completer.sh"
+    # sometimes it's here on M1 Macs
+    elif [[ -f "/opt/homebrew/share/zsh/site-functions/aws_zsh_completer.sh" ]] ; then
+        echo "/opt/homebrew/share/zsh/site-functions/aws_zsh_completer.sh"
     else
         # try to locate it in the system (note: very slow)
         _aws_completion_path=`locate aws_zsh_completer.sh 2>/dev/null | head -1`
