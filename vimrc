@@ -45,8 +45,6 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
     " ansible
     Plug 'pearofducks/ansible-vim'
-    " v
-    Plug 'lcolaholicl/vim-v', { 'for': 'v' }
     " jsonnet
     Plug 'google/vim-jsonnet', { 'for': 'jsonnet' }
 
