@@ -133,7 +133,7 @@
     auto-rebase = "!f() { git fetch && GIT_SEQUENCE_EDITOR=: git rebase --autosquash -i origin/${1:-`git default-branch`} ; }; f"
 
     # prune local branches
-    fresh = !git remote prune origin && git branch -vv | grep -P ': (gone|desaparecido)]' | awk '{print $1}' | xargs -r git branch -D
+    fresh = !git remote prune origin && git branch -vv | grep -E ': (gone|desaparecido)]' | awk '{print $1}' | xargs -r git branch -D
     my-branches = !git branch | grep hkatz
 
     # git go (go get) [See: https://regex101.com/r/0akEWc/2]

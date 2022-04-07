@@ -144,5 +144,5 @@ function kb_get_labels () {
 
 function kb_get_env () {
     pod="$1"
-    kubectl exec -it "$pod" env | grep -P -v "(PORT|HOST|HOME|PATH|TERM|JAVA_OPTS)" | sed 's///g' | perl -p -e "s/(\w+)=(.*)/export \1='\2'/"
+    kubectl exec -it "$pod" env | grep -E -v "(PORT|HOST|HOME|PATH|TERM|JAVA_OPTS)" | sed 's///g' | perl -p -e "s/(\w+)=(.*)/export \1='\2'/"
 }

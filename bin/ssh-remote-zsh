@@ -118,7 +118,7 @@ fi
 REMOTE_DOTFILES='~/.dotfiles-harrison/'
 
 # check for out of date dotfiles on remote server
-if ssh $1 "[[ ! -f $REMOTE_DOTFILES/VERSION ]] || cat $REMOTE_DOTFILES/VERSION | grep -v -q -P '^$DOTFILES_VERSION'" ; then
+if ssh $1 "[[ ! -f $REMOTE_DOTFILES/VERSION ]] || cat $REMOTE_DOTFILES/VERSION | grep -v -q -E '^$DOTFILES_VERSION'" ; then
     color_echo yellow "Transferring files..."
 
     # construct a list of excluded files for the tar transfer

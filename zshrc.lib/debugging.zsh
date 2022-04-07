@@ -46,7 +46,7 @@ function zsh_debug () {
         current_section=`echo $line | awk '{print $2}' | cut -f1 -d:`
 
         # skip any line that doesn't match our debugging pattern
-        if ! echo "$line" | grep -q -P '^\d+\s.*:\d+\>' ; then
+        if ! echo "$line" | grep -q -E '^\d+\s.*:\d+\>' ; then
             continue
         fi
 

@@ -29,8 +29,8 @@ function compile_file () {
 
     # first, get the list of vars from the file
     vars=$(cat "$compiled" | \
-           \grep -o -P "{{\w+}}" | \
-           \grep -o -P "\w+" | \
+           \grep -o -E "{{\w+}}" | \
+           \grep -o -E "\w+" | \
            tr "\n" " " ) # replace newlines with spaces to use in loop below
 
     # for each var, replace it in the file

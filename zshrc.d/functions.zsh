@@ -24,7 +24,7 @@ function check_and_update_git_repo () {
         color_echo yellow "Updating git repo..."
         git fetch
         color_echo yellow "Pruning local branches..."
-        git branch -vv | grep -P ': (gone|desaparecido)]' | awk '{print $1}' | xargs -r git branch -D
+        git branch -vv | grep -E ': (gone|desaparecido)]' | awk '{print $1}' | xargs -r git branch -D
         color_echo green "Done."
     fi
 }
@@ -156,7 +156,7 @@ function setup_vim_plugins () {
     local plugin_list_file="$DOTFILES/.plugin_list"
 
     # command to list the plugins from the vimrc
-    local plugin_list_cmd="cat $DOTFILES/vimrc | grep -P '^\s+Plug\s+' | awk '{print \$2}' | tr -d ','"
+    local plugin_list_cmd="cat $DOTFILES/vimrc | grep -E '^\s+Plug\s+' | awk '{print \$2}' | tr -d ','"
 
     # initialize to 'false'
     local do_plugin_setup=""
