@@ -5,9 +5,10 @@
     # personal information
 	email = {{GIT_EMAIL}}
 	name = {{GIT_NAME}}
+    signingkey = {{GIT_GPG_SIGNINGKEY}}
 
-[url "git@github.com:sqsp"]
-    insteadOf = https://github.com/sqsp
+[url "git@github.com:gemini"]
+    insteadOf = https://github.com/gemini
 
 [core]
     # fixes some filesystems that distinguish case, but don't ignore it
@@ -58,9 +59,20 @@
     # use the suggested git command when misspelled after 1.0 seconds
 	autocorrect = 10
 
+[commit]
+    # git commit --signed
+    gpgsign = {{GIT_GPG_SIGN}}
+
+[pull]
+    # only pull fast-forwarded changes
+    ff = only
+
 [push]
     # push the current branch by default when given no arguments
 	default = current
+
+    # sign pushes with gpg key if asked (and surver supports it)
+    gpgsign = if-asked
 
 [merge]
     # set the default tool to vimdiff
@@ -89,6 +101,9 @@
 [tag]
     # default tag sorting to date authored desc
     sort = -taggerdate
+
+    # git tag --signed
+    gpgsign = {{GIT_GPG_SIGN}}
 
 [grep]
     # default regex is perl
