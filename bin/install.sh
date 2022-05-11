@@ -10,8 +10,14 @@ DEFAULT_DOTFILES_HOME=$HOME/.dotfiles-harrison
 symlink () {
   local from="$1"
 
-  ln -s -f -v $DEFAULT_DOTFILES_HOME/$from $HOME/$from 
+  ln -s -f -v $DEFAULT_DOTFILES_HOME/$from $HOME/$from
 }
+
+if [[ -f ~/.zshrc ]] ; then
+	echo "Saving ~/.zshrc to ~/.zshrc_local"
+    echo "# Saved ~/.zshrc to ~/.zshrc_local during .dotfiles-harrison install" > ~/.zshrc_local
+	cat ~/.zshrc >> ~/.zshrc_local
+fi
 
 symlink .zshrc
 symlink .vimrc
