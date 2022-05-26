@@ -64,9 +64,12 @@ function color_echo() {
         shift
     fi
 
+    is_stderr=false
     case $1 in
      red)
           color="1;31"
+          # when the color is "red", redirect to stderr
+          is_stderr=true
           ;;
      green)
           color="1;32"
@@ -94,7 +97,13 @@ function color_echo() {
     # remove $1
     shift
 
-    echo -e $n_flag "\033[${color}m$@\033[0m"
+    if [[ $is_stderr == true ]]; then
+        # stderr
+        echo -e $n_flag "\033[${color}m$@\033[0m" >&2
+    else
+        # stdout
+        echo -e $n_flag "\033[${color}m$@\033[0m"
+    fi
 }
 
 # begin reading from the keyboard
