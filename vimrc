@@ -784,18 +784,7 @@ augroup ft_go
     au FileType go let g:go_fmt_experimental = 1
     au FileType go let g:go_fmt_command = 'goimports'
     au FileType go let g:go_metalinter_autosave = 0
-    au FileType go let g:go_metalinter_command = '--tests --vendor --exclude=vendor
-                                                \ --enable vet
-                                                \ --enable deadcode
-                                                \ --enable varcheck
-                                                \ --enable structcheck
-                                                \ --enable errcheck
-                                                \ --enable dupl
-                                                \ --enable ineffassign
-                                                \ --enable goconst
-                                                \ --enable golint
-                                                \'
-    au FileType go let g:go_metalinter_enabled = [ 'vet', 'deadcode', 'varcheck', 'structcheck', 'dupl', 'ineffassign', 'goconst', 'golint', 'errcheck' ]
+    au FileType go let g:go_metalinter_command = 'golangci-lint'
 
     " add some missing Plug mappings
     nnoremap <silent> <Plug>(go-toggle-same-ids) :<C-u>call go#guru#ToggleSameIds()<CR>
