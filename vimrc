@@ -115,6 +115,12 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " tagbar
     Plug 'majutsushi/tagbar'
+
+    " planery
+    Plug 'nvim-lua/plenary.nvim'
+
+    " scala autocomplete
+    Plug 'scalameta/nvim-metals', { 'branch': 'main', 'for': 'scala' }
 call plug#end()
 
 filetype plugin indent on    " required
@@ -144,6 +150,7 @@ set sidescroll=1                   " scroll sidways 1 character at a time
 set autowrite                      " autowrite on things like :next, :prev, :etc...
 set lazyredraw                     " redraw the screen lazily
 set updatetime=300                 " set vim's updatetime
+set shortmess-=F                   " allow filetype-based autocommands to show popup messages
 " Wildmenu completion {{{
 
 set wildmenu " turn on globing for opening files
