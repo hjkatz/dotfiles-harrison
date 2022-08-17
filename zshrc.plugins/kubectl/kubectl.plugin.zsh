@@ -28,8 +28,8 @@ source $dir/kube_ps1.sh
 
 alias kb="kubectl "
 alias kube="kubectl "
-alias kctx="kubectx "
-alias kns="kubens "
+alias kctx="kubectl ctx "
+alias kns="kubectl ns "
 
 alias -g kall="all,configmaps,deployments.apps,servicemonitors,secrets,limits,resourcequotas,poddisruptionbudgets,jobs,deployments,cronjobs,statefulsets,serviceaccounts,rolebindings,persistentvolumeclaims"
 

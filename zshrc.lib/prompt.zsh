@@ -145,6 +145,7 @@ build_prompt '%{$fg_bold[cyan]%} %$PR_PWDLEN<...<%~%<<%{$reset_color%}${(e)PR_FI
 build_prompt $'\n' # second line!
 build_prompt '%{$fg_bold[yellow]%}%# ' # the prompt separator/privilege indicator
 build_prompt '%{$reset_color%}'
+build_prompt '$(display_prompt "local_prompt_info")'
 build_prompt '$(display_prompt "kubectl_prompt_info")'
 build_prompt '$(display_prompt "rbenv_prompt_info")'
 build_prompt '$(display_prompt "pyenv_prompt_info")'

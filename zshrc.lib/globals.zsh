@@ -49,12 +49,13 @@ export GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION="_local_exit_function"
 
 # default prompt visibility states
 typeset -A GLOBALS__SHOW_PROMPT_HASH=(
+    local      true
     git        true
     rbenv      true
     virtualenv true
     pyenv      false
     hg         true
-    kubectl    true
+    kubectl    false
 )
 export GLOBALS__SHOW_PROMPT_HASH
 
