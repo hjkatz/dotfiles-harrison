@@ -12,6 +12,29 @@ function chpwd () {
     check_and_update_git_repo
 }
 
+# override cd to support bare `cd` with no args behaviour:
+#   - if in git, cd to git root
+#     - if already in git and git root, cd $HOME
+#   - else, cd $HOME
+#   - else (has args), cd ARGS
+function cd () {
+    if [[ $# == 0 ]] ; then
+        local gitroot
+        gitroot=`git rev-parse --show-toplevel 2>&1`
+        if [[ $? == 0 ]] ; then
+            if [[ `pwd` != "$gitroot" ]] ; then
+                builtin cd "$gitroot"
+            else
+                builtin cd "$HOME"
+            fi
+        else
+            builtin cd "$HOME"
+        fi
+    else
+        builtin cd "$@"
+    fi
+}
+
 # period is 900 seconds == 15 mins
 export PERIOD=900
 
