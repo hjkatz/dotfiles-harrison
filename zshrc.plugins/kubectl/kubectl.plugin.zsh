@@ -31,7 +31,8 @@ alias kube="kubectl "
 alias kctx="kubectl ctx "
 alias kns="kubectl ns "
 
-alias -g kall="all,configmaps,deployments.apps,servicemonitors,secrets,limits,resourcequotas,poddisruptionbudgets,jobs,deployments,cronjobs,statefulsets,serviceaccounts,rolebindings,persistentvolumeclaims"
+# for prometheus include: servicemonitors
+alias -g kall="all,configmaps,deployments.apps,secrets,limits,resourcequotas,poddisruptionbudgets,jobs,deployments,cronjobs,statefulsets,serviceaccounts,rolebindings,persistentvolumeclaims"
 
 # add kubectl completion
 source <(kubectl completion zsh)
