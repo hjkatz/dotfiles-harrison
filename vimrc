@@ -547,17 +547,25 @@ inoremap <silent><expr> <c-space> coc#refresh()
 " to trigger coc (kde plasma doesn't have a way to ignore/change ctrl-space for just konsole)
 inoremap <silent><expr> <c-k> coc#refresh()
 
+" see: :h coc-completion-example
+" Use <tab> and <S-tab> to navigate completion list: >
+function! CheckBackSpace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+" Insert <tab> when previous text is space, refresh completion if not.
+inoremap <silent><expr> <TAB>
+  \ coc#pum#visible() ? coc#pum#next(1):
+  \ CheckBackSpace() ? "\<Tab>" :
+  \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
 " see: https://github.com/tpope/vim-endwise/issues/125
-inoremap <silent> <CR> <C-r>=<SID>coc_confirm()<CR>
-function! s:coc_confirm() abort
-  if pumvisible()
-    return coc#_select_confirm()
-  else
-    return "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-  endif
-endfunction
+" see: :h coc-completion-example
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
@@ -572,18 +580,7 @@ nmap <C-t> <C-o>
 " Remap for rename current word
 nmap <leader>r <Plug>(coc-rename)
 
-" use <tab> for trigger completion and navigate to the next complete item
-" see: https://github.com/neoclide/coc-snippets
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? coc#_select_confirm() :
-      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-
 let g:coc_snippet_next = '<tab>'
-
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " }}}
 
