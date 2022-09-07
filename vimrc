@@ -35,7 +35,7 @@ call plug#begin(expand(s:vim_directory.'plugged'))
     " text objects for ruby blocks with 'r'
     Plug 'tek/vim-textobj-ruby', { 'for': 'ruby' }
     " text object for variable segments with 'v'
-    Plug 'Julian/vim-textobj-variable-segment'
+    Plug 'Julian/vim-textobj-variable-segment', { 'branch': 'main' }
 
     " go! must be before vim-polyglot
     Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoUpdateBinaries' }
