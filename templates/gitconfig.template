@@ -74,6 +74,9 @@
     # sign pushes with gpg key if asked (and surver supports it)
     gpgsign = if-asked
 
+    # automatically run `git push -u` to set upstream tracking branch if none is configured during a push
+    autoSetupRemote = true
+
 [merge]
     # set the default tool to vimdiff
     tool = vimdiff
