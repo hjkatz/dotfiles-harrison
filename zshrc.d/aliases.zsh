@@ -128,4 +128,37 @@ alias -g LATEST='*(om[1])'
 
 # base64 shortcuts
 alias -g encode=' base64 '
-alias -g decode=' base64 -D '
+
+# support different flags
+case "$GLOBALS__DISTRO" in
+    ubuntu)
+        # fall through
+        ;&
+    debian)
+        # fall through
+        ;&
+    fedora)
+        # fall through
+        ;&
+    centos)
+        # fall through
+        ;&
+    rhel)
+        # fall through
+        ;&
+    fedora)
+        # fall through
+        ;&
+    redhat)
+        # fall through
+        ;&
+    linux)
+        alias -g decode=' base64 -d '
+        ;;
+    darwin)
+        alias -g decode=' base64 -D '
+        ;;
+    *)
+        echo "Distro '$GLOBALS__DISTRO' is unrecognized"
+        ;;
+esac
