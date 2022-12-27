@@ -24,6 +24,7 @@ alias ll="ls -alF $_color "
 alias l="ls -CF $_color "
 unset _color
 
+alias clear='clear -x '
 alias cl='clear && ls '
 alias tree='tree -lFC '
 alias treee='tree -alFC -pug '
