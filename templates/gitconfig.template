@@ -10,6 +10,18 @@
 [url "git@github.com:gemini"]
     insteadOf = https://github.com/gemini
 
+[url "git@github.com:ngrok-private"]
+    insteadOf = https://github.com/ngrok-private
+
+[url "git@github.com:ngrok-oss"]
+    insteadOf = https://github.com/ngrok-oss
+
+[url "git@github.com:ngrok"]
+    insteadOf = https://github.com/ngrok
+
+[gpg]
+    format = ssh
+
 [core]
     # fixes some filesystems that distinguish case, but don't ignore it
     ignorecase = false
