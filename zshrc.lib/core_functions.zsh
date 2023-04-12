@@ -304,3 +304,97 @@ echo_run () {
     echo "> $1"
     eval $1
 }
+
+# Start a dedicated ssh-agent for name
+#
+# Usage:
+#   $ start_ssh_agent <name>
+#
+#   # start and set the agent as the primary agent (exported envars)
+#   $ start_ssh_agent <name> true
+function start_ssh_agent () {
+    agent_name="$1"
+    primary_agent="${2:-false}"
+
+    [[ -z $agent_name ]] && {
+        color_echo red "Missing required agent_name"
+        return 1
+    }
+
+    ssh_auth_sock="$HOME/.ssh/$agent_name.agent"
+    ssh_agent_pid_path="$HOME/.ssh/$agent_name.pid"
+
+    # is ssh-agent already running?
+    ssh_agent_pid=`ps aux | grep "ssh-agent -a $ssh_auth_sock" | grep -v grep | awk '{print $2}'`
+    if [[ -z $ssh_agent_pid ]] ; then
+        color_echo yellow "Starting ssh-agent: $agent_name"
+
+        # ssh-agent not running, start it
+        ssh-agent -a "$ssh_auth_sock" 2>&1 >/dev/null
+
+        # grab the now running pid
+        ssh_agent_pid=`ps aux | grep "ssh-agent -a $ssh_auth_sock" | grep -v grep | awk '{print $2}'`
+    else
+        color_echo green "Connected to ssh-agent: $agent_name"
+    fi
+
+    # put the pid into the file
+    echo "$ssh_agent_pid" > $ssh_agent_pid_path
+
+    if [[ "$primary_agent" == true ]] ; then
+        export SSH_AUTH_SOCK="$ssh_auth_sock"
+        export SSH_AGENT_PID="$ssh_agent_pid"
+    fi
+}
+
+# Add an ssh-keygen identity to an agent
+#
+# Usage:
+#   $ add_ssh_id_to_agent <path/to/id> <name>
+function add_ssh_id_to_agent () {
+    id_path="$1"
+    agent_name="$2"
+
+    [[ -z $id_path ]] && {
+        color_echo red "Missing required id_path"
+        return 1
+    }
+
+    [[ -z $agent_name ]] && {
+        color_echo red "Missing required agent_name"
+        return 1
+    }
+
+    ssh_auth_sock="$HOME/.ssh/$agent_name.agent"
+    ssh_agent_pid_path="$HOME/.ssh/$agent_name.pid"
+    ssh_agent_pid="$(cat $ssh_agent_pid_path)"
+    key_name=$(basename $id_path)
+
+    # add ssh adentities to the agent if they are not already added
+    if SSH_AUTH_SOCK=$ssh_auth_sock SSH_AGENT_PID=$ssh_agent_pid ssh-add -l | grep "The agent has no identities." ; then
+        # Personal
+        color_echo yellow "Adding key $key_name to $agent_name ssh-agent"
+        SSH_AUTH_SOCK=$ssh_auth_sock SSH_AGENT_PID=$ssh_agent_pid ssh-add "$id_path"
+    else
+        color_echo green "Found existing key $key_name attached to $agent_name ssh-agent"
+    fi
+}
+
+# List all identities loaded into a specific agent
+#
+# Usage:
+#   $ list_ssh_ids_for_agent <name>
+function list_ssh_ids_for_agent () {
+    agent_name="$1"
+
+    [[ -z $agent_name ]] && {
+        color_echo red "Missing required agent_name"
+        return 1
+    }
+
+    ssh_auth_sock="$HOME/.ssh/$agent_name.agent"
+    ssh_agent_pid_path="$HOME/.ssh/$agent_name.pid"
+    ssh_agent_pid="$(cat $ssh_agent_pid_path)"
+
+    SSH_AUTH_SOCK=$ssh_auth_sock SSH_AGENT_PID=$ssh_agent_pid ssh-add -l
+}
