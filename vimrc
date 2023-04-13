@@ -151,6 +151,7 @@ set autowrite                      " autowrite on things like :next, :prev, :etc
 set lazyredraw                     " redraw the screen lazily
 set updatetime=300                 " set vim's updatetime
 set shortmess-=F                   " allow filetype-based autocommands to show popup messages
+set mouse=                         " turn off mouse support
 " Wildmenu completion {{{
 
 set wildmenu " turn on globing for opening files
