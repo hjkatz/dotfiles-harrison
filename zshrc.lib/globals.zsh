@@ -25,6 +25,7 @@ export GLOBALS__CAUTION_SERVERS
 GLOBALS__GITCONFIG_SERVERS=(
     "harrison.internal"
     "homestead"
+    "devenv-hkatz"
 )
 
 # export on separate line to prevent "unknown file attribute" error in older versions of Zsh
