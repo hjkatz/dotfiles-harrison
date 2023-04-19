@@ -1,0 +1,4 @@
+" Used to configure nvim using vimrc
+set runtimepath^={{DOTFILES}}/.vim runtimepath+={{DOTFILES}}/.vim/after
+let &packpath=&runtimepath
+source {{DOTFILES}}/vimrc

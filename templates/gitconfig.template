@@ -5,7 +5,8 @@
     # personal information
 	email = {{GIT_EMAIL}}
 	name = {{GIT_NAME}}
-    signingkey = {{GIT_GPG_SIGNINGKEY}}
+    #commented out for now, not needed for ssh-key signing
+    #signingkey = {{GIT_GPG_SIGNINGKEY}}
 
 [url "git@github.com:gemini"]
     insteadOf = https://github.com/gemini
@@ -21,6 +22,10 @@
 
 [gpg]
     format = ssh
+
+[gpg "ssh"]
+    defaultKeyCommand = {{DOTFILES}}/bin/git-ssh-key.sh
+    allowedSignersFile = {{DOTFILES}}/.git_allowed_signers
 
 [core]
     # fixes some filesystems that distinguish case, but don't ignore it

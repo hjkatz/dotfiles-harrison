@@ -1,0 +1,10 @@
+# empty on purpose
+# git will sign commits (view with `git show --show-signature`) and say "No signature" if this file and gpg.ssh.allowedSignersFile gitconfig does not exist
+# but, if this file exists (and is empty or has comments), then git will say "Good "git" signature with [...] key \n No principal matched."
+#
+# We _could_ add lines like
+# <email> <ssh-key>
+#
+# to get a fully verified view, but it doesn't matter, we just don't want to be mislef with "No signature"
+#
+# See: https://calebhearth.com/sign-git-with-ssh
