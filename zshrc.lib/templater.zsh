@@ -43,3 +43,4 @@ function compile_file () {
 
 # compile some templates
 compile_file gitconfig
+compile_file nvimrc
