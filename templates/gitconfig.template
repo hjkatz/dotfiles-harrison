@@ -194,7 +194,8 @@
     release = !bash -c 'git fetch && git co-release'
     release-master = !bash -c 'git release && git merge origin/master && git push origin HEAD && git pr-release && git checkout master && git pull'
     release-main = !bash -c 'git release && git merge origin/main && git push origin HEAD && git pr release main && git checkout main && git pull'
-    pr = "!f() { to=${1:-`git default-branch`} ; from=${2:-`git current-branch`} ; repo=$(basename `git rev-parse --show-toplevel`) ; open \"https://github.com/{{GIT_ORG}}/${repo}/compare/${to}...${from}?expand=1\" ; }; f"
+    pr = "!f() { to=${1:-`git default-branch`} ; from=${2:-`git current-branch`} ; repo=$(basename `git rev-parse --show-toplevel`) ; tracking=`git branch -vv --no-color --remotes
+ -l $from` ; [[ -z $tracking ]] && echo 'Pushing branch for tracking...' && git push ; open \"https://github.com/{{GIT_ORG}}/${repo}/compare/${to}...${from}?expand=1\" ; }; f
     pr-release = pr release
     pr-master = pr master
     pr-main = pr main
