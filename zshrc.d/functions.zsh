@@ -245,3 +245,17 @@ function cert_details() {
 function vman() {
     man $* | col -b | vim -c 'set ft=man nomod nolist' -
 }
+
+# Set the terminal window title
+#
+# Usage: set_title your title text here
+function set_title() {
+    title="$@"
+
+    if [[ -z $title ]] ; then
+        color_echo red "Missing required text!"
+        return 1
+    fi
+
+    echo -n -e "\033]0;$title\007"
+}
