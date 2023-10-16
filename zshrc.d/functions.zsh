@@ -176,7 +176,7 @@ function setup_vim_plugins () {
         color_echo yellow 'Setting up vim plugins...'
 
         # then, install new plugins, update the plugins, then quit vim
-        command nvim -u $DOTFILES/nvimrc +PlugInstall +PlugUpdate +qall >/dev/null 2>&1
+        command nvim -u $DOTFILES/nvimrc +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall
 
         # refresh the plugin list file
         eval $plugin_list_cmd > $plugin_list_file

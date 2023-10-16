@@ -5,7 +5,12 @@
 
 " NOTE: the below MUST be pointed to the correct installation directory for
 " vim extras. If you do not know where this is please contact the author.
-let s:vim_directory='~/.dotfiles-harrison/.vim/'
+let g:dotfiles_vim_dir=$HOME.'/.dotfiles-harrison/.vim/'
+
+" lua config in vim, see: https://herrbischoff.com/2022/07/neovim-using-init-vim-and-init-lua-concurrently/
+" lua <<EOF
+"    <lua code>
+" EOF
 
 " Plugins first, then settings
 " Plugins ------------------------------- {{{
@@ -17,58 +22,63 @@ filetype off                  " required, turns off automatic filetype detection
 " Vim Plug
 source ~/.dotfiles-harrison/plug.vim
 
-call plug#begin(expand(s:vim_directory.'plugged'))
+call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     " repeat everything with '.'
     Plug 'tpope/vim-repeat'
 
     " better .swp file handling
     " Plug 'chrisbra/Recover.vim'
 
+    " nvim lsp and code completion
+    Plug 'williamboman/mason.nvim', { 'do': ':MasonUpdate' }
+    Plug 'williamboman/mason-lspconfig.nvim'
+    Plug 'neovim/nvim-lspconfig'
+    Plug 'ray-x/guihua.lua', { 'do': 'cd lua/fzy && make' }
+    Plug 'hrsh7th/nvim-cmp'
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'hrsh7th/cmp-nvim-lua'
+    Plug 'hrsh7th/cmp-buffer'
+    Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
+    Plug 'ray-x/lsp_signature.nvim'
+    Plug 'FelipeLema/cmp-async-path'
+
+    " go development
+    Plug 'ray-x/go.nvim', { 'for': 'go', 'do': ':GoInstallBinaries' }
+
     " easy alignment
     Plug 'junegunn/vim-easy-align'
+
+    " auto-pairs
+    Plug 'windwp/nvim-autopairs'
 
     " Text Object Plugins
     " add more builtin text object targets like quotes, tags, braces, etc...
     Plug 'wellle/targets.vim'
     " text object user denifinitions
     Plug 'kana/vim-textobj-user'
-    " text objects for ruby blocks with 'r'
-    Plug 'tek/vim-textobj-ruby', { 'for': 'ruby' }
     " text object for variable segments with 'v'
     Plug 'Julian/vim-textobj-variable-segment', { 'branch': 'main' }
 
-    " go! must be before vim-polyglot
-    Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoUpdateBinaries' }
     " Filetype Plugins
-    Plug 'sheerun/vim-polyglot'
+    " Plug 'sheerun/vim-polyglot'
+    " tree-sitter
+    Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
+    Plug 'nvim-treesitter/nvim-treesitter-refactor'
     " adds folding, fancy settings, and more!
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-    " ansible
-    Plug 'pearofducks/ansible-vim'
-    " jsonnet
-    Plug 'google/vim-jsonnet', { 'for': 'jsonnet' }
 
     " LaTeX Everything
     Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
 
-    " syntax and style checking
-    " Plug 'scrooloose/syntastic'
-
-    " autocomplete
-    Plug 'neoclide/coc.nvim', { 'branch': 'release' }
-
     " snippets for code insertion
-    " Plug 'SirVer/ultisnips'
-    " Common snippets for many languages
-    Plug 'honza/vim-snippets'
-    " Golang Ginkgo snippets
-    Plug 'trayo/vim-ginkgo-snippets', { 'for': 'go' }
+    Plug 'L3MON4D3/LuaSnip', {'tag': 'v1.*'}
 
     " auto-upcase sql terms
     Plug 'hjkatz/sql_iabbr.vim', { 'for': 'sql' }
 
     " comment command with 'gc'
     Plug 'tpope/vim-commentary'
+    Plug 'JoosepAlviste/nvim-ts-context-commentstring'
 
     " add ending control statements in languages like bash, zsh, vimscript, etc...
     Plug 'tpope/vim-endwise'
@@ -89,7 +99,7 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " git in vim
     Plug 'tpope/vim-fugitive'
-    Plug 'tommcdo/vim-fubitive'
+    " Plug 'tommcdo/vim-fubitive'
     Plug 'tpope/vim-rhubarb'
 
     " act on surrounding items like quotes, tags, braces, etc...
@@ -118,9 +128,6 @@ call plug#begin(expand(s:vim_directory.'plugged'))
 
     " planery
     Plug 'nvim-lua/plenary.nvim'
-
-    " scala autocomplete
-    Plug 'scalameta/nvim-metals', { 'branch': 'main', 'for': 'scala' }
 call plug#end()
 
 filetype plugin indent on    " required
@@ -208,11 +215,11 @@ command! -nargs=0 Pulse call s:Pulse()
 
 if has('persistent_undo')
   " create undodir
-  if isdirectory( s:vim_directory . 'undo' ) == 0
-    exec 'silent !mkdir -p ' . s:vim_directory . 'undo > /dev/null 2>&1'
+  if isdirectory( g:dotfiles_vim_dir . 'undo' ) == 0
+    exec 'silent !mkdir -p ' . g:dotfiles_vim_dir . 'undo > /dev/null 2>&1'
   endif
 
-  let &undodir = expand( s:vim_directory . 'undo' )
+  let &undodir = expand( g:dotfiles_vim_dir . 'undo' )
   set undofile
 endif
 
@@ -258,18 +265,23 @@ endfunction
 " }}}
 " Misc --------------------------------- {{{
 
+" Leader
+let mapleader = ','
+let maplocalleader = ","
+
+" no longer needed in nvim with treesitter?
 " turn on syntax coloring and indentation based on the filetype
-syntax on
-filetype on
-filetype indent on
+" syntax on
+" filetype on
+" filetype indent on
 
 " easy file reloading
-" nnoremap <F10> :w<CR>:so %<CR>
+nnoremap <leader>rc :w<CR>:so %<CR>
 
 " show the syntax highlighting group of the object under the cursor
-map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+" map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+" \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+" \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 " <F5> insert date
 inoremap <F5> <C-R>=strftime("%c")<CR>
@@ -281,6 +293,9 @@ nnoremap * *zz
 nnoremap # #zz
 nnoremap g* g*zz
 nnoremap g# g#zz
+
+" toggle cursorline
+nnoremap <leader>cc :set cursorline!<CR>
 
 " don't move cursor on '*'
 nnoremap <silent> * :let stay_star_view = winsaveview()<cr>*:call winrestview(stay_star_view)<cr>
@@ -315,10 +330,6 @@ command! Q q
 command! W w
 command! Wq wq
 
-" Leader
-let mapleader = ','
-let maplocalleader = ","
-
 " Prettify a hunk of JSON with <localleader>j
 nnoremap <buffer> <localleader>j ^vg_:!python -m json.tool<cr>
 vnoremap <buffer> <localleader>j :!python -m json.tool<cr>
@@ -345,6 +356,284 @@ inoremap <expr> <c-y> matchstr(getline(line('.')-1), '\%' . virtcol('.') . 'v\%(
 
 " }}}
 " Plugin Config ------------------------ {{{
+
+" nvim-autopairs ----------------------------- {{{
+
+lua <<EOF
+require("nvim-autopairs").setup({
+    disable_filetype = { "TelescopePrompt" , "guihua", "guihua_rust", "clap_input" },
+})
+
+EOF
+
+autocmd FileType guihua lua require('cmp').setup.buffer { enabled = false }
+autocmd FileType guihua_rust lua require('cmp').setup.buffer { enabled = false }
+
+" }}}
+
+" mason --------------------------- {{{
+
+lua <<EOF
+
+require("mason").setup({
+  -- :help mason-debugging
+  -- :MasonLog
+  -- log_level = vim.log.levels.DEBUG,
+  install_root_dir = vim.g.dotfiles_vim_dir .. "mason",
+  ui = {
+      icons = {
+          package_installed = "✓",
+          package_pending = "➜",
+          package_uninstalled = "✗"
+      },
+  },
+})
+
+require("mason-lspconfig").setup({
+    automatic_installation = true,
+    ensure_installed = {
+        -- list of lsp mason packages to keep installed
+        "lua_ls",
+        "gopls",
+        "yamlls",
+        "pyright",
+        "jsonls",
+        "golangci_lint_ls",
+        "dockerls",
+        "bashls",
+        "gopls",
+        "tsserver",
+    },
+})
+
+EOF
+
+" }}}
+
+" mason-lsp / lspconfig / navigator ----------------------------- {{{
+
+" See: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v2.x/doc/md/lsp.md#you-might-not-need-lsp-zero
+" See: https://github.com/ray-x/navigator.lua
+
+lua <<EOF
+
+local has_words_before = function()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+end
+
+local feedkey = function(key, mode)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
+end
+
+local cmp = require('cmp')
+local luasnip = require('luasnip')
+
+cmp.setup({
+    -- snippet engine is _required_
+    snippet = {
+        expand = function(args)
+          luasnip.lsp_expand(args.body)
+        end,
+    },
+
+    window = {
+        -- documentation = cmp.config.window.bordered()
+    },
+
+    sources = cmp.config.sources({
+        -- { name = 'nvim_lsp_signature_help' },
+        { name = 'nvim_lsp' },
+        { name = 'nvim_lua' },
+        { name = 'luasnip' },
+        { name = 'async_path', keyword_length = 1 },
+        { name = 'buffer', keyword_length = 1 },
+    }),
+
+  preselect = cmp.PreselectMode.None,
+
+  mapping = {
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ["<CR>"] = cmp.mapping({
+       i = function(fallback)
+         if cmp.visible() and cmp.get_active_entry() then
+           cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+         else
+           fallback()
+         end
+       end,
+       s = cmp.mapping.confirm({ select = true }),
+       c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
+     }),
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      elseif has_words_before() then
+        cmp.complete()
+      else
+        fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
+      end
+    end, { "i", "s" }),
+    ["<S-Tab>"] = cmp.mapping(function()
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+    ['<Down>'] = cmp.mapping.select_next_item(),
+    ['<Up>'] = cmp.mapping.select_prev_item(),
+  },
+})
+
+-- link autopairs and cmp together so <cr> inserts () on Function and Method
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+
+-- global mappings
+vim.keymap.set('n', '<leader>q', vim.diagnostic.setqflist)
+
+local lsp_signature = require('lsp_signature').setup({
+  -- no panda
+  hint_enable = false,
+})
+
+local function toggle_lsp_signature()
+  require('lsp_signature').toggle_float_win()
+end
+
+local lspconfig = require('lspconfig')
+local lsp_defaults = lspconfig.util.default_config
+
+local lsp_capabilities = vim.tbl_deep_extend('force', lsp_defaults.capabilities, require('cmp_nvim_lsp').default_capabilities())
+local lsp_attach = function(client, bufnr)
+  local opts = { buffer = bufnr }
+  -- Create your keybindings here...
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+  vim.keymap.set('n', '<leader>d', vim.lsp.buf.hover, opts)
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+  vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, opts)
+  vim.keymap.set('n', 'gs', vim.lsp.buf.signature_help, opts)
+  vim.keymap.set('n', '<C-S-K>', toggle_lsp_signature, opts)
+  vim.keymap.set('i', '<C-S-K>', toggle_lsp_signature, opts)
+  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+  vim.keymap.set('v', '<leader>cf', vim.lsp.buf.format, opts)
+  vim.keymap.set('n', '<leader>cf', vim.lsp.buf.format, opts)
+end
+
+-- use the lsp server name (not mason name, see the grey text name in :Mason)
+            -- 5107: Error loading lua [string ":lua"]:113: '}' expected (to close '{' at line 111) near '='
+local lsp_settings = {
+    -- see :Mason then <enter> on server name, then example.setting turns into example = { setting = "<value" } in the table below
+    yamlls = {
+        yaml = {
+            keyOrdering = false,
+        },
+    }
+}
+
+-- set default value for lsp_settings that are not configured from defaults
+setmetatable(lsp_settings, { __index=function() return {} end })
+
+-- all handlers should use the default on_attach and capabilities
+-- see lsp_settings above for per-lsp settings
+local mason_handlers = {
+    -- The first entry (without a key) will be the default handler
+    -- and will be called for each installed server that doesn't have
+    -- a dedicated handler.
+    function (server_name)
+        lspconfig[server_name].setup({
+            on_attach    = lsp_attach,
+            capabilities = lsp_capabilities,
+            settings     = lsp_settings[server_name],
+        })
+    end,
+}
+
+require('mason-lspconfig').setup_handlers(mason_handlers)
+
+EOF
+
+" Mappings for jump to definition
+nmap <C-n> gd
+nmap <C-t> <C-o>
+
+" }}}
+
+" treesitter ----------------------------- {{{
+
+lua <<END
+
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = {
+    "c",
+    "cmake",
+    "comment",
+    "diff",
+    "dockerfile",
+    "git_config",
+    "git_rebase",
+    "gitcommit",
+    "gitignore",
+    "go",
+    "gomod",
+    "gosum",
+    "gowork",
+    "hcl",
+    "html",
+    "ini",
+    "javascript",
+    "jq",
+    "json",
+    "json5",
+    "jsonnet",
+    "lua",
+    "luadoc",
+    "make",
+    -- "markdown", see: https://github.com/nvim-treesitter/nvim-treesitter/issues/2916
+    "nix",
+    "proto",
+    "python",
+    "regex",
+    "rust",
+    "sql",
+    "terraform",
+    "toml",
+    "typescript",
+    "vim",
+    "vimdoc",
+    "yaml",
+    "query",
+  },
+
+  context_commentstring = {
+      enable = true,
+  },
+
+  sync_install = false,
+  auto_install = true,
+
+  highlight = {
+    enable = true,
+  },
+
+  indent = {
+      enable = true
+  }
+}
+
+END
+
+" }}}
 
 " golden ratio ----------------------------- {{{
 
@@ -485,103 +774,26 @@ autocmd BufWritePre * call Delete_whitespace()
 
 " }}}
 
-" Ultisnips -------------------------- {{{
+ " vim-qf ----------------------------- {{{
 
-" let g:UltiSnipsExpandTrigger="<tab>"
-" let g:UltiSnipsJumpForwardTrigger="<tab>"
-" let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-" let g:UltiSnipsSnippetDirectories=[$HOME.'/.dotfiles-harrison/UltiSnips', 'UltiSnips']
+ " Mappings for location list movement
+ nmap <Home> <Plug>(qf_qf_previous)
+ nmap <End>  <Plug>(qf_qf_next)
 
-" }}}
+ nmap <C-Home> <Plug>(qf_loc_previous)
+ nmap <C-End>  <Plug>(qf_loc_next)
 
-" vim-qf ----------------------------- {{{
+ nmap <F5> <Plug>(qf_qf_toggle)
 
-" Mappings for location list movement
-nmap <Home> <Plug>(qf_qf_previous)
-nmap <End>  <Plug>(qf_qf_next)
+ let g:qf_auto_resize = 0
+ let g:qf_save_win_view = 1
 
-nmap <C-Home> <Plug>(qf_loc_previous)
-nmap <C-End>  <Plug>(qf_loc_next)
-
-nmap <F5> <Plug>(qf_qf_toggle)
-
-let g:qf_auto_resize = 0
-let g:qf_save_win_view = 1
-
-" }}}
-
-" vim-go ----------------------------- {{{
-
-" disable vim-go :GoDef short cut (gd)
-" this is handled by LanguageClient [LC]
-let g:go_def_mapping_enabled = 0
-
-" }}}
+ " }}}
 
 " vim-fubitive ----------------------------- {{{
 
 " configure bitbucket for code.squarespace.net
 let g:fubitive_domain_pattern = 'code\.squarespace\.net'
-
-" }}}
-
-" Syntastic ----------------------------- {{{
-
-" Only use quickfix lists
-let g:syntastic_use_quickfix_lists = 1
-
-let g:syntastic_mode_map = {
-    \ "mode": "active",
-    \ "passive_filetypes": ["go", "python", "ansible"]
-    \}
-
-" }}}
-
-" CoC ----------------------------- {{{
-
-" see: https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources
-
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Remap i_ctrl-k from digraphs (see :help i_ctrl-k)
-" to trigger coc (kde plasma doesn't have a way to ignore/change ctrl-space for just konsole)
-inoremap <silent><expr> <c-k> coc#refresh()
-
-" see: :h coc-completion-example
-" Use <tab> and <S-tab> to navigate completion list: >
-function! CheckBackSpace() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-
-" Insert <tab> when previous text is space, refresh completion if not.
-inoremap <silent><expr> <TAB>
-  \ coc#pum#visible() ? coc#pum#next(1):
-  \ CheckBackSpace() ? "\<Tab>" :
-  \ coc#refresh()
-inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
-
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-" Coc only does snippet and additional edit on confirm.
-" see: https://github.com/tpope/vim-endwise/issues/125
-" see: :h coc-completion-example
-inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" " Mappings for jump to definition
-nmap <C-n> gd
-nmap <C-t> <C-o>
-
-" Remap for rename current word
-nmap <leader>r <Plug>(coc-rename)
-
-let g:coc_snippet_next = '<tab>'
 
 " }}}
 
@@ -669,12 +881,17 @@ augroup END
 " Folding ------------------------------ {{{
 
 " enable folding and start folds with level-0 unfolded
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
 set foldenable
 set foldlevelstart=0
 
 " Space to toggle folds.
 nnoremap <Space> za
 vnoremap <Space> za
+" Shift+Space to toggle folds recursively.
+nnoremap <S-Space> zA
+vnoremap <S-Space> zA
 
 " Make zO recursively open whatever fold we're in, even if it's partially open.
 nnoremap zO zczO
@@ -709,178 +926,73 @@ set foldtext=MyFoldText()
 " }}}
 " Filetype-specific -------------------- {{{
 
-" CSS and LessCSS {{{
-
-augroup ft_css
-    au!
-
-    au BufNewFile,BufRead *.less setlocal filetype=less
-
-    au Filetype less,css setlocal foldmethod=marker
-    au Filetype less,css setlocal foldmarker={,}
-    au Filetype less,css setlocal iskeyword+=-
-
-    " Use <localleader>S to sort properties.  Turns this:
-    "
-    "     p {
-    "         width: 200px;
-    "         height: 100px;
-    "         background: red;
-    "
-    "         ...
-    "     }
-    "
-    " into this:
-
-    "     p {
-    "         background: red;
-    "         height: 100px;
-    "         width: 200px;
-    "
-    "         ...
-    "     }
-    au BufNewFile,BufRead *.less,*.css nnoremap <buffer> <localleader>S ?{<CR>jV/\v^\s*\}?$<CR>k:sort<CR>:noh<CR>
-
-    " Make {<cr> insert a pair of brackets
-    au Filetype css inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
-    " }fixes syntax highlighting
-
-augroup END
-
-" }}}
-" Coffeescript {{{
-
-augroup ft_coffee
-    au!
-
-    au FileType coffee setlocal ts=2
-    au FileType coffee setlocal sw=2
-    au FileType coffee setlocal expandtab
-
-    au FileType coffee setlocal foldmethod=marker
-    au FileType coffee setlocal foldmarker={,}
-
-    " Recursive toggle
-    au FileType coffee nnoremap <Space> zA
-    au FileType coffee vnoremap <Space> zA
-
-    " Make {<cr> insert a pair of brackets
-    au Filetype coffee inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
-    " }fixes syntax highlighting
-augroup END
-
-" }}}
 " Go {{{
 
 augroup ft_go
-    au!
+   au!
 
-    " allow deoplete to complete via the omnifunc and vim-go
-    " call deoplete#custom#option('omni_patterns', { 'go': '[^. *\t]\.\w*' })
+    lua <<EOF
 
-    " turn on folding
-    au FileType go setlocal foldmethod=syntax
+    -- auto formattingon save
+    local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", {})
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      pattern = "*.go",
+      callback = function()
+       require('go.format').goimport()
+      end,
+      group = format_sync_grp,
+    })
 
-    " Recursive toggle
-    au FileType go nnoremap <Space> zA
-    au FileType go vnoremap <Space> zA
+    require('go').setup({
+        luasnip = true,
+        lsp_cfg = false, -- use my own lspconfig
+    })
 
-    " use experimental mode for go fmt
-    au FileType go let g:go_fmt_experimental = 1
-    au FileType go let g:go_fmt_command = 'goimports'
-    au FileType go let g:go_metalinter_autosave = 0
-    au FileType go let g:go_metalinter_command = 'golangci-lint'
+EOF
 
-    " add some missing Plug mappings
-    nnoremap <silent> <Plug>(go-toggle-same-ids) :<C-u>call go#guru#ToggleSameIds()<CR>
+   " Recursive toggle
+   au FileType go nnoremap <Space> zA
+   au FileType go vnoremap <Space> zA
 
-    " automatic stuff
-    au FileType go let g:go_auto_type_info = 1
-    au FileType go let g:go_auto_sameids = 0
-    au FileType go let g:go_fmt_autosave = 1
-    au FileType go let g:go_updatetime = 800 "ms
+   " Alternate between test files (use A! to create file)
+   au Filetype go command! -bang A GoAlt
+   au Filetype go command! -bang AV GoAltV
+   au Filetype go command! -bang AS GoAltS
 
-    " adjust the highlighting
-    au FileType go let g:go_highlight_build_constraints = 1
-    au FileType go let g:go_highlight_generate_tags = 1
-    au FileType go let g:go_highlight_array_whitespace_error = 1
-    au FileType go let g:go_highlight_space_tab_error = 1
-    au FileType go let g:go_highlight_operators = 1
-    au FileType go let g:go_highlight_functions = 1
-    au FileType go let g:go_highlight_function_arguments = 1
-    au FileType go let g:go_highlight_function_calls = 1
-    au FileType go let g:go_highlight_types = 1
-    au FileType go let g:go_highlight_extra_types = 1
-    au FileType go let g:go_highlight_fields = 1
-    au FileType go let g:go_highlight_string_spellcheck = 1
-    au FileType go let g:go_highlight_format_strings = 1
-    au FileType go let g:go_highlight_variable_declarations = 1
-    au FileType go let g:go_highlight_variable_assignments = 1
+   " " run :GoBuild or :GoTestCompile based on the go file
+   " function! s:build_go_files()
+   "   let l:file = expand('%')
+   "   if l:file =~# '^\f\+_test\.go$'
+   "     call go#test#Test(0, 1)
+   "   elseif l:file =~# '^\f\+\.go$'
+   "     call go#cmd#Build(0)
+   "   endif
+   " endfunction
 
-    " Alternate Alternate commands
-    au Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
-    au Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
-    au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
-    au Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
+   " " set the vim-go guru scope from the git root
+   " function! s:go_guru_scope_from_git_root()
+   " " chomp because get rev-parse returns line with newline at the end
+   "   return s:chomp(s:substring(system("git rev-parse --show-toplevel"),$GOPATH . "/src/","")) . "/..."
+   " endfunction
 
-    " run :GoBuild or :GoTestCompile based on the go file
-    function! s:build_go_files()
-      let l:file = expand('%')
-      if l:file =~# '^\f\+_test\.go$'
-        call go#test#Test(0, 1)
-      elseif l:file =~# '^\f\+\.go$'
-        call go#cmd#Build(0)
-      endif
-    endfunction
+   " " do this everytime we open a go file
+   " " au FileType go silent exe "GoGuruScope " . s:go_guru_scope_from_git_root()
 
-    " set the vim-go guru scope from the git root
-    function! s:go_guru_scope_from_git_root()
-    " chomp because get rev-parse returns line with newline at the end
-      return s:chomp(s:substring(system("git rev-parse --show-toplevel"),$GOPATH . "/src/","")) . "/..."
-    endfunction
+   " " setup some leaders
+   " Go build current package of current file
+   au FileType go nmap <leader>b :GoBuild %:h<CR>
+   au FileType go nmap <Leader>t :GoTestFile<CR>
+   au FileType go nmap <Leader>tf :GoTestFunc<CR>
+   au FileType go nnoremap <F8> Ortime.Breakpoint()<esc>/import<cr>Oimport rtime "runtime"<esc><c-o>:w<cr>
 
-    " do this everytime we open a go file
-    au FileType go silent exe "GoGuruScope " . s:go_guru_scope_from_git_root()
-
-    " setup some leaders
-    au FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
-    au FileType go nmap <Leader>t <Plug>(go-test)
-    au FileType go nmap <Leader>tf <Plug>(go-test-func)
-    au FileType go nmap <Leader>i <Plug>(go-imports)
-    au FileType go nmap <Leader><space> <Plug>(go-toggle-same-ids)
-    au FileType go nmap <Leader>a :call go#alternate#Switch('', 'edit')<CR>
-    au FileType go nmap <Leader>s :call go#alternate#Switch('', 'split')<CR>
-    au FileType go nmap <Leader>v :call go#alternate#Switch('', 'vsplit')<CR>
-    au FileType go nmap <Leader>d <Plug>(go-doc)
-    au FileType go nmap <Leader>c zR<Plug>(go-coverage-toggle)
-    au FileType go nmap <Leader>r <Plug>(go-rename)
-    au FileType go nmap <F4> <Plug>(go-run)
-    au FileType go nmap <F6> zR<Plug>(go-metalinter)
-    au FileType go nmap <F7> zR<Plug>(go-coverage-toggle)
-    " au FileType go nmap <F8> zR<Plug>(go-breakpoint-toggle)
-    au FileType go nnoremap <F8> Ortime.Breakpoint()<esc>/import<cr>Oimport rtime "runtime"<esc><c-o>:w<cr>
-
-    " abbreviations
-    au FileType go iabbrev === :=
-    au FileType go iabbrev !! !=
-    au FileType go iabbrev importlogrus log "github.com/sirupsen/logrus"
-    au FileType go iabbrev importlog log "github.com/sirupsen/logrus"
-    au FileType go iabbrev importspew "github.com/davecgh/go-spew/spew"
-    au FileType go iabbrev importmetav1 metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-    " only use the quicklist
-    au FileType go let g:go_list_type = 'quickfix'
-augroup END
-
-" }}}
-" HTML {{{
-
-augroup ft_html
-    au!
-
-    au FileType html setlocal ts=2
-    au FileType html setlocal sw=2
-    au FileType html setlocal expandtab
+   " abbreviations
+   au FileType go iabbrev === :=
+   au FileType go iabbrev !! !=
+   au FileType go iabbrev importlogrus log "github.com/sirupsen/logrus"
+   au FileType go iabbrev importlog log "github.com/sirupsen/logrus"
+   au FileType go iabbrev importspew "github.com/davecgh/go-spew/spew"
+   au FileType go iabbrev importassert "github.com/stretchr/testify/assert"
+   au FileType go iabbrev importmetav1 metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 augroup END
 
 " }}}
@@ -894,35 +1006,31 @@ augroup ft_helm
 augroup END
 
 " }}}
-" Java {{{
-
-augroup ft_java
-    au!
-
-    au FileType java setlocal foldmethod=marker
-    au FileType java setlocal foldmarker={,}
-
-    " Make {<cr> insert a pair of brackets
-    au Filetype java inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
-    " }fixes syntax highlighting
-augroup END
-
-" }}}
 " Javascript {{{
 
 augroup ft_javascript
     au!
 
-    au FileType javascript setlocal foldmethod=marker
-    au FileType javascript setlocal foldmarker={,}
-
     " Recursive toggle
     au FileType javascript nnoremap <Space> zA
     au FileType javascript vnoremap <Space> zA
 
-    " Make {<cr> insert a pair of brackets
-    au Filetype javascript inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
-    " }fixes syntax highlighting
+augroup END
+
+" }}}
+" Typescript {{{
+
+augroup ft_typescript
+    au!
+
+    " Recursive toggle
+    au FileType typescript nnoremap <Space> zA
+    au FileType typescript vnoremap <Space> zA
+
+    au FileType typescript setlocal ts=2
+    au FileType typescript setlocal sw=2
+    au FileType typescript setlocal expandtab
+
 augroup END
 
 " }}}
@@ -931,15 +1039,9 @@ augroup END
 augroup ft_json
     au!
 
-    au FileType json setlocal foldmethod=syntax
-
     " Recursive toggle
     au FileType json nnoremap <Space> zA
     au FileType json vnoremap <Space> zA
-
-    " Make {<cr> insert a pair of brackets
-    au Filetype json inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
-    " }fixes syntax highlighting
 augroup END
 
 " }}}
@@ -952,21 +1054,12 @@ augroup ft_jsonnet
     au FileType jsonnet setlocal sw=2
     au FileType jsonnet setlocal expandtab
 
-    au FileType jsonnet setlocal foldmethod=indent
-
     " Recursive toggle
     au FileType jsonnet nnoremap <Space> zA
     au FileType jsonnet vnoremap <Space> zA
 
-    " no c-style indenting because it messes up the indenting
-    au FileType jsonnet setlocal nocindent
-
     " use # for comments instead of default //
     au FileType jsonnet setlocal commentstring=#\ %s
-
-    " Make {<cr> insert a pair of brackets
-    au Filetype jsonnet inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
-    " }fixes syntax highlighting
 augroup END
 
 " }}}
@@ -1002,59 +1095,12 @@ augroup ft_markdown
 augroup END
 
 " }}}
-" Perl {{{
-
-augroup ft_perl
-    au!
-
-    au FileType perl setlocal foldmethod=marker
-    au FileType perl setlocal foldmarker={,}
-    au FileType perl setlocal complete-=i
-
-    " add perl syntax highlighting for the following words
-    au FileType perl syn keyword perlStatement any all croak carp cluck confess Readonly
-
-    " Recursive toggle
-    au FileType perl nnoremap <Space> zA
-    au FileType perl vnoremap <Space> zA
-
-    " Make {<cr> insert a pair of brackets
-    au Filetype perl inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
-    " }fixes syntax highlighting
-augroup END
-
-" }}}
-" PHP {{{
-
-augroup ft_php
-    au!
-
-    " Make {<cr> insert a pair of brackets
-    au Filetype php inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
-    " }fixes syntax highlighting
-
-    " set commentary string for php to use hash comments
-    au Filetype php setlocal commentstring=#\ %s
-augroup END
-
-" }}}
 " Python {{{
 
 augroup ft_python
     au!
 
     au FileType python setlocal define=^\s*\\(def\\\\|class\\)
-augroup END
-
-" }}}
-" Ruby {{{
-
-augroup ft_ruby
-    au!
-
-    au FileType ruby setlocal ts=2
-    au FileType ruby setlocal sw=2
-    au FileType ruby setlocal expandtab
 augroup END
 
 " }}}
@@ -1065,35 +1111,6 @@ augroup ft_vim
 
     au FileType vim setlocal foldmethod=marker
     au FileType help setlocal textwidth=80
-augroup END
-
-" }}}
-" XML {{{
-
-augroup ft_xml
-    au!
-
-    au FileType xml setlocal foldmethod=manual
-
-    " Use <localleader>f to fold the current tag.
-    au FileType xml nnoremap <buffer> <localleader>f Vatzf
-
-    " Indent tag
-    au FileType xml nnoremap <buffer> <localleader>= Vat=
-augroup END
-
-" }}}
-" ZSH {{{
-
-augroup ft_zsh
-    au!
-
-    au FileType vim setlocal foldmethod=marker
-    au FileType zsh setlocal foldmethod=manual
-
-    " Make {<cr> insert a pair of brackets
-    au Filetype zsh inoremap <buffer> {<cr> {}<left><cr><cr><up><space><space><space><space>
-    " }fixes syntax highlighting
 augroup END
 
 " }}}

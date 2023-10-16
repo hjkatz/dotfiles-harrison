@@ -1,7 +1,0 @@
-# WithError handling
-snippet werr "Basic WithError handling" b
-if err != nil {
-	log.WithError(err).
-	    ${1:Fatal}("Failed to ${2:do something...}")
-}
-endsnippet
