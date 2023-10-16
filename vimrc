@@ -12,6 +12,11 @@ let g:dotfiles_vim_dir=$HOME.'/.dotfiles-harrison/.vim/'
 "    <lua code>
 " EOF
 
+" Note: These must be installed on the system for everything to work properly
+" Pre-reqs:
+"   - Nerd Fonts: https://www.nerdfonts.com/
+"     - Installed and Configured for Terminal
+
 " Plugins first, then settings
 " Plugins ------------------------------- {{{
 
@@ -34,6 +39,7 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     Plug 'williamboman/mason-lspconfig.nvim'
     Plug 'neovim/nvim-lspconfig'
     Plug 'ray-x/guihua.lua', { 'do': 'cd lua/fzy && make' }
+    Plug 'ray-x/navigator.lua'
     Plug 'hrsh7th/nvim-cmp'
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-nvim-lua'
@@ -357,6 +363,26 @@ inoremap <expr> <c-y> matchstr(getline(line('.')-1), '\%' . virtcol('.') . 'v\%(
 " }}}
 " Plugin Config ------------------------ {{{
 
+" ray-x/guihua ----------------------------- {{{
+
+lua <<EOF
+
+require("guihua.maps").setup({
+  maps = {
+      close_view = 'q',
+      prev = '<Home>',
+      next = '<End>',
+      confirm = '<CR>',
+      split = '<C-s>',
+      vsplit = '<C-v>',
+      tabnew = '<C-t>',
+  },
+})
+
+EOF
+
+" }}}
+
 " nvim-autopairs ----------------------------- {{{
 
 lua <<EOF
@@ -429,6 +455,28 @@ end
 local cmp = require('cmp')
 local luasnip = require('luasnip')
 
+-- Enable navigator with mason support
+--   - disable navigator from installing/setting up lsp (use mason and mason-lsp instead)
+--   - disable navigator from configuring keymappings for lsp (use mason instead)
+-- See: https://github.com/ray-x/navigator.lua/issues/239#issuecomment-1287949589
+require("navigator").setup({
+  debug = true,
+  mason = true,
+  default_mapping = false,
+  -- lsp_installer = false,
+  lsp_signature_help = true,
+  signature_help_cfg = nil, -- configure ray-x/lsp_signature_help on its own
+  lsp = {
+      enable = true,
+      -- document_highlight = true,
+      disable_lsp = "all",
+      tsserver = {
+          single_file_support = true,
+      },
+      format_on_save = true,
+  }
+})
+
 cmp.setup({
     -- snippet engine is _required_
     snippet = {
@@ -499,8 +547,15 @@ cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setqflist)
 
 local lsp_signature = require('lsp_signature').setup({
-  -- no panda
-  hint_enable = false,
+  hint_enable = true,
+  -- hint_inline = function() return false end, -- supported in nvim 0.10+
+  hint_prefix = "() ",
+  floating_window = false,
+  floating_window_above_cur_line = true,
+  handler_opts = {
+      border = "rounded",
+  },
+  always_trigger = false,
 })
 
 local function toggle_lsp_signature()
@@ -513,6 +568,11 @@ local lsp_defaults = lspconfig.util.default_config
 local lsp_capabilities = vim.tbl_deep_extend('force', lsp_defaults.capabilities, require('cmp_nvim_lsp').default_capabilities())
 local lsp_attach = function(client, bufnr)
   local opts = { buffer = bufnr }
+  -- Setup navigator for lsp client
+  require("navigator.lspclient.mapping").setup({
+    client = client,
+    bufnr = bufnr,
+  })
   -- Create your keybindings here...
   vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
   vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
