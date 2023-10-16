@@ -134,6 +134,9 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
 
     " planery
     Plug 'nvim-lua/plenary.nvim'
+
+    " colorscheme tokyonight
+    Plug 'folke/tokyonight.nvim'
 call plug#end()
 
 filetype plugin indent on    " required
@@ -463,18 +466,17 @@ require("navigator").setup({
   debug = true,
   mason = true,
   default_mapping = false,
-  -- lsp_installer = false,
+  -- lsp_installer = false, -- use mason instead
   lsp_signature_help = true,
   signature_help_cfg = nil, -- configure ray-x/lsp_signature_help on its own
   lsp = {
       enable = true,
-      -- document_highlight = true,
-      disable_lsp = "all",
+      document_highlight = true,
       tsserver = {
           single_file_support = true,
       },
       format_on_save = true,
-  }
+  },
 })
 
 cmp.setup({
@@ -490,6 +492,7 @@ cmp.setup({
     },
 
     sources = cmp.config.sources({
+        -- TODO enable this?
         -- { name = 'nvim_lsp_signature_help' },
         { name = 'nvim_lsp' },
         { name = 'nvim_lua' },
@@ -573,25 +576,52 @@ local lsp_attach = function(client, bufnr)
     client = client,
     bufnr = bufnr,
   })
-  -- Create your keybindings here...
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-  vim.keymap.set('n', '<leader>d', vim.lsp.buf.hover, opts)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-  vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, opts)
-  vim.keymap.set('n', 'gs', vim.lsp.buf.signature_help, opts)
-  vim.keymap.set('n', '<C-S-K>', toggle_lsp_signature, opts)
-  vim.keymap.set('i', '<C-S-K>', toggle_lsp_signature, opts)
-  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
-  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-  vim.keymap.set('v', '<leader>cf', vim.lsp.buf.format, opts)
-  vim.keymap.set('n', '<leader>cf', vim.lsp.buf.format, opts)
+  require("navigator.dochighlight").documentHighlight(bufnr)
+
+  -- ray-x/navigator
+  -- ref: https://github.com/ray-x/navigator.lua/tree/master#default-keymaps
+  -- ref: https://github.com/ray-x/navigator.lua/blob/master/lua/navigator/lspclient/mapping.lua
+  -- must override all default mappings for any of them to work
+  local keymaps = {
+    { mode = 'n', key = 'gr',         func = require('navigator.reference').async_ref }, -- show references and context (async)
+    { mode = 'n', key = '<c-]>',      func = require('navigator.definition').definition }, -- goto definition
+    { mode = 'n', key = 'gd',         func = require('navigator.definition').definition }, -- goto definition
+    { mode = 'n', key = 'gD',         func = vim.lsp.buf.declaration }, -- goto declaration
+    { mode = 'n', key = '<leader>/',  func = require('navigator.workspace').workspace_symbol_live }, -- workspace fzf
+    { mode = 'n', key = '<C-S-F>',    func = require('navigator.workspace').workspace_symbol_live }, -- workspace fzf
+    { mode = 'n', key = 'g0',         func = require('navigator.symbols').document_symbols }, -- document's symbols
+    { mode = 'n', key = '<leader>d',  func = vim.lsp.buf.hover }, -- hover window
+    { mode = 'n', key = 'K',          func = vim.lsp.buf.hover }, -- hover window
+    { mode = 'n', key = 'gi',         func = vim.lsp.buf.implementation }, -- goto implementation (doesn't always work?)
+    { mode = 'n', key = '<Leader>gi', func = vim.lsp.buf.incoming_calls }, -- incoming calls
+    { mode = 'n', key = '<Leader>go', func = vim.lsp.buf.outgoing_calls }, -- outgoing calls
+    { mode = 'n', key = 'gt',         func = vim.lsp.buf.type_definition }, -- goto type definition
+    { mode = 'n', key = 'gp',         func = require('navigator.definition').definition_preview }, -- hover definition preview
+    { mode = 'n', key = 'gP',         func = require('navigator.definition').type_definition_preview }, -- hover type definition preview
+    { mode = 'n', key = '<c-k>',      func = vim.lsp.buf.signature_help }, -- sig help
+    { mode = 'n', key = '<C-S-K>',    func = toggle_lsp_signature }, -- sig help
+    { mode = 'i', key = '<C-S-K>',    func = toggle_lsp_signature }, -- sig help
+    { mode = 'n', key = '<leader>ca', func = vim.lsp.buf.code_action }, -- code action
+    { mode = 'n', key = '<leader>la', func = require('navigator.codelens').run_action }, -- codelens action
+    { mode = 'n', key = '<leader>rn', func = require('navigator.rename').rename }, -- rename
+    { mode = 'n', key = '<leader>gt', func = require('navigator.treesitter').buf_ts }, -- fzf treesitter symbols
+    { mode = 'n', key = '<leader>ct', func = require('navigator.ctags').ctags }, -- fzf ctags
+    { mode = 'n', key = '<leader>ca', func = require('navigator.codeAction').code_action }, -- code action
+    { mode = 'v', key = '<leader>ca', func = require('navigator.codeAction').range_code_action }, -- code action
+    { mode = 'n', key = 'gG',         func = require('navigator.diagnostics').show_buf_diagnostics }, -- diagnostics
+    { mode = 'n', key = 'gL',         func = require('navigator.diagnostics').show_diagnostics }, -- diagnostics
+    { mode = 'n', key = '<leader>ff', func = vim.lsp.buf.format }, -- format code
+    { mode = 'v', key = '<leader>ff', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
+    { mode = 'n', key = '<leader>cf', func = vim.lsp.buf.format }, -- format code
+    { mode = 'v', key = '<leader>cf', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
+  }
+
+  for _, km in pairs(keymaps) do
+      vim.keymap.set(km.mode, km.key, km.func, opts)
+  end
 end
 
 -- use the lsp server name (not mason name, see the grey text name in :Mason)
-            -- 5107: Error loading lua [string ":lua"]:113: '}' expected (to close '{' at line 111) near '='
 local lsp_settings = {
     -- see :Mason then <enter> on server name, then example.setting turns into example = { setting = "<value" } in the table below
     yamlls = {
@@ -1185,116 +1215,27 @@ if exists( "syntax_on" )
   syntax reset
 endif
 
-set t_Co=256
-let g:colors_name = "katz"
+lua <<EOF
 
-hi Cursor                       ctermfg=235  ctermbg=231  cterm=none
-hi Visual                       ctermfg=none ctermbg=238  cterm=none
-hi CursorLine                   ctermfg=none ctermbg=237  cterm=none
-hi CursorColumn                 ctermfg=none ctermbg=237  cterm=none
-hi ColorColumn                  ctermfg=none ctermbg=237  cterm=none
-hi LineNr                       ctermfg=11   ctermbg=none cterm=none
-hi VertSplit                    ctermfg=241  ctermbg=241  cterm=none
-hi MatchParen                   ctermfg=141  ctermbg=none cterm=underline
-hi StatusLine                   ctermfg=231  ctermbg=241  cterm=bold
-hi StatusLineNC                 ctermfg=231  ctermbg=241  cterm=none
-hi Pmenu                        ctermfg=none ctermbg=238  cterm=none
-hi PmenuSel                     ctermfg=none ctermbg=13   cterm=none
-hi PmenuSbar                    ctermfg=none ctermbg=238  cterm=none
-hi PmenuThumb                   ctermfg=none ctermbg=59   cterm=none
-hi CocSearch                    ctermfg=none ctermbg=none cterm=none
-hi CocFloating                  ctermfg=none ctermbg=none cterm=none
-hi CocMenuSel                   ctermfg=none ctermbg=13   cterm=none
-hi CocFloatThumb                ctermfg=none ctermbg=235  cterm=none
-hi CocFloatSbar                 ctermfg=none ctermbg=236  cterm=none
-hi IncSearch                    ctermfg=235  ctermbg=186  cterm=none
-hi Search                       ctermfg=none ctermbg=236  cterm=inverse,underline
-hi Directory                    ctermfg=197  ctermbg=none cterm=none
-hi Folded                       ctermfg=14   ctermbg=235  cterm=none
-hi SignColumn                   ctermfg=none ctermbg=237  cterm=none
-hi Normal                       ctermfg=231  ctermbg=none cterm=none
-hi Boolean                      ctermfg=197  ctermbg=none cterm=none
-hi Character                    ctermfg=197  ctermbg=none cterm=none
-hi Comment                      ctermfg=242  ctermbg=none cterm=none
-hi Conditional                  ctermfg=141  ctermbg=none cterm=none
-hi Constant                     ctermfg=81 ctermbg=none cterm=none
-hi Define                       ctermfg=141  ctermbg=none cterm=none
-hi DiffAdd                      ctermfg=231  ctermbg=64   cterm=bold
-hi DiffDelete                   ctermfg=88   ctermbg=none cterm=none
-hi DiffChange                   ctermfg=none ctermbg=none cterm=none
-hi DiffText                     ctermfg=231  ctermbg=24   cterm=bold
-hi ErrorMsg                     ctermfg=231  ctermbg=197  cterm=none
-hi WarningMsg                   ctermfg=231  ctermbg=197  cterm=none
-hi Float                        ctermfg=197  ctermbg=none cterm=none
-hi Function                     ctermfg=148  ctermbg=none cterm=none
-hi Identifier                   ctermfg=81   ctermbg=none cterm=none
-hi Keyword                      ctermfg=141  ctermbg=none cterm=none
-hi Label                        ctermfg=186  ctermbg=none cterm=none
-hi NonText                      ctermfg=59   ctermbg=none cterm=none
-hi Number                       ctermfg=197  ctermbg=none cterm=none
-hi Operator                     ctermfg=141  ctermbg=none cterm=none
-hi PreProc                      ctermfg=141  ctermbg=none cterm=none
-hi Special                      ctermfg=231  ctermbg=none cterm=none
-hi SpecialComment               ctermfg=242  ctermbg=none cterm=none
-hi SpecialKey                   ctermfg=59   ctermbg=none cterm=none
-hi Statement                    ctermfg=141  ctermbg=none cterm=none
-hi StorageClass                 ctermfg=81   ctermbg=none cterm=none
-hi String                       ctermfg=186  ctermbg=none cterm=none
-hi Tag                          ctermfg=141  ctermbg=none cterm=none
-hi Title                        ctermfg=231  ctermbg=none cterm=bold
-hi Todo                         ctermfg=235   ctermbg=11 cterm=bold
-hi Type                         ctermfg=141  ctermbg=none cterm=none
-hi Underlined                   ctermfg=none ctermbg=none cterm=underline
-hi rubyClass                    ctermfg=141  ctermbg=none cterm=none
-hi rubyFunction                 ctermfg=148  ctermbg=none cterm=none
-hi rubyInterpolationDelimiter   ctermfg=none ctermbg=none cterm=none
-hi rubySymbol                   ctermfg=197  ctermbg=none cterm=none
-hi rubyConstant                 ctermfg=81   ctermbg=none cterm=none
-hi rubyStringDelimiter          ctermfg=186  ctermbg=none cterm=none
-hi rubyBlockParameter           ctermfg=208  ctermbg=none cterm=none
-hi rubyInstanceVariable         ctermfg=none ctermbg=none cterm=none
-hi rubyInclude                  ctermfg=141  ctermbg=none cterm=none
-hi rubyGlobalVariable           ctermfg=none ctermbg=none cterm=none
-hi rubyRegexp                   ctermfg=186  ctermbg=none cterm=none
-hi rubyRegexpDelimiter          ctermfg=186  ctermbg=none cterm=none
-hi rubyEscape                   ctermfg=197  ctermbg=none cterm=none
-hi rubyControl                  ctermfg=141  ctermbg=none cterm=none
-hi rubyClassVariable            ctermfg=none ctermbg=none cterm=none
-hi rubyOperator                 ctermfg=141  ctermbg=none cterm=none
-hi rubyException                ctermfg=141  ctermbg=none cterm=none
-hi rubyPseudoVariable           ctermfg=none ctermbg=none cterm=none
-hi rubyRailsUserClass           ctermfg=81   ctermbg=none cterm=none
-hi rubyRailsARAssociationMethod ctermfg=81   ctermbg=none cterm=none
-hi rubyRailsARMethod            ctermfg=81   ctermbg=none cterm=none
-hi rubyRailsRenderMethod        ctermfg=81   ctermbg=none cterm=none
-hi rubyRailsMethod              ctermfg=81   ctermbg=none cterm=none
-hi erubyDelimiter               ctermfg=none ctermbg=none cterm=none
-hi erubyComment                 ctermfg=95   ctermbg=none cterm=none
-hi erubyRailsMethod             ctermfg=81   ctermbg=none cterm=none
-hi htmlTag                      ctermfg=148  ctermbg=none cterm=none
-hi htmlEndTag                   ctermfg=148  ctermbg=none cterm=none
-hi htmlTagName                  ctermfg=none ctermbg=none cterm=none
-hi htmlArg                      ctermfg=none ctermbg=none cterm=none
-hi htmlSpecialChar              ctermfg=197  ctermbg=none cterm=none
-hi javaScriptFunction           ctermfg=81   ctermbg=none cterm=none
-hi javaScriptRailsFunction      ctermfg=81   ctermbg=none cterm=none
-hi javaScriptBraces             ctermfg=none ctermbg=none cterm=none
-hi yamlKey                      ctermfg=141  ctermbg=none cterm=none
-hi yamlAnchor                   ctermfg=none ctermbg=none cterm=none
-hi yamlAlias                    ctermfg=none ctermbg=none cterm=none
-hi yamlDocumentHeader           ctermfg=186  ctermbg=none cterm=none
-hi cssURL                       ctermfg=208  ctermbg=none cterm=none
-hi cssFunctionName              ctermfg=81   ctermbg=none cterm=none
-hi cssColor                     ctermfg=197  ctermbg=none cterm=none
-hi cssPseudoClassId             ctermfg=148  ctermbg=none cterm=none
-hi cssClassName                 ctermfg=148  ctermbg=none cterm=none
-hi cssValueLength               ctermfg=197  ctermbg=none cterm=none
-hi cssCommonAttr                ctermfg=81   ctermbg=none cterm=none
-hi cssBraces                    ctermfg=none ctermbg=none cterm=none
-hi goStatement ctermfg=200
-hi goLabel ctermfg=141
-hi goBuiltins ctermfg=200
-" hi goLabel ctermfg=200
-hi goFunctionCall ctermfg=148
+require("tokyonight").setup({
+  style = "night", -- extra dark
+  transparent = true,
+  terminal_colors = true,
+  styles = {
+    -- Style to be applied to different syntax groups
+    -- Value is any valid attr-list value for `:help nvim_set_hl`
+    comments = { italic = true },
+    keywords = { italic = true },
+    functions = {},
+    variables = {},
+    -- Background styles. Can be "dark", "transparent" or "normal"
+    sidebars = "dark", -- style for sidebars, see below
+    floats = "dark", -- style for floating windows
+  },
+})
+
+EOF
+
+colorscheme tokyonight-night
 
 " }}}
