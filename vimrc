@@ -48,6 +48,10 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     Plug 'ray-x/lsp_signature.nvim'
     Plug 'FelipeLema/cmp-async-path'
 
+    " Github Copilot
+    Plug 'zbirenbaum/copilot.lua'
+    Plug 'zbirenbaum/copilot-cmp'
+
     " go development
     Plug 'ray-x/go.nvim', { 'for': 'go', 'do': ':GoInstallBinaries' }
 
@@ -422,8 +426,13 @@ require("mason-lspconfig").setup({
     automatic_installation = true,
     ensure_installed = {
         -- list of lsp mason packages to keep installed
+        "vimls",
         "lua_ls",
+        "terraformls",
+        "jqls",
+        "ltex",
         "gopls",
+        "taplo",
         "yamlls",
         "pyright",
         "jsonls",
@@ -439,7 +448,7 @@ EOF
 
 " }}}
 
-" mason-lsp / lspconfig / navigator ----------------------------- {{{
+" mason-lsp / lspconfig / navigator / cmp ----------------------------- {{{
 
 " See: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v2.x/doc/md/lsp.md#you-might-not-need-lsp-zero
 " See: https://github.com/ray-x/navigator.lua
@@ -457,6 +466,9 @@ end
 
 local cmp = require('cmp')
 local luasnip = require('luasnip')
+
+-- setup various cmp sources
+require("copilot_cmp").setup({})
 
 -- Enable navigator with mason support
 --   - disable navigator from installing/setting up lsp (use mason and mason-lsp instead)
@@ -545,13 +557,25 @@ cmp.setup({
     },
 
     sources = cmp.config.sources({
-        { name = 'nvim_lsp_signature_help' },
         { name = 'nvim_lsp' },
+        { name = 'copilot' },
+        { name = 'nvim_lsp_signature_help' },
         { name = 'nvim_lua' },
         { name = 'luasnip' },
         { name = 'async_path', keyword_length = 1 },
         { name = 'buffer', keyword_length = 1 },
     }),
+
+  -- formatting = {
+  --   format = lspkind.cmp_format({
+  --     mode = "symbol",
+  --     max_width = 50,
+  --     -- icons for cmp sources
+  --     symbol_map = {
+  --       Copilot = "",
+  --     },
+  --   })
+  -- },
 
   preselect = cmp.PreselectMode.None,
 
@@ -949,6 +973,18 @@ nnoremap <silent> <F2> :TagbarToggle<CR>
 
 let g:tagbar_map_togglefold = '<Space>'
 let g:tagbar_autofocus = 1
+
+" }}}
+
+" copilot --------------------------- {{{
+
+lua <<EOF
+
+-- configure copilot.lua
+require("copilot").setup({
+})
+
+EOF
 
 " }}}
 
