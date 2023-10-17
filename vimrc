@@ -469,6 +469,59 @@ require("navigator").setup({
   -- lsp_installer = false, -- use mason instead
   lsp_signature_help = true,
   signature_help_cfg = nil, -- configure ray-x/lsp_signature_help on its own
+  icons = {
+    icons = true, -- requires nerd fonts
+
+    -- Code action
+    code_action_icon = '󱐋 ',
+
+    -- code lens
+    code_lens_action_icon = '󰍉 ',
+
+    -- Diagnostics -- appear in the sign column
+    diagnostic_head = "", -- empty prefix
+    diagnostic_err = "",
+    diagnostic_warn = "",
+    diagnostic_info = "",
+    diagnostic_hint = "",
+
+    -- these icons appear in the floating windows
+    diagnostic_head_severity_1 = ' ',
+    diagnostic_head_severity_2 = ' ',
+    diagnostic_head_severity_3 = ' ',
+    diagnostic_head_description = '', -- empty description (suffix for severities)
+    diagnostic_virtual_text = '', -- empty floating text prefix
+    diagnostic_file = '', -- icon in floating window indicating a file contains diagnostics
+
+    -- Values
+    value_changed = '📝',
+    value_definition = '🐶🍡', -- it is easier to see than 🦕
+    side_panel = {
+      section_separator = '󰇜',
+      line_num_left = '',
+      line_num_right = '',
+      inner_node = '├○',
+      outer_node = '╰○',
+      bracket_left = '⟪',
+      bracket_right = '⟫',
+    },
+    -- Treesitter
+    -- Note: many many more node.type or kind may be available
+    match_kinds = {
+      var = '󱀍 ', -- variable
+      method = 'ƒ ', --  method
+      ['function'] = ' ', -- function?
+      parameter = '󰫧 ', -- param/arg
+      associated = ' ', -- linked/related
+      namespace = ' ',
+      type = '𝐓 ',
+      field = ' ',
+      module = ' ',
+      flag = ' ',
+    },
+    treesitter_defult = ' ',
+    doc_symbols = ' ',
+  },
   lsp = {
       enable = true,
       document_highlight = true,
@@ -492,8 +545,7 @@ cmp.setup({
     },
 
     sources = cmp.config.sources({
-        -- TODO enable this?
-        -- { name = 'nvim_lsp_signature_help' },
+        { name = 'nvim_lsp_signature_help' },
         { name = 'nvim_lsp' },
         { name = 'nvim_lua' },
         { name = 'luasnip' },
@@ -602,14 +654,18 @@ local lsp_attach = function(client, bufnr)
     { mode = 'n', key = '<C-S-K>',    func = toggle_lsp_signature }, -- sig help
     { mode = 'i', key = '<C-S-K>',    func = toggle_lsp_signature }, -- sig help
     { mode = 'n', key = '<leader>ca', func = vim.lsp.buf.code_action }, -- code action
+    { mode = 'n', key = '<leader>cl', func = require('navigator.codelens').run_action }, -- codelens action
     { mode = 'n', key = '<leader>la', func = require('navigator.codelens').run_action }, -- codelens action
     { mode = 'n', key = '<leader>rn', func = require('navigator.rename').rename }, -- rename
     { mode = 'n', key = '<leader>gt', func = require('navigator.treesitter').buf_ts }, -- fzf treesitter symbols
+    { mode = 'n', key = '<leader>ts', func = require('navigator.treesitter').buf_ts }, -- fzf treesitter symbols
     { mode = 'n', key = '<leader>ct', func = require('navigator.ctags').ctags }, -- fzf ctags
     { mode = 'n', key = '<leader>ca', func = require('navigator.codeAction').code_action }, -- code action
     { mode = 'v', key = '<leader>ca', func = require('navigator.codeAction').range_code_action }, -- code action
     { mode = 'n', key = 'gG',         func = require('navigator.diagnostics').show_buf_diagnostics }, -- diagnostics
+    { mode = 'n', key = '<leader>G',  func = require('navigator.diagnostics').show_buf_diagnostics }, -- diagnostics
     { mode = 'n', key = 'gL',         func = require('navigator.diagnostics').show_diagnostics }, -- diagnostics
+    { mode = 'n', key = '<leader>L',  func = require('navigator.diagnostics').show_diagnostics }, -- diagnostics
     { mode = 'n', key = '<leader>ff', func = vim.lsp.buf.format }, -- format code
     { mode = 'v', key = '<leader>ff', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
     { mode = 'n', key = '<leader>cf', func = vim.lsp.buf.format }, -- format code
