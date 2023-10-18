@@ -34,6 +34,12 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     " better .swp file handling
     " Plug 'chrisbra/Recover.vim'
 
+    " planery
+    Plug 'nvim-lua/plenary.nvim'
+
+    " telescope
+    Plug 'nvim-telescope/telescope.nvim'
+
     " nvim lsp and code completion
     Plug 'williamboman/mason.nvim', { 'do': ':MasonUpdate' }
     Plug 'williamboman/mason-lspconfig.nvim'
@@ -136,9 +142,6 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
 
     " tagbar
     Plug 'majutsushi/tagbar'
-
-    " planery
-    Plug 'nvim-lua/plenary.nvim'
 
     " colorscheme tokyonight
     Plug 'folke/tokyonight.nvim'
@@ -402,6 +405,52 @@ EOF
 
 autocmd FileType guihua lua require('cmp').setup.buffer { enabled = false }
 autocmd FileType guihua_rust lua require('cmp').setup.buffer { enabled = false }
+
+" }}}
+
+" telescope ----------------------------- {{{
+
+lua <<EOF
+
+require("telescope").setup({
+  defaults = {
+    prompt_prefix = "❯ ",
+    selection_caret = "❯ ",
+    initial_mode = "insert", -- or "normal"
+    layout_strategy = "vertical",
+    mappings = {
+      i = {
+        ["<C-e>"] = "close",
+        ["<Home>"] = "move_selection_previous",
+        ["<End>"] = "move_selection_next",
+        ["<C-s>"] = "select_horizontal",
+        ["<C-v>"] = "select_vertical",
+        ["<C-k>"] = "preview_scrolling_up",
+        ["<C-j>"] = "preview_scrolling_down",
+        ["<C-l>"] = "preview_scrolling_right",
+        ["<C-h>"] = "preview_scrolling_left",
+      },
+      n = {
+        ["<C-e>"] = "close",
+        ["<Home>"] = "move_selection_previous",
+        ["<End>"] = "move_selection_next",
+        ["<C-s>"] = "select_horizontal",
+        ["<C-v>"] = "select_vertical",
+        ["<C-k>"] = "preview_scrolling_up",
+        ["<C-j>"] = "preview_scrolling_down",
+        ["<C-l>"] = "preview_scrolling_right",
+        ["<C-h>"] = "preview_scrolling_left",
+      },
+    },
+  },
+})
+
+vim.keymap.set('n', '<leader>ff', require("telescope.builtin").find_files, {})
+vim.keymap.set('n', '<leader>fg', require("telescope.builtin").live_grep, {})
+vim.keymap.set('n', '<leader>rg', require("telescope.builtin").live_grep, {})
+vim.keymap.set('n', '<leader>fh', require("telescope.builtin").help_tags, {}) -- :help
+
+EOF
 
 " }}}
 
@@ -699,10 +748,10 @@ local lsp_attach = function(client, bufnr)
     { mode = 'n', key = '<leader>G',  func = require('navigator.diagnostics').show_buf_diagnostics }, -- diagnostics
     { mode = 'n', key = 'gL',         func = require('navigator.diagnostics').show_diagnostics }, -- diagnostics
     { mode = 'n', key = '<leader>L',  func = require('navigator.diagnostics').show_diagnostics }, -- diagnostics
-    { mode = 'n', key = '<leader>ff', func = vim.lsp.buf.format }, -- format code
-    { mode = 'v', key = '<leader>ff', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
     { mode = 'n', key = '<leader>cf', func = vim.lsp.buf.format }, -- format code
     { mode = 'v', key = '<leader>cf', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
+    { mode = 'n', key = '<leader>fc', func = vim.lsp.buf.format }, -- format code
+    { mode = 'v', key = '<leader>fc', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
   }
 
   for _, km in pairs(keymaps) do
