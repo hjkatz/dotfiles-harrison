@@ -412,6 +412,19 @@ autocmd FileType guihua_rust lua require('cmp').setup.buffer { enabled = false }
 
 lua <<EOF
 
+-- :help telescope.mappings
+local telescopeMappings = {
+  ["<C-e>"] = "close",
+  ["<Home>"] = "move_selection_previous",
+  ["<End>"] = "move_selection_next",
+  ["<C-s>"] = "select_horizontal",
+  ["<C-v>"] = "select_vertical",
+  ["<C-k>"] = "preview_scrolling_up",
+  ["<C-j>"] = "preview_scrolling_down",
+  ["<C-l>"] = "preview_scrolling_right",
+  ["<C-h>"] = "preview_scrolling_left",
+}
+
 require("telescope").setup({
   defaults = {
     prompt_prefix = "❯ ",
@@ -419,36 +432,74 @@ require("telescope").setup({
     initial_mode = "insert", -- or "normal"
     layout_strategy = "vertical",
     mappings = {
-      i = {
-        ["<C-e>"] = "close",
-        ["<Home>"] = "move_selection_previous",
-        ["<End>"] = "move_selection_next",
-        ["<C-s>"] = "select_horizontal",
-        ["<C-v>"] = "select_vertical",
-        ["<C-k>"] = "preview_scrolling_up",
-        ["<C-j>"] = "preview_scrolling_down",
-        ["<C-l>"] = "preview_scrolling_right",
-        ["<C-h>"] = "preview_scrolling_left",
-      },
-      n = {
-        ["<C-e>"] = "close",
-        ["<Home>"] = "move_selection_previous",
-        ["<End>"] = "move_selection_next",
-        ["<C-s>"] = "select_horizontal",
-        ["<C-v>"] = "select_vertical",
-        ["<C-k>"] = "preview_scrolling_up",
-        ["<C-j>"] = "preview_scrolling_down",
-        ["<C-l>"] = "preview_scrolling_right",
-        ["<C-h>"] = "preview_scrolling_left",
-      },
+      i = telescopeMappings,
+      n = telescopeMappings,
     },
   },
 })
 
-vim.keymap.set('n', '<leader>ff', require("telescope.builtin").find_files, {})
+-- cache for git rev-parse --is-inside-work-tree by pwd
+local is_inside_git_tree = {}
+
+-- returns the git root from the current directory
+local get_git_root = function()
+  local dot_git_path = vim.fn.finddir(".git", ".;")
+  return vim.fn.fnamemodify(dot_git_path, ":h")
+end
+
+-- find_files from git repo root if in git, otherwise find_files in pwd
+local telescope_project_files = function(opts)
+  if opts == nil then
+      opts = {}
+  end
+
+  local cwd = vim.fn.getcwd()
+  if is_inside_git_tree[cwd] == nil then
+    vim.fn.system("git rev-parse --is-inside-work-tree")
+    is_inside_git_tree[cwd] = vim.v.shell_error == 0
+  end
+
+  if is_inside_git_tree[cwd] then
+    opts["cwd"] = get_git_root()
+  end
+
+  require("telescope.builtin").find_files(opts)
+end
+
+-- function to open telescope with horizontal selection mapped to <CR>
+local telescope_find_files_horizontal = function(opts)
+  telescope_project_files({
+    attach_mappings = function(_, map)
+      map({"i", "n"}, "<CR>", "select_horizontal")
+      return true
+    end,
+  })
+end
+
+-- function to open telescope with horizontal selection mapped to <CR>
+local telescope_find_files_vertical = function(opts)
+  telescope_project_files({
+    attach_mappings = function(_, map)
+      map({"i", "n"}, "<CR>", "select_vertical")
+      return true
+    end,
+  })
+end
+
+-- keymaps
+vim.keymap.set('n', '<leader>ff', telescope_project_files, {})
 vim.keymap.set('n', '<leader>fg', require("telescope.builtin").live_grep, {})
 vim.keymap.set('n', '<leader>rg', require("telescope.builtin").live_grep, {})
 vim.keymap.set('n', '<leader>fh', require("telescope.builtin").help_tags, {}) -- :help
+vim.keymap.set('n', '<leader>hh', require("telescope.builtin").help_tags, {}) -- :help
+vim.keymap.set('n', 'Sp', require("telescope.builtin").help_tags, {}) -- :help
+
+-- commands
+vim.api.nvim_create_user_command( "Sp", telescope_find_files_horizontal, {})
+vim.api.nvim_create_user_command( "SP", telescope_find_files_horizontal, {})
+vim.api.nvim_create_user_command( "Vsp", telescope_find_files_vertical, {})
+vim.api.nvim_create_user_command( "VSp", telescope_find_files_vertical, {})
+vim.api.nvim_create_user_command( "VSP", telescope_find_files_vertical, {})
 
 EOF
 
