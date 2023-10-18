@@ -74,6 +74,7 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     " tree-sitter
     Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
+    Plug 'nvim-treesitter/playground'
     " adds folding, fancy settings, and more!
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 
@@ -478,9 +479,19 @@ require("navigator").setup({
   debug = true,
   mason = true,
   default_mapping = false,
-  -- lsp_installer = false, -- use mason instead
+  lsp_installer = false, -- use mason instead
   lsp_signature_help = true,
   signature_help_cfg = nil, -- configure ray-x/lsp_signature_help on its own
+  lsp = {
+      diagnostic_scrollbar_sign = false, -- disable scrollbar symbols
+      enable = false,
+      disable_lsp = "all",
+      document_highlight = true,
+      tsserver = {
+          single_file_support = true,
+      },
+      format_on_save = true,
+  },
   icons = {
     icons = true, -- requires nerd fonts
 
@@ -521,26 +532,23 @@ require("navigator").setup({
     -- Note: many many more node.type or kind may be available
     match_kinds = {
       var = '󱀍 ', -- variable
+      const = '󱀍 ',
       method = 'ƒ ', --  method
-      ['function'] = ' ', -- function?
+      ['function'] = ' ', -- function
       parameter = '󰫧 ', -- param/arg
+      parameters = '󰫧 ', -- param/arg
+      required_parameter = '󰫧 ', -- param/arg
+      -- identifier = '󰫧 ', -- param/arg
       associated = ' ', -- linked/related
       namespace = ' ',
       type = '𝐓 ',
       field = ' ',
       module = ' ',
       flag = ' ',
+      import = '󰋺 ',
     },
     treesitter_defult = ' ',
     doc_symbols = ' ',
-  },
-  lsp = {
-      enable = true,
-      document_highlight = true,
-      tsserver = {
-          single_file_support = true,
-      },
-      format_on_save = true,
   },
 })
 
@@ -674,7 +682,8 @@ local lsp_attach = function(client, bufnr)
     { mode = 'n', key = 'gt',         func = vim.lsp.buf.type_definition }, -- goto type definition
     { mode = 'n', key = 'gp',         func = require('navigator.definition').definition_preview }, -- hover definition preview
     { mode = 'n', key = 'gP',         func = require('navigator.definition').type_definition_preview }, -- hover type definition preview
-    { mode = 'n', key = '<c-k>',      func = vim.lsp.buf.signature_help }, -- sig help
+    -- messes up ctrl-hjkl for moving windows
+    -- { mode = 'n', key = '<c-k>',      func = vim.lsp.buf.signature_help }, -- sig help
     { mode = 'n', key = '<C-S-K>',    func = toggle_lsp_signature }, -- sig help
     { mode = 'i', key = '<C-S-K>',    func = toggle_lsp_signature }, -- sig help
     { mode = 'n', key = '<leader>ca', func = vim.lsp.buf.code_action }, -- code action
@@ -797,7 +806,11 @@ require'nvim-treesitter.configs'.setup {
   },
 
   indent = {
-      enable = true
+      enable = true,
+  },
+
+  playground = {
+      enable = true,
   }
 }
 
@@ -982,6 +995,18 @@ lua <<EOF
 
 -- configure copilot.lua
 require("copilot").setup({
+  suggestion = {
+    enabled = true,
+    auto_trigger = true,
+    keymap = {
+      accept = "<C-t>",
+    },
+  },
+
+  filetypes = {
+    yaml = true,
+    markdown = true,
+  }
 })
 
 EOF
