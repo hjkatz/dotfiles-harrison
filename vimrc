@@ -1207,8 +1207,8 @@ augroup ft_go
 EOF
 
    " Recursive toggle
-   au FileType go nnoremap <Space> zA
-   au FileType go vnoremap <Space> zA
+   au FileType go nnoremap <buffer> <Space> zA
+   au FileType go vnoremap <buffer> <Space> zA
 
    " Alternate between test files (use A! to create file)
    au Filetype go command! -bang A GoAlt
@@ -1236,19 +1236,19 @@ EOF
 
    " " setup some leaders
    " Go build current package of current file
-   au FileType go nmap <leader>b :GoBuild %:h<CR>
-   au FileType go nmap <Leader>t :GoTestFile<CR>
-   au FileType go nmap <Leader>tf :GoTestFunc<CR>
-   au FileType go nnoremap <F8> Ortime.Breakpoint()<esc>/import<cr>Oimport rtime "runtime"<esc><c-o>:w<cr>
+   au FileType go nmap <buffer> <leader>b :GoBuild %:h<CR>
+   au FileType go nmap <buffer> <Leader>t :GoTestFile<CR>
+   au FileType go nmap <buffer> <Leader>tf :GoTestFunc<CR>
+   au FileType go nnoremap <buffer> <F8> Ortime.Breakpoint()<esc>/import<cr>Oimport rtime "runtime"<esc><c-o>:w<cr>
 
    " abbreviations
-   au FileType go iabbrev === :=
-   au FileType go iabbrev !! !=
-   au FileType go iabbrev importlogrus log "github.com/sirupsen/logrus"
-   au FileType go iabbrev importlog log "github.com/sirupsen/logrus"
-   au FileType go iabbrev importspew "github.com/davecgh/go-spew/spew"
-   au FileType go iabbrev importassert "github.com/stretchr/testify/assert"
-   au FileType go iabbrev importmetav1 metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+   au FileType go iabbrev <buffer> === :=
+   au FileType go iabbrev <buffer> !! !=
+   au FileType go iabbrev <buffer> importlogrus log "github.com/sirupsen/logrus"
+   au FileType go iabbrev <buffer> importlog log "github.com/sirupsen/logrus"
+   au FileType go iabbrev <buffer> importspew "github.com/davecgh/go-spew/spew"
+   au FileType go iabbrev <buffer> importassert "github.com/stretchr/testify/assert"
+   au FileType go iabbrev <buffer> importmetav1 metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 augroup END
 
 " }}}
@@ -1268,8 +1268,8 @@ augroup ft_javascript
     au!
 
     " Recursive toggle
-    au FileType javascript nnoremap <Space> zA
-    au FileType javascript vnoremap <Space> zA
+    au FileType javascript nnoremap <buffer> <Space> zA
+    au FileType javascript vnoremap <buffer> <Space> zA
 
 augroup END
 
@@ -1280,8 +1280,8 @@ augroup ft_typescript
     au!
 
     " Recursive toggle
-    au FileType typescript nnoremap <Space> zA
-    au FileType typescript vnoremap <Space> zA
+    au FileType typescript nnoremap <buffer> <Space> zA
+    au FileType typescript vnoremap <buffer> <Space> zA
 
     au FileType typescript setlocal ts=2
     au FileType typescript setlocal sw=2
@@ -1296,8 +1296,8 @@ augroup ft_json
     au!
 
     " Recursive toggle
-    au FileType json nnoremap <Space> zA
-    au FileType json vnoremap <Space> zA
+    au FileType json nnoremap <buffer> <Space> zA
+    au FileType json vnoremap <buffer> <Space> zA
 augroup END
 
 " }}}
@@ -1311,8 +1311,8 @@ augroup ft_jsonnet
     au FileType jsonnet setlocal expandtab
 
     " Recursive toggle
-    au FileType jsonnet nnoremap <Space> zA
-    au FileType jsonnet vnoremap <Space> zA
+    au FileType jsonnet nnoremap <buffer> <Space> zA
+    au FileType jsonnet vnoremap <buffer> <Space> zA
 
     " use # for comments instead of default //
     au FileType jsonnet setlocal commentstring=#\ %s
@@ -1325,8 +1325,8 @@ augroup ft_latex
     au!
 
     " Recursive toggle
-    au FileType latex nnoremap <Space> zA
-    au FileType latex vnoremap <Space> zA
+    au FileType latex nnoremap <buffer> <Space> zA
+    au FileType latex vnoremap <buffer> <Space> zA
 
     " Folding for latex is handled by latexbox
 
