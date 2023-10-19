@@ -447,28 +447,35 @@ local get_git_root = function()
   return vim.fn.fnamemodify(dot_git_path, ":h")
 end
 
--- find_files from git repo root if in git, otherwise find_files in pwd
-local telescope_project_files = function(opts)
-  if opts == nil then
-      opts = {}
-  end
+-- wraps telescope picker with opts to set cwd if inside git root, otherwise fallback to pwd
+local wrap_project_files_fallback_cwd = function(fnPicker)
+  return function(opts)
+    if opts == nil then
+        opts = {}
+    end
 
-  local cwd = vim.fn.getcwd()
-  if is_inside_git_tree[cwd] == nil then
-    vim.fn.system("git rev-parse --is-inside-work-tree")
-    is_inside_git_tree[cwd] = vim.v.shell_error == 0
-  end
+    local cwd = vim.fn.getcwd()
+    if is_inside_git_tree[cwd] == nil then
+      vim.fn.system("git rev-parse --is-inside-work-tree")
+      is_inside_git_tree[cwd] = vim.v.shell_error == 0
+    end
 
-  if is_inside_git_tree[cwd] then
-    opts["cwd"] = get_git_root()
-  end
+    if is_inside_git_tree[cwd] then
+      opts["cwd"] = get_git_root()
+    end
 
-  require("telescope.builtin").find_files(opts)
+    fnPicker(opts)
+  end
 end
+
+local picker_find_files = require("telescope.builtin").find_files
+local picker_live_grep = require("telescope.builtin").live_grep
 
 -- function to open telescope with horizontal selection mapped to <CR>
 local telescope_find_files_horizontal = function(opts)
-  telescope_project_files({
+  local picker = wrap_project_files_fallback_cwd(picker_find_files)
+
+  picker({
     attach_mappings = function(_, map)
       map({"i", "n"}, "<CR>", "select_horizontal")
       return true
@@ -476,9 +483,11 @@ local telescope_find_files_horizontal = function(opts)
   })
 end
 
--- function to open telescope with horizontal selection mapped to <CR>
+-- function to open telescope with vertical selection mapped to <CR>
 local telescope_find_files_vertical = function(opts)
-  telescope_project_files({
+  local picker = wrap_project_files_fallback_cwd(picker_find_files)
+
+  picker({
     attach_mappings = function(_, map)
       map({"i", "n"}, "<CR>", "select_vertical")
       return true
@@ -487,9 +496,9 @@ local telescope_find_files_vertical = function(opts)
 end
 
 -- keymaps
-vim.keymap.set('n', '<leader>ff', telescope_project_files, {})
-vim.keymap.set('n', '<leader>fg', require("telescope.builtin").live_grep, {})
-vim.keymap.set('n', '<leader>rg', require("telescope.builtin").live_grep, {})
+vim.keymap.set('n', '<leader>ff', wrap_project_files_fallback_cwd(picker_find_files), {})
+vim.keymap.set('n', '<leader>fg', wrap_project_files_fallback_cwd(picker_live_grep), {})
+vim.keymap.set('n', '<leader>rg', wrap_project_files_fallback_cwd(picker_live_grep), {})
 vim.keymap.set('n', '<leader>fh', require("telescope.builtin").help_tags, {}) -- :help
 vim.keymap.set('n', '<leader>hh', require("telescope.builtin").help_tags, {}) -- :help
 vim.keymap.set('n', 'Sp', require("telescope.builtin").help_tags, {}) -- :help
@@ -579,7 +588,6 @@ require("navigator").setup({
   debug = true,
   mason = true,
   default_mapping = false,
-  lsp_installer = false, -- use mason instead
   lsp_signature_help = true,
   signature_help_cfg = nil, -- configure ray-x/lsp_signature_help on its own
   lsp = {
