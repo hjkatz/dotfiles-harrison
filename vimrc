@@ -629,9 +629,9 @@ require("navigator").setup({
     diagnostic_virtual_text = '', -- empty floating text prefix
     diagnostic_file = '', -- icon in floating window indicating a file contains diagnostics
 
-    -- Values
-    value_changed = '📝',
-    value_definition = '🐶🍡', -- it is easier to see than 🦕
+    -- Values icons appear in floating references view
+    value_definition = '󰐕', -- identifier defined
+    value_changed = '󰆕 ', -- identifier modified
     side_panel = {
       section_separator = '󰇜',
       line_num_left = '',
