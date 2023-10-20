@@ -621,10 +621,16 @@ require("navigator").setup({
   lsp_signature_help = true,
   signature_help_cfg = nil, -- configure ray-x/lsp_signature_help on its own
   lsp = {
-      diagnostic_scrollbar_sign = false, -- disable scrollbar symbols
+      -- Disable all lsp setup including code actions, lens, diagnostics, etc...
+      -- I will set these up via copy/paste functions from ray-x/navigator.lua
+      -- into my lsp config below
+      -- some config settings will still be loaded and respected during require("navigator.*").some_fn calls
       enable = false,
       disable_lsp = "all",
-      document_highlight = true,
+      code_action = {
+        delay = 5000, -- ms
+      },
+      diagnostic_scrollbar_sign = false, -- disable scrollbar symbols
       tsserver = {
           single_file_support = true,
       },
@@ -694,6 +700,8 @@ require("navigator").setup({
     doc_symbols = ' ',
   },
 })
+-- load diagnostics (disabled by lsp.enabled = false)
+require('navigator.diagnostics').config({})
 
 cmp.setup({
     -- snippet engine is _required_
@@ -798,12 +806,22 @@ local lsp_defaults = lspconfig.util.default_config
 local lsp_capabilities = vim.tbl_deep_extend('force', lsp_defaults.capabilities, require('cmp_nvim_lsp').default_capabilities())
 local lsp_attach = function(client, bufnr)
   local opts = { buffer = bufnr }
+  require("navigator.dochighlight").documentHighlight(bufnr)
+  require("navigator.lspclient.highlight").add_highlight()
+  require("navigator.lspclient.highlight").diagnositc_config_sign() -- [sic]
+  require('navigator.lspclient.lspkind').init()
+  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
   -- Setup navigator for lsp client
   require("navigator.lspclient.mapping").setup({
     client = client,
     bufnr = bufnr,
   })
-  require("navigator.dochighlight").documentHighlight(bufnr)
+
+  -- call to show code actions as floating text and gutter icon
+  local prompt_code_action = function()
+    require('navigator.codeAction').code_action_prompt(bufnr)
+  end
 
   -- ray-x/navigator
   -- ref: https://github.com/ray-x/navigator.lua/tree/master#default-keymaps
@@ -838,6 +856,8 @@ local lsp_attach = function(client, bufnr)
     { mode = 'n', key = '<leader>ct', func = require('navigator.ctags').ctags }, -- fzf ctags
     { mode = 'n', key = '<leader>ca', func = require('navigator.codeAction').code_action }, -- code action
     { mode = 'v', key = '<leader>ca', func = require('navigator.codeAction').range_code_action }, -- code action
+    { mode = 'n', key = '<C-S-C>',    func = prompt_code_action }, -- prompt for possible code actions
+    { mode = 'v', key = '<C-S-C>',    func = prompt_code_action }, -- prompt for possible code actions
     { mode = 'n', key = 'gG',         func = require('navigator.diagnostics').show_buf_diagnostics }, -- diagnostics
     { mode = 'n', key = '<leader>G',  func = require('navigator.diagnostics').show_buf_diagnostics }, -- diagnostics
     { mode = 'n', key = 'gL',         func = require('navigator.diagnostics').show_diagnostics }, -- diagnostics
@@ -860,7 +880,7 @@ local lsp_settings = {
         yaml = {
             keyOrdering = false,
         },
-    }
+    },
 }
 
 -- set default value for lsp_settings that are not configured from defaults
