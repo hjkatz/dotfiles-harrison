@@ -634,12 +634,7 @@ require("navigator").setup({
       tsserver = {
           single_file_support = true,
       },
-      format_on_save = {
-        disable = {
-          "javascript",
-          "typescript",
-        },
-      },
+      format_on_save = false,
   },
   icons = {
     icons = true, -- requires nerd fonts
