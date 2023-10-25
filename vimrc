@@ -544,7 +544,7 @@ EOF
 
 " }}}
 
-" mason --------------------------- {{{
+" mason / mason-lspconfig --------------------------- {{{
 
 lua <<EOF
 
@@ -571,15 +571,14 @@ require("mason-lspconfig").setup({
         "terraformls",
         "jqls",
         "ltex",
-        "gopls",
         "taplo",
         "yamlls",
         "pyright",
         "jsonls",
-        "golangci_lint_ls",
+        "gopls",
+        "golangci_lint_ls", -- golangci-lint + lsp
         "dockerls",
         "bashls",
-        "gopls",
         "tsserver",
     },
 })
@@ -588,7 +587,7 @@ EOF
 
 " }}}
 
-" mason-lsp / lspconfig / navigator / cmp ----------------------------- {{{
+" lspconfig / navigator / cmp ----------------------------- {{{
 
 " See: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v2.x/doc/md/lsp.md#you-might-not-need-lsp-zero
 " See: https://github.com/ray-x/navigator.lua
@@ -797,7 +796,6 @@ end
 
 local lspconfig = require('lspconfig')
 local lsp_defaults = lspconfig.util.default_config
-
 local lsp_capabilities = vim.tbl_deep_extend('force', lsp_defaults.capabilities, require('cmp_nvim_lsp').default_capabilities())
 local lsp_attach = function(client, bufnr)
   local opts = { buffer = bufnr }
@@ -876,10 +874,51 @@ local lsp_settings = {
             keyOrdering = false,
         },
     },
+
+    -- See: https://github.com/golang/tools/blob/master/gopls/doc/settings.md
+    gopls = {
+      -- root_dir = lspconfig.util.root_pattern("go/go.mod", "go.mod", ".git"),
+      -- directoryFilters = {
+
+      -- },
+    },
+}
+
+-- See: https://ngrok.slack.com/archives/C0405411BG9/p1698257254042009?thread_ts=1698180961.267949&cid=C0405411BG9
+-- See: https://github.com/neovim/neovim/issues/23291#issuecomment-1560742827
+-- See: https://github.com/golang/go/issues/41504
+-- require('vim.lsp._watchfiles')._watchfunc = function(_, _, _) return true end
+
+-- overrides lsp root_dir
+local lsp_root_dir_overrides = {
+    gopls = function(fname)
+        local root_files = {
+            'go/go.mod', -- ngrok
+            'go.work',
+            'go.mod',
+            '.git',
+        }
+        return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
+    end,
 }
 
 -- set default value for lsp_settings that are not configured from defaults
 setmetatable(lsp_settings, { __index=function() return {} end })
+setmetatable(lsp_root_dir_overrides, { __index=function() return false end })
+
+local get_lspconfig = function(server_name)
+  local opts = {
+    on_attach    = lsp_attach,
+    capabilities = lsp_capabilities,
+    settings     = lsp_settings[server_name],
+  }
+
+  if lsp_root_dir_overrides[server_name] ~= false then
+      opts.root_dir = lsp_root_dir_overrides[server_name]
+  end
+
+  return opts
+end
 
 -- all handlers should use the default on_attach and capabilities
 -- see lsp_settings above for per-lsp settings
@@ -888,11 +927,7 @@ local mason_handlers = {
     -- and will be called for each installed server that doesn't have
     -- a dedicated handler.
     function (server_name)
-        lspconfig[server_name].setup({
-            on_attach    = lsp_attach,
-            capabilities = lsp_capabilities,
-            settings     = lsp_settings[server_name],
-        })
+        lspconfig[server_name].setup(get_lspconfig(server_name))
     end,
 }
 
