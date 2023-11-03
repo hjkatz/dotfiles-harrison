@@ -619,6 +619,8 @@ require("navigator").setup({
   default_mapping = false,
   lsp_signature_help = true,
   signature_help_cfg = nil, -- configure ray-x/lsp_signature_help on its own
+  lines_show_prompt = 20, -- when result list is >= number, then show input prompt
+  prompt_mode = 'normal', -- default mode for prompt
   lsp = {
       -- Disable all lsp setup including code actions, lens, diagnostics, etc...
       -- I will set these up via copy/paste functions from ray-x/navigator.lua
