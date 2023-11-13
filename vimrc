@@ -879,9 +879,7 @@ local lsp_settings = {
 
     -- See: https://github.com/golang/tools/blob/master/gopls/doc/settings.md
     gopls = {
-      -- root_dir = lspconfig.util.root_pattern("go/go.mod", "go.mod", ".git"),
       -- directoryFilters = {
-
       -- },
     },
 }
@@ -898,6 +896,15 @@ local lsp_root_dir_overrides = {
             'go/go.mod', -- ngrok
             'go.work',
             'go.mod',
+            '.git',
+        }
+        return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
+    end,
+
+    terraformlm = function(fname)
+        local root_files = {
+            '.terraform',
+            'tf', -- ngrok
             '.git',
         }
         return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
