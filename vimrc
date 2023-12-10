@@ -857,10 +857,11 @@ local lsp_attach = function(client, bufnr)
     { mode = 'n', key = '<leader>G',  func = require('navigator.diagnostics').show_buf_diagnostics }, -- diagnostics
     { mode = 'n', key = 'gL',         func = require('navigator.diagnostics').show_diagnostics }, -- diagnostics
     { mode = 'n', key = '<leader>L',  func = require('navigator.diagnostics').show_diagnostics }, -- diagnostics
-    { mode = 'n', key = '<leader>cf', func = vim.lsp.buf.format }, -- format code
-    { mode = 'v', key = '<leader>cf', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
-    { mode = 'n', key = '<leader>fc', func = vim.lsp.buf.format }, -- format code
-    { mode = 'v', key = '<leader>fc', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
+    -- doesn't work yet in 0.10 nightly, and I don't use these anyways
+    -- { mode = 'n', key = '<leader>cf', func = vim.lsp.buf.format }, -- format code
+    -- { mode = 'v', key = '<leader>cf', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
+    -- { mode = 'n', key = '<leader>fc', func = vim.lsp.buf.format }, -- format code
+    -- { mode = 'v', key = '<leader>fc', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
   }
 
   for _, km in pairs(keymaps) do
@@ -893,18 +894,18 @@ local lsp_settings = {
 local lsp_root_dir_overrides = {
     gopls = function(fname)
         local root_files = {
+            'go.mod',
             'go/go.mod', -- ngrok
             'go.work',
-            'go.mod',
             '.git',
         }
         return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
     end,
 
-    terraformlm = function(fname)
+    terraformls = function(fname)
         local root_files = {
+            '.terraform_root', -- ngrok
             '.terraform',
-            'tf', -- ngrok
             '.git',
         }
         return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
@@ -996,10 +997,6 @@ require'nvim-treesitter.configs'.setup {
     "query",
   },
 
-  context_commentstring = {
-      enable = true,
-  },
-
   sync_install = false,
   auto_install = true,
 
@@ -1015,6 +1012,17 @@ require'nvim-treesitter.configs'.setup {
       enable = true,
   }
 }
+
+require('ts_context_commentstring').setup {
+  enable = true,
+
+  languages = {
+    terraform = '# %s',
+  },
+}
+
+-- skip backwards compatability check to speed up loading
+vim.g.skip_ts_context_commentstring_module = true
 
 END
 
