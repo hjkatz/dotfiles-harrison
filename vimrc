@@ -28,6 +28,9 @@ filetype off                  " required, turns off automatic filetype detection
 source ~/.dotfiles-harrison/plug.vim
 
 call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
+    " fancy icons
+    Plug 'nvim-tree/nvim-web-devicons'
+
     " repeat everything with '.'
     Plug 'tpope/vim-repeat'
 
@@ -130,14 +133,11 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     " whitespace detection and deletion
     Plug 'ntpeters/vim-better-whitespace'
 
-    " split windows in a spectacular fashion
-    " Plug 'roman/golden-ratio'
-
     " asks which file you meant to open
     Plug 'EinfachToll/DidYouMean'
 
     " quickfix/location list taming
-    Plug 'romainl/vim-qf'
+    Plug 'folke/trouble.nvim'
 
     " git gutter
     Plug 'airblade/vim-gitgutter'
@@ -410,6 +410,54 @@ autocmd FileType guihua_rust lua require('cmp').setup.buffer { enabled = false }
 
 " }}}
 
+ " trouble  ----------------------------- {{{
+
+lua <<EOF
+require("trouble").setup({
+  position = "bottom",
+  severity = nil, -- default (ALL), filter with '<tab>'
+  -- severity = vim.diagnostic.severity.ERROR,
+
+  -- keymaps
+  action_keys = {
+    close = "q", -- close the list
+    cancel = "<esc>", -- cancel the preview and get back to your last window / buffer / cursor
+    refresh = "r", -- manually refresh
+    switch_severity = "<tab>", -- switch severity (ERROR, WARNING, INFO, HINT, ALL)
+    open_split = { "<c-s>" }, -- open buffer in new split
+    open_vsplit = { "<c-v>" }, -- open buffer in new vsplit
+    open_tab = {}, -- disabled
+    hover = "K", -- opens a small popup with the full multiline message
+    toggle_fold = { "zA", "zR", "<space>" }, -- toggle fold of one or all diagnostics
+    help = "?", -- opens the trouble help
+  },
+
+  -- use the signs defined in the lsp client
+  use_diagnostic_signs = true,
+})
+
+local toggle_trouble = function()
+  require("trouble").toggle()
+end
+
+local trouble_next_item = function()
+  require("trouble").next({})
+end
+
+local trouble_prev_item = function()
+  require("trouble").previous({})
+end
+
+-- global mappings
+vim.keymap.set('n', '<F5>', toggle_trouble)
+vim.keymap.set('n', '<leader>q', toggle_trouble)
+vim.keymap.set('n', '<Home>', trouble_prev_item)
+vim.keymap.set('n', '<End>', trouble_next_item)
+
+EOF
+
+ " }}}
+
 " telescope ----------------------------- {{{
 
 lua <<EOF
@@ -453,6 +501,7 @@ local telescopeMappings = {
   ["<C-j>"] = "preview_scrolling_down",
   ["<C-l>"] = "preview_scrolling_right",
   ["<C-h>"] = "preview_scrolling_left",
+  ["<C-t>"] = require("trouble.providers.telescope").open_with_trouble,
 }
 
 require("telescope").setup({
@@ -776,9 +825,6 @@ cmp.setup({
 -- link autopairs and cmp together so <cr> inserts () on Function and Method
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-
--- global mappings
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setqflist)
 
 local lsp_signature = require('lsp_signature').setup({
   hint_enable = true,
@@ -1166,22 +1212,6 @@ endfunction
 autocmd BufWritePre * call Delete_whitespace()
 
 " }}}
-
- " vim-qf ----------------------------- {{{
-
- " Mappings for location list movement
- nmap <Home> <Plug>(qf_qf_previous)
- nmap <End>  <Plug>(qf_qf_next)
-
- nmap <C-Home> <Plug>(qf_loc_previous)
- nmap <C-End>  <Plug>(qf_loc_next)
-
- nmap <F5> <Plug>(qf_qf_toggle)
-
- let g:qf_auto_resize = 0
- let g:qf_save_win_view = 1
-
- " }}}
 
 " vim-fubitive ----------------------------- {{{
 
