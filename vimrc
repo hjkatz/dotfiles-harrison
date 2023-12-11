@@ -139,8 +139,8 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     " quickfix/location list taming
     Plug 'folke/trouble.nvim'
 
-    " git gutter
-    Plug 'airblade/vim-gitgutter'
+    " git signs in the gutter
+    Plug 'lewis6991/gitsigns.nvim'
 
     " tagbar
     Plug 'majutsushi/tagbar'
@@ -1226,6 +1226,26 @@ nnoremap <silent> <F2> :TagbarToggle<CR>
 
 let g:tagbar_map_togglefold = '<Space>'
 let g:tagbar_autofocus = 1
+
+" }}}
+
+" gitsigns ----------------------------- {{{
+
+lua <<EOF
+
+require("gitsigns").setup({
+  signcolumn = true, -- show gitsigns in the sign column
+  numhl = true, -- highlight the line number column too
+  current_line_blame = true,
+  current_line_blame_formatter = '[<author_mail>, <author_time:%Y-%m-%d> [<abbrev_sha>] - <summary>]',
+  current_line_blame_formatter_nc = '[Not committed yet]',
+  trouble = true,
+})
+
+vim.keymap.set('n', '<leader>gb', require('gitsigns').blame_line, {})
+vim.keymap.set('n', '<leader>bl', require('gitsigns').blame_line, {})
+
+EOF
 
 " }}}
 
