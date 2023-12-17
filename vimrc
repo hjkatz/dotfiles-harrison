@@ -388,7 +388,8 @@ require("guihua.maps").setup({
       confirm = '<CR>',
       split = '<C-s>',
       vsplit = '<C-v>',
-      tabnew = '<C-t>',
+      -- tabnew = '<C-t>',
+      send_qf = '<C-q>',
   },
 })
 
@@ -453,6 +454,32 @@ vim.keymap.set('n', '<F5>', toggle_trouble)
 vim.keymap.set('n', '<leader>q', toggle_trouble)
 vim.keymap.set('n', '<Home>', trouble_prev_item)
 vim.keymap.set('n', '<End>', trouble_next_item)
+
+-- hijack quickfix and location lists
+local function hijack_qflist()
+  local trouble = require("trouble")
+
+  -- Check whether we deal with a quickfix or location list buffer, close the window and open the
+  -- corresponding Trouble window instead.
+  if vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0 then
+    vim.defer_fn(function()
+      vim.cmd.lclose()
+      trouble.open("loclist")
+    end, 0)
+  else
+    vim.defer_fn(function()
+      vim.cmd.cclose()
+      trouble.open("quickfix")
+    end, 0)
+  end
+end
+
+local group = vim.api.nvim_create_augroup("HijackQuickfixWithTrouble", {})
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  pattern = "quickfix", -- buf name
+  group = group,
+  callback = hijack_qflist,
+})
 
 EOF
 
@@ -681,6 +708,8 @@ require("navigator").setup({
         delay = 5000, -- ms
       },
       diagnostic_scrollbar_sign = false, -- disable scrollbar symbols
+      diagnostic_virtual_text = '', -- empty floating text prefix
+      display_diagnostic_qf = false, -- do not display qf on save
       tsserver = {
           single_file_support = true,
       },
