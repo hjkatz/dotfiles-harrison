@@ -857,7 +857,7 @@ cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 
 local lsp_signature = require('lsp_signature').setup({
   hint_enable = true,
-  -- hint_inline = function() return false end, -- supported in nvim 0.10+
+  hint_inline = function() return true end,
   hint_prefix = "() ",
   floating_window = false,
   floating_window_above_cur_line = true,
