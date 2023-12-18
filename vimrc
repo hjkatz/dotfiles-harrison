@@ -95,6 +95,9 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     " snippets for code insertion
     Plug 'L3MON4D3/LuaSnip', {'tag': 'v1.*'}
 
+    " debug print
+    Plug 'andrewferrier/debugprint.nvim'
+
     " auto-upcase sql terms
     Plug 'hjkatz/sql_iabbr.vim', { 'for': 'sql' }
 
@@ -1314,6 +1317,38 @@ let g:tagbar_autofocus = 1
 
 " }}}
 
+" debugprint ----------------------------- {{{
+
+lua <<EOF
+
+require("debugprint").setup({
+  create_keymaps = false,
+  move_to_debugline = true,
+  display_snippet = true,
+  display_counter = true,
+  print_tag = "DEBUGPRINT",
+})
+
+vim.keymap.set("n", "<leader>dD", function()
+  return require("debugprint").debugprint({ above = true })
+end, { expr = true })
+
+vim.keymap.set("n", "<leader>dd", function()
+  return require("debugprint").debugprint({})
+end, { expr = true })
+
+vim.keymap.set("n", "<leader>dV", function()
+  return require("debugprint").debugprint({ above = true, variable = true })
+end, { expr = true })
+
+vim.keymap.set("n", "<leader>dv", function()
+  return require("debugprint").debugprint({ variable = true })
+end, { expr = true })
+
+EOF
+
+" }}}
+
 " gitsigns ----------------------------- {{{
 
 lua <<EOF
@@ -1535,7 +1570,6 @@ EOF
    au FileType go nmap <buffer> <leader>b :GoBuild %:h<CR>
    au FileType go nmap <buffer> <Leader>t :GoTestFile<CR>
    au FileType go nmap <buffer> <Leader>tf :GoTestFunc<CR>
-   au FileType go nnoremap <buffer> <F8> Ortime.Breakpoint()<esc>/import<cr>Oimport rtime "runtime"<esc><c-o>:w<cr>
 
    " abbreviations
    au FileType go iabbrev <buffer> === :=
