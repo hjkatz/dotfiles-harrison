@@ -72,6 +72,9 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     " auto-pairs
     Plug 'windwp/nvim-autopairs'
 
+    " which-key
+    Plug 'folke/which-key.nvim'
+
     " Text Object Plugins
     " add more builtin text object targets like quotes, tags, braces, etc...
     Plug 'wellle/targets.vim'
@@ -1314,6 +1317,50 @@ nnoremap <silent> <F2> :TagbarToggle<CR>
 
 let g:tagbar_map_togglefold = '<Space>'
 let g:tagbar_autofocus = 1
+
+" }}}
+
+" which-key ----------------------------- {{{
+
+lua <<EOF
+
+require("which-key").setup({
+  plugins = {
+    marks = true,
+    registers = false,
+    spelling = {
+      enabled = true,
+      suggestions = 20,
+    },
+    presets = {
+      operators = false,
+      motions = false,
+      text_objects = false,
+      windows = false,
+      nav = false,
+      z = false,
+      g = false,
+    },
+  },
+})
+
+vim.keymap.set("n", "<leader>dD", function()
+  return require("debugprint").debugprint({ above = true })
+end, { expr = true })
+
+vim.keymap.set("n", "<leader>dd", function()
+  return require("debugprint").debugprint({})
+end, { expr = true })
+
+vim.keymap.set("n", "<leader>dV", function()
+  return require("debugprint").debugprint({ above = true, variable = true })
+end, { expr = true })
+
+vim.keymap.set("n", "<leader>dv", function()
+  return require("debugprint").debugprint({ variable = true })
+end, { expr = true })
+
+EOF
 
 " }}}
 
