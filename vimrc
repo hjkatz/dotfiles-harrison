@@ -388,9 +388,64 @@ require("guihua.maps").setup({
       confirm = '<CR>',
       split = '<C-s>',
       vsplit = '<C-v>',
-      -- tabnew = '<C-t>',
+      tabnew = '<C-t>', -- will be hijacked to use send_qf -> trouble instead
       send_qf = '<C-q>',
   },
+})
+
+function is_win_guihua_floating(win)
+  -- default to current window
+  if win ~= false then win = 0 end
+  -- get the config for the window
+  local config = vim.api.nvim_win_get_config(win)
+
+  -- check if the window is floating
+  if config.relative == "" then return false end
+
+  -- it just so happens that .title of each floating window created by guihua looks like this
+  -- title = { { "R", "GHRainbow1" }, { "e", "GHRainbow2" }, ... }
+  -- so let's check for that I guess
+  if not config.title then return false end
+  local title = config.title
+  if #title <= 0 then return false end
+  local first_item = title[1]
+  if #first_item < 2 then return false end
+  local first_string = first_item[2]
+  if vim.startswith(first_string, "GH") then return true end
+
+  return false
+end
+
+function hijack_guihua_mappings(buf)
+  -- get bufmap for the current win
+  buf = 0
+  local bufmap = vim.api.nvim_buf_get_keymap(buf, 'n')
+
+  -- find the function with lhs = "<C-Q>" (send items to quickfix)
+  local fn = nil
+  for _, v in pairs(bufmap) do
+    if v.lhs and v.lhs == "<C-Q>" then
+      fn = v.callback
+      break
+    end
+  end
+
+  -- -- override the new tab mapping to instead call the send to quickfix callback
+  vim.keymap.set('n', '<C-t>', fn, { buffer = buf })
+  vim.keymap.set('i', '<C-t>', fn, { buffer = buf })
+end
+
+vim.api.nvim_create_autocmd("WinNew", {
+  pattern = "*",
+  callback = function()
+    if is_win_guihua_floating() then
+      -- get the current buffer
+      local buf = vim.api.nvim_win_get_buf(0)
+      local timer = vim.loop.new_timer()
+      -- delay the hijack b/c the bufmap is not filled in until after the window is created
+      timer:start(50, 0, vim.schedule_wrap(hijack_guihua_mappings))
+    end
+  end,
 })
 
 EOF
