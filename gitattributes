@@ -13,7 +13,7 @@
 #
 
 # Documents
-*.bibtex   text diff=bibtex
+*.bibtex   text=auto diff=bibtex
 *.doc      diff=astextplain
 *.DOC      diff=astextplain
 *.docx     diff=astextplain
@@ -24,16 +24,16 @@
 *.PDF      diff=astextplain
 *.rtf      diff=astextplain
 *.RTF      diff=astextplain
-*.md       text
-*.tex      text diff=tex
-*.adoc     text
-*.textile  text
-*.mustache text
-*.csv      text
-*.tab      text
-*.tsv      text
-*.txt      text
-*.sql      text
+*.md       text=auto
+*.tex      text=auto diff=tex
+*.adoc     text=auto
+*.textile  text=auto
+*.mustache text=auto
+*.csv      text=auto
+*.tab      text=auto
+*.tsv      text=auto
+*.txt      text=auto
+*.sql      text=auto
 
 # Graphics
 *.png      binary
@@ -51,20 +51,20 @@
 *.eps      binary
 
 # Scripts
-*.bash     text eol=lf
-*.fish     text eol=lf
-*.sh       text eol=lf
+*.bash     text=auto eol=lf
+*.fish     text=auto eol=lf
+*.sh       text=auto eol=lf
 # These are explicitly windows files and should use crlf
-*.bat      text eol=crlf
-*.cmd      text eol=crlf
-*.ps1      text eol=crlf
+*.bat      text=auto eol=crlf
+*.cmd      text=auto eol=crlf
+*.ps1      text=auto eol=crlf
 
 # Serialisation
-*.json     text
-*.toml     text
-*.xml      text
-*.yaml     text
-*.yml      text
+*.json     text=auto
+*.toml     text=auto
+*.xml      text=auto
+*.yaml     text=auto
+*.yml      text=auto
 
 # Archives
 *.7z       binary
@@ -95,28 +95,28 @@
 
 # Source files
 # ============
-*.vim text eol=lf
-.vimrc text eol=lf
-.gvimrc text eol=lf
+*.vim text=auto eol=lf
+.vimrc text=auto eol=lf
+.gvimrc text=auto eol=lf
 
 # Basic .gitattributes for a perl repo.
 
 # Source files
 # ============
-*.pl text diff=perl
-*.pm text diff=perl
+*.pl text=auto diff=perl
+*.pm text=auto diff=perl
 
 # Basic .gitattributes for a python repo.
 
 # Source files
 # ============
-*.pxd    text diff=python
-*.py     text diff=python
-*.py3    text diff=python
-*.pyw    text diff=python
-*.pyx    text diff=python
-*.pyz    text diff=python
-*.pyi    text diff=python
+*.pxd    text=auto diff=python
+*.py     text=auto diff=python
+*.py3    text=auto diff=python
+*.pyw    text=auto diff=python
+*.pyx    text=auto diff=python
+*.pyz    text=auto diff=python
+*.pyi    text=auto diff=python
 
 # Binary files
 # ============
@@ -129,7 +129,7 @@
 *.pyo    binary
 
 # Jupyter notebook
-*.ipynb  text
+*.ipynb  text=auto
 
 # Note: .db, .p, and .pkl files are associated
 # with the python modules ``pickle``, ``dbm.*``,
@@ -154,106 +154,106 @@
 *                 text=auto
 
 # Source code
-*.bash            text eol=lf
-*.bat             text eol=crlf
-*.cmd             text eol=crlf
-*.coffee          text
-*.css             text
-*.htm             text diff=html
-*.html            text diff=html
-*.inc             text
-*.ini             text
-*.js              text
-*.json            text
-*.jsx             text
-*.less            text
-*.ls              text
-*.map             text -diff
-*.od              text
-*.onlydata        text
-*.php             text diff=php
-*.pl              text
-*.ps1             text eol=crlf
-*.py              text diff=python
-*.rb              text diff=ruby
-*.sass            text
-*.scm             text
-*.scss            text diff=css
-*.sh              text eol=lf
-*.sql             text
-*.styl            text
-*.tag             text
-*.ts              text
-*.tsx             text
-*.xml             text
-*.xhtml           text diff=html
+*.bash            text=auto eol=lf
+*.bat             text=auto eol=crlf
+*.cmd             text=auto eol=crlf
+*.coffee          text=auto
+*.css             text=auto
+*.htm             text=auto diff=html
+*.html            text=auto diff=html
+*.inc             text=auto
+*.ini             text=auto
+*.js              text=auto
+*.json            text=auto
+*.jsx             text=auto
+*.less            text=auto
+*.ls              text=auto
+*.map             text=auto -diff
+*.od              text=auto
+*.onlydata        text=auto
+*.php             text=auto diff=php
+*.pl              text=auto
+*.ps1             text=auto eol=crlf
+*.py              text=auto diff=python
+*.rb              text=auto diff=ruby
+*.sass            text=auto
+*.scm             text=auto
+*.scss            text=auto diff=css
+*.sh              text=auto eol=lf
+*.sql             text=auto
+*.styl            text=auto
+*.tag             text=auto
+*.ts              text=auto
+*.tsx             text=auto
+*.xml             text=auto
+*.xhtml           text=auto diff=html
 
 # Docker
-Dockerfile        text
+Dockerfile        text=auto
 
 # Documentation
-*.ipynb           text
-*.markdown        text
-*.md              text
-*.mdwn            text
-*.mdown           text
-*.mkd             text
-*.mkdn            text
-*.mdtxt           text
-*.mdtext          text
-*.txt             text
-AUTHORS           text
-CHANGELOG         text
-CHANGES           text
-CONTRIBUTING      text
-COPYING           text
-copyright         text
-*COPYRIGHT*       text
-INSTALL           text
-license           text
-LICENSE           text
-NEWS              text
-readme            text
-*README*          text
-TODO              text
+*.ipynb           text=auto
+*.markdown        text=auto
+*.md              text=auto
+*.mdwn            text=auto
+*.mdown           text=auto
+*.mkd             text=auto
+*.mkdn            text=auto
+*.mdtxt           text=auto
+*.mdtext          text=auto
+*.txt             text=auto
+AUTHORS           text=auto
+CHANGELOG         text=auto
+CHANGES           text=auto
+CONTRIBUTING      text=auto
+COPYING           text=auto
+copyright         text=auto
+*COPYRIGHT*       text=auto
+INSTALL           text=auto
+license           text=auto
+LICENSE           text=auto
+NEWS              text=auto
+readme            text=auto
+*README*          text=auto
+TODO              text=auto
 
 # Templates
-*.dot             text
-*.ejs             text
-*.haml            text
-*.handlebars      text
-*.hbs             text
-*.hbt             text
-*.jade            text
-*.latte           text
-*.mustache        text
-*.njk             text
-*.phtml           text
-*.tmpl            text
-*.tpl             text
-*.twig            text
-*.vue             text
+*.dot             text=auto
+*.ejs             text=auto
+*.haml            text=auto
+*.handlebars      text=auto
+*.hbs             text=auto
+*.hbt             text=auto
+*.jade            text=auto
+*.latte           text=auto
+*.mustache        text=auto
+*.njk             text=auto
+*.phtml           text=auto
+*.tmpl            text=auto
+*.tpl             text=auto
+*.twig            text=auto
+*.vue             text=auto
 
 # Configs
-*.cnf             text
-*.conf            text
-*.config          text
-.editorconfig     text
-.env              text
-.gitattributes    text
-.gitconfig        text
-.htaccess         text
-*.lock            text -diff
-package-lock.json text -diff
-*.toml            text
-*.yaml            text
-*.yml             text
-browserslist      text
-Makefile          text
-makefile          text
+*.cnf             text=auto
+*.conf            text=auto
+*.config          text=auto
+.editorconfig     text=auto
+.env              text=auto
+.gitattributes    text=auto
+.gitconfig        text=auto
+.htaccess         text=auto
+*.lock            text=auto -diff
+package-lock.json text=auto -diff
+*.toml            text=auto
+*.yaml            text=auto
+*.yml             text=auto
+browserslist      text=auto
+Makefile          text=auto
+makefile          text=auto
 
 # Heroku
-Procfile          text
+Procfile          text=auto
 
 # Graphics
 *.ai              binary
@@ -331,30 +331,30 @@ Procfile          text
 *.pyc             binary
 
 # RC files (like .babelrc or .eslintrc)
-*.*rc             text
+*.*rc             text=auto
 
 # Ignore files (like .npmignore or .gitignore)
-*.*ignore         text
+*.*ignore         text=auto
 
 # Java sources
-*.java          text diff=java
-*.gradle        text diff=java
-*.gradle.kts    text diff=java
+*.java          text=auto diff=java
+*.gradle        text=auto diff=java
+*.gradle.kts    text=auto diff=java
 
 # These files are text and should be normalized (Convert crlf => lf)
-*.css           text diff=css
-*.df            text
-*.htm           text diff=html
-*.html          text diff=html
-*.js            text
-*.jsp           text
-*.jspf          text
-*.jspx          text
-*.properties    text
-*.tld           text
-*.tag           text
-*.tagx          text
-*.xml           text
+*.css           text=auto diff=css
+*.df            text=auto
+*.htm           text=auto diff=html
+*.html          text=auto diff=html
+*.js            text=auto
+*.jsp           text=auto
+*.jspf          text=auto
+*.jspx          text=auto
+*.properties    text=auto
+*.tld           text=auto
+*.tag           text=auto
+*.tagx          text=auto
+*.xml           text=auto
 
 # These files are binary and should be left untouched
 # (binary is a macro for -text -diff)
@@ -369,11 +369,11 @@ Procfile          text
 # Various languages
 
 # Ruby
-*.rb text diff=ruby
-*.rake text diff=ruby
+*.rb text=auto diff=ruby
+*.rake text=auto diff=ruby
 
 # PHP
-*.php text diff=php
+*.php text=auto diff=php
 
 # Rust
-*.rs text diff=rust
+*.rs text=auto diff=rust
