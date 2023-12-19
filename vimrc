@@ -1342,7 +1342,7 @@ lua <<EOF
 
 require("which-key").setup({
   plugins = {
-    marks = true,
+    marks = false,
     registers = false,
     spelling = {
       enabled = true,
@@ -1359,22 +1359,6 @@ require("which-key").setup({
     },
   },
 })
-
-vim.keymap.set("n", "<leader>dD", function()
-  return require("debugprint").debugprint({ above = true })
-end, { expr = true })
-
-vim.keymap.set("n", "<leader>dd", function()
-  return require("debugprint").debugprint({})
-end, { expr = true })
-
-vim.keymap.set("n", "<leader>dV", function()
-  return require("debugprint").debugprint({ above = true, variable = true })
-end, { expr = true })
-
-vim.keymap.set("n", "<leader>dv", function()
-  return require("debugprint").debugprint({ variable = true })
-end, { expr = true })
 
 EOF
 
