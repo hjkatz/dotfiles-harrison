@@ -26,10 +26,17 @@ export KUBE_PS1_CLUSTER_FUNCTION=kube_ps1_cluster_function
 dir=$(dirname $0)
 source $dir/kube_ps1.sh
 
+alias k="kubectl "
 alias kb="kubectl "
 alias kube="kubectl "
 alias kctx="kubectl ctx "
 alias kns="kubectl ns "
+
+# k3s
+alias sk="sudo k3s"
+alias ks="sudo k3s"
+alias ksk="sudo k3s kubectl "
+alias sks="sudo k3s kubectl "
 
 # for prometheus include: servicemonitors
 alias -g kall="all,configmaps,deployments.apps,secrets,limits,resourcequotas,poddisruptionbudgets,jobs,deployments,cronjobs,statefulsets,serviceaccounts,rolebindings,persistentvolumeclaims"
@@ -48,6 +55,7 @@ source <(kubectl completion zsh)
 # set completion
 compdef kb=kubectl
 compdef kube=kubectl
+compdef k=kubectl
 
 # kubectx config
 export KUBECTX_CURRENT_FGCOLOR=$(tput setaf 6) # blue text
