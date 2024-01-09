@@ -91,7 +91,6 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     Plug 'nvim-treesitter/playground'
     " adds folding, fancy settings, and more!
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-    Plug 'chrisgrieser/nvim-origami'
 
     " LaTeX Everything
     Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
@@ -1318,21 +1317,6 @@ nnoremap <silent> <F2> :TagbarToggle<CR>
 
 let g:tagbar_map_togglefold = '<Space>'
 let g:tagbar_autofocus = 1
-
-" }}}
-
-" origami "folding" ----------------------------- {{{
-
-lua <<EOF
-
--- experimental folding with h and l
-require("origami").setup({
-  keepFoldsAcrossSessions = true,
-  pauseFoldsOnSearch = true,
-  setupFoldKeymaps = true,
-})
-
-EOF
 
 " }}}
 
