@@ -472,7 +472,7 @@ autocmd FileType guihua_rust lua require('cmp').setup.buffer { enabled = false }
 
 " }}}
 
- " trouble  ----------------------------- {{{
+" trouble  ----------------------------- {{{
 
 lua <<EOF
 require("trouble").setup({
@@ -494,8 +494,13 @@ require("trouble").setup({
     help = "?", -- opens the trouble help
   },
 
-  -- use the signs defined in the lsp client
-  use_diagnostic_signs = true,
+  use_diagnostic_signs = true, -- use the signs defined in the lsp client
+  cycle_results = true, -- cycle item list when reaching beginning or end
+  auto_open = false, -- automatically open the list when you have diagnostics
+  auto_close = false, -- automatically close the list when you have no diagnostics
+  auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
+  auto_fold = false, -- automatically fold a file trouble list at creation
+  -- auto_jump = true,
 })
 
 local toggle_trouble = function()
@@ -503,11 +508,17 @@ local toggle_trouble = function()
 end
 
 local trouble_next_item = function()
-  require("trouble").next({})
+  require("trouble").next({
+    skip_groups = true,
+    jump = true,
+  })
 end
 
 local trouble_prev_item = function()
-  require("trouble").previous({})
+  require("trouble").previous({
+    skip_groups = true,
+    jump = true,
+  })
 end
 
 -- global mappings
