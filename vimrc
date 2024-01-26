@@ -763,7 +763,7 @@ require("copilot_cmp").setup({})
 --   - disable navigator from configuring keymappings for lsp (use mason instead)
 -- See: https://github.com/ray-x/navigator.lua/issues/239#issuecomment-1287949589
 require("navigator").setup({
-  debug = true,
+  debug = false,
   mason = true,
   default_mapping = false,
   lsp_signature_help = true,
@@ -930,7 +930,7 @@ cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 
 local lsp_signature = require('lsp_signature').setup({
   hint_enable = true,
-  hint_inline = function() return true end,
+  hint_inline = function() return false end,
   hint_prefix = "() ",
   floating_window = false,
   floating_window_above_cur_line = true,
