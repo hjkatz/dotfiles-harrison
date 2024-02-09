@@ -719,7 +719,7 @@ require("mason-lspconfig").setup({
         "lua_ls",
         "terraformls",
         "jqls",
-        "ltex",
+        -- "ltex", -- prints too many debug messages
         "taplo",
         "yamlls",
         "pyright",
