@@ -83,6 +83,9 @@
     # git commit --signed
     gpgsign = {{GIT_GPG_SIGN}}
 
+    # add the full diff into $EDITOR when writing a message
+    verbose = true
+
 [pull]
     # only pull fast-forwarded changes
     ff = only
@@ -101,9 +104,15 @@
     # set the default tool to vimdiff
     tool = vimdiff
 
+    # even better diffs
+    conflictStyle = zdiff3
+
 [rebase]
     # autosquash commits starting with !fixup or !squash during git rebase
     autoSquash = true
+
+    # stash push/pop during rebase
+    autoStash = true
 
 [mergetool]
     # do not keep around the backup .orig files
