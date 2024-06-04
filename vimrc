@@ -601,7 +601,7 @@ local telescopeMappings = {
   ["<C-j>"] = "preview_scrolling_down",
   ["<C-l>"] = "preview_scrolling_right",
   ["<C-h>"] = "preview_scrolling_left",
-  ["<C-t>"] = require("trouble.providers.telescope").open_with_trouble,
+  ["<C-t>"] = require("trouble.sources.telescope").open,
 }
 
 require("telescope").setup({
@@ -1364,7 +1364,7 @@ EOF
 lua <<EOF
 
 require("debugprint").setup({
-  create_keymaps = false,
+  -- keymaps = false,
   move_to_debugline = true,
   display_snippet = true,
   display_counter = true,
