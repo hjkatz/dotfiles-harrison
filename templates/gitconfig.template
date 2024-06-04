@@ -169,8 +169,7 @@
     tree = log --all --graph --decorate --oneline
     stump = log --all --graph --decorate --oneline --simplify-by-decoration
     dag = log --graph --decorate --oneline
-    oldest-ancestor = !bash -c 'diff --old-line-format='' --new-line-format='' <(git rev-list --first-parent "${1:-`git default-branch`}") <(git rev-list --first-parent "${2:-HEAD}") | head -1' -
-    branch-point = !bash -c 'diff --old-line-format='' --new-line-format='' <(git rev-list --first-parent "${1:-`git default-branch`}") <(git rev-list --first-parent "${2:-HEAD}") | head -1' -
+    branch-point = !bash -c 'git merge-base "origin/${1:-`git default-branch`}" "${2:-HEAD}"'
     cherry-dag = !bash -c 'git log --graph --decorate --oneline HEAD...$(git branch-point)'
     cdag = cherry-dag
 
