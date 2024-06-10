@@ -1036,7 +1036,7 @@ local lsp_settings = {
 -- See: https://ngrok.slack.com/archives/C0405411BG9/p1698257254042009?thread_ts=1698180961.267949&cid=C0405411BG9
 -- See: https://github.com/neovim/neovim/issues/23291#issuecomment-1560742827
 -- See: https://github.com/golang/go/issues/41504
--- require('vim.lsp._watchfiles')._watchfunc = function(_, _, _) return true end
+require('vim.lsp._watchfiles')._watchfunc = function(_, _, _) return true end
 
 -- overrides lsp root_dir
 local lsp_root_dir_overrides = {
