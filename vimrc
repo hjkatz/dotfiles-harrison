@@ -778,6 +778,8 @@ require("navigator").setup({
       enable = false,
       disable_lsp = "all",
       code_action = {
+        enable = true,
+        sign = true,
         delay = 5000, -- ms
       },
       diagnostic_scrollbar_sign = false, -- disable scrollbar symbols
@@ -951,7 +953,7 @@ local lsp_attach = function(client, bufnr)
   local opts = { buffer = bufnr }
   require("navigator.dochighlight").documentHighlight(bufnr)
   require("navigator.lspclient.highlight").add_highlight()
-  require("navigator.lspclient.highlight").diagnositc_config_sign() -- [sic]
+  require("navigator.lspclient.highlight").config_signs()
   require('navigator.lspclient.lspkind').init()
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
