@@ -1020,61 +1020,79 @@ local lsp_attach = function(client, bufnr)
 end
 
 -- use the lsp server name (not mason name, see the grey text name in :Mason)
-local lsp_settings = {
-    -- see :Mason then <enter> on server name, then example.setting turns into example = { setting = "<value" } in the table below
+-- see :Mason then <enter> on server name, then example.setting turns into example = { setting = "<value" } in the table below
+local lsp_config_override = {
     yamlls = {
-        yaml = {
-            keyOrdering = false,
+        settings = {
+            yaml = {
+                keyOrdering = false,
+            },
         },
     },
 
     -- See: https://github.com/golang/tools/blob/master/gopls/doc/settings.md
+    -- See: https://ngrok.slack.com/archives/C0405411BG9/p1698257254042009?thread_ts=1698180961.267949&cid=C0405411BG9
+    -- See: https://github.com/neovim/neovim/issues/23291#issuecomment-1560742827
+    -- See: https://github.com/golang/go/issues/41504
     gopls = {
-      -- directoryFilters = {
-      -- },
+        root_dir = function(fname)
+            local root_files = {
+                'go.mod',
+                'go/go.mod', -- ngrok
+                'go.work',
+                '.git',
+            }
+            return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
+        end,
+    },
+
+    -- See: https://github.com/nametake/golangci-lint-langserver
+    golangci_lint_ls = {
+    },
+
+    terraformls = {
+        root_dir = function(fname)
+            local root_files = {
+                '.terraform_root', -- ngrok
+                '.terraform',
+                '.git',
+            }
+            return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
+        end,
     },
 }
 
--- See: https://ngrok.slack.com/archives/C0405411BG9/p1698257254042009?thread_ts=1698180961.267949&cid=C0405411BG9
--- See: https://github.com/neovim/neovim/issues/23291#issuecomment-1560742827
--- See: https://github.com/golang/go/issues/41504
+-- conditionally override golangci_lint_ls.init_options when in ngrok
+if vim.env.NGROK_HOME then
+    lsp_config_override["golangci_lint_ls"] = {
+        init_options = {
+            command = {
+                vim.env.NGROK_HOME .. "/go/golangci-lint",
+                "run", "--config", vim.env.NGROK_HOME .. "/go/.golangci.yml",
+                "--out-format", "json",
+                "--timeout", "15s",
+            },
+        },
+    }
+end
+
+-- disable watch files until this is fixed
+-- see: https://github.com/neovim/neovim/issues/23291
 require('vim.lsp._watchfiles')._watchfunc = function(_, _, _) return true end
 
--- overrides lsp root_dir
-local lsp_root_dir_overrides = {
-    gopls = function(fname)
-        local root_files = {
-            'go.mod',
-            'go/go.mod', -- ngrok
-            'go.work',
-            '.git',
-        }
-        return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
-    end,
-
-    terraformls = function(fname)
-        local root_files = {
-            '.terraform_root', -- ngrok
-            '.terraform',
-            '.git',
-        }
-        return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
-    end,
-}
-
--- set default value for lsp_settings that are not configured from defaults
-setmetatable(lsp_settings, { __index=function() return {} end })
-setmetatable(lsp_root_dir_overrides, { __index=function() return false end })
+-- set default value for lsp_config_override that are not configured from defaults
+setmetatable(lsp_config_override, { __index=function() return {} end })
 
 local get_lspconfig = function(server_name)
   local opts = {
     on_attach    = lsp_attach,
     capabilities = lsp_capabilities,
-    settings     = lsp_settings[server_name],
   }
 
-  if lsp_root_dir_overrides[server_name] ~= false then
-      opts.root_dir = lsp_root_dir_overrides[server_name]
+  -- if lsp_config_override exists for server_name
+  if lsp_config_override[server_name] ~= false then
+      -- then merge the settings into the opts
+      opts = vim.tbl_extend('force', opts, lsp_config_override[server_name])
   end
 
   return opts
