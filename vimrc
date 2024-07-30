@@ -1063,11 +1063,11 @@ local lsp_config_override = {
 }
 
 -- conditionally override golangci_lint_ls.init_options when in ngrok
-if vim.env.NGROK_HOME then
+if vim.env.NGROK_HOME and vim.env.GOPATH then
     lsp_config_override["golangci_lint_ls"] = {
         init_options = {
             command = {
-                vim.env.NGROK_HOME .. "/go/golangci-lint",
+                vim.env.GOPATH .. "/bin/golangci-lint",
                 "run", "--config", vim.env.NGROK_HOME .. "/go/.golangci.yml",
                 "--out-format", "json",
                 "--timeout", "15s",
