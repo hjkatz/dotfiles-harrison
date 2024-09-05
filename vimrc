@@ -728,7 +728,7 @@ require("mason-lspconfig").setup({
         "golangci_lint_ls", -- golangci-lint + lsp
         "dockerls",
         "bashls",
-        "tsserver",
+        "tsserver", -- renamed to ts_ls, see: https://github.com/neovim/nvim-lspconfig/pull/3232#issuecomment-2331025714
     },
 })
 
@@ -1105,6 +1105,10 @@ local mason_handlers = {
     -- and will be called for each installed server that doesn't have
     -- a dedicated handler.
     function (server_name)
+        -- tsserver renamed upstream, see: https://github.com/neovim/nvim-lspconfig/pull/3232#issuecomment-2331025714
+        if server_name == "tsserver" then
+            server_name = "ts_ls"
+        end
         lspconfig[server_name].setup(get_lspconfig(server_name))
     end,
 }
