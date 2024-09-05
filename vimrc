@@ -989,7 +989,7 @@ local lsp_attach = function(client, bufnr)
     { mode = 'n', key = 'gp',         func = require('navigator.definition').definition_preview }, -- hover definition preview
     { mode = 'n', key = 'gP',         func = require('navigator.definition').type_definition_preview }, -- hover type definition preview
     -- messes up ctrl-hjkl for moving windows
-    -- { mode = 'n', key = '<c-k>',      func = vim.lsp.buf.signature_help }, -- sig help
+    { mode = 'n', key = '<c-k>',      func = vim.lsp.buf.signature_help }, -- sig help
     { mode = 'n', key = '<C-S-K>',    func = toggle_lsp_signature }, -- sig help
     { mode = 'i', key = '<C-S-K>',    func = toggle_lsp_signature }, -- sig help
     { mode = 'n', key = '<leader>ca', func = vim.lsp.buf.code_action }, -- code action
@@ -1000,7 +1000,7 @@ local lsp_attach = function(client, bufnr)
     { mode = 'n', key = '<leader>ts', func = require('navigator.treesitter').buf_ts }, -- fzf treesitter symbols
     { mode = 'n', key = '<leader>ct', func = require('navigator.ctags').ctags }, -- fzf ctags
     { mode = 'n', key = '<leader>ca', func = require('navigator.codeAction').code_action }, -- code action
-    { mode = 'v', key = '<leader>ca', func = require('navigator.codeAction').range_code_action }, -- code action
+    { mode = 'v', key = '<leader>ca', func = require('navigator.codeAction').code_action }, -- code action
     { mode = 'n', key = '<C-S-C>',    func = prompt_code_action }, -- prompt for possible code actions
     { mode = 'v', key = '<C-S-C>',    func = prompt_code_action }, -- prompt for possible code actions
     { mode = 'n', key = 'gG',         func = require('navigator.diagnostics').show_buf_diagnostics }, -- diagnostics
@@ -1008,10 +1008,10 @@ local lsp_attach = function(client, bufnr)
     { mode = 'n', key = 'gL',         func = require('navigator.diagnostics').show_diagnostics }, -- diagnostics
     { mode = 'n', key = '<leader>L',  func = require('navigator.diagnostics').show_diagnostics }, -- diagnostics
     -- doesn't work yet in 0.10 nightly, and I don't use these anyways
-    -- { mode = 'n', key = '<leader>cf', func = vim.lsp.buf.format }, -- format code
-    -- { mode = 'v', key = '<leader>cf', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
-    -- { mode = 'n', key = '<leader>fc', func = vim.lsp.buf.format }, -- format code
-    -- { mode = 'v', key = '<leader>fc', func = vim.lsp.buf.range_formatting }, -- format code (visual range)
+    { mode = 'n', key = '<leader>cf', func = vim.lsp.buf.format }, -- format code
+    { mode = 'v', key = '<leader>cf', func = require('navigator.formatting').range_format }, -- format code (visual range)
+    { mode = 'n', key = '<leader>fc', func = vim.lsp.buf.format }, -- format code
+    { mode = 'v', key = '<leader>fc', func = require('navigator.formatting').range_format }, -- format code (visual range)
   }
 
   for _, km in pairs(keymaps) do
