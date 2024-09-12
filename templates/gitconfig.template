@@ -180,6 +180,9 @@
     # [See: https://stackoverflow.com/questions/29094595/git-interactive-rebase-without-opening-the-editor]
     auto-rebase = "!f() { git fetch && GIT_SEQUENCE_EDITOR=: git rebase --autosquash -i origin/${1:-`git default-branch`} ; }; f"
 
+    # rebase cdag
+    rdag = !bash -c 'git rebase -i $(git branch-point)'
+
     # prune local branches
     fresh = !git remote prune origin && git branch -vv | grep -E ': (gone|desaparecido)]' | awk '{print $1}' | xargs -r git branch -D
     my-branches = !git branch | grep hkatz

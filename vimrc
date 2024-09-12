@@ -728,7 +728,7 @@ require("mason-lspconfig").setup({
         "golangci_lint_ls", -- golangci-lint + lsp
         "dockerls",
         "bashls",
-        "tsserver", -- renamed to ts_ls, see: https://github.com/neovim/nvim-lspconfig/pull/3232#issuecomment-2331025714
+        "ts_ls",
     },
 })
 
@@ -786,6 +786,9 @@ require("navigator").setup({
       diagnostic_virtual_text = '', -- empty floating text prefix
       display_diagnostic_qf = false, -- do not display qf on save
       tsserver = {
+          single_file_support = true,
+      },
+      ts_ls = { -- renamed from tsserver
           single_file_support = true,
       },
       format_on_save = false,
@@ -989,7 +992,7 @@ local lsp_attach = function(client, bufnr)
     { mode = 'n', key = 'gp',         func = require('navigator.definition').definition_preview }, -- hover definition preview
     { mode = 'n', key = 'gP',         func = require('navigator.definition').type_definition_preview }, -- hover type definition preview
     -- messes up ctrl-hjkl for moving windows
-    { mode = 'n', key = '<c-k>',      func = vim.lsp.buf.signature_help }, -- sig help
+    -- { mode = 'n', key = '<c-k>',      func = vim.lsp.buf.signature_help }, -- sig help
     { mode = 'n', key = '<C-S-K>',    func = toggle_lsp_signature }, -- sig help
     { mode = 'i', key = '<C-S-K>',    func = toggle_lsp_signature }, -- sig help
     { mode = 'n', key = '<leader>ca', func = vim.lsp.buf.code_action }, -- code action
@@ -1105,10 +1108,6 @@ local mason_handlers = {
     -- and will be called for each installed server that doesn't have
     -- a dedicated handler.
     function (server_name)
-        -- tsserver renamed upstream, see: https://github.com/neovim/nvim-lspconfig/pull/3232#issuecomment-2331025714
-        if server_name == "tsserver" then
-            server_name = "ts_ls"
-        end
         lspconfig[server_name].setup(get_lspconfig(server_name))
     end,
 }
