@@ -84,7 +84,7 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     Plug 'Julian/vim-textobj-variable-segment', { 'branch': 'main' }
 
     " Filetype Plugins
-    " Plug 'sheerun/vim-polyglot'
+    Plug 'sheerun/vim-polyglot'
     " tree-sitter
     Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
@@ -476,35 +476,58 @@ autocmd FileType guihua_rust lua require('cmp').setup.buffer { enabled = false }
 
 lua <<EOF
 require("trouble").setup({
-  position = "bottom",
-  severity = nil, -- default (ALL), filter with '<tab>'
-  -- severity = vim.diagnostic.severity.ERROR,
-
   -- keymaps
-  action_keys = {
-    close = "q", -- close the list
-    cancel = "<esc>", -- cancel the preview and get back to your last window / buffer / cursor
-    refresh = "r", -- manually refresh
-    switch_severity = "<tab>", -- switch severity (ERROR, WARNING, INFO, HINT, ALL)
-    open_split = { "<c-s>" }, -- open buffer in new split
-    open_vsplit = { "<c-v>" }, -- open buffer in new vsplit
-    open_tab = {}, -- disabled
-    hover = "K", -- opens a small popup with the full multiline message
-    toggle_fold = { "zA", "zR", "<space>" }, -- toggle fold of one or all diagnostics
-    help = "?", -- opens the trouble help
+  keys = {
+    ["?"] = "help", -- opens the trouble help
+    ["q"] = "close", -- close the list
+    ["<esc>"] = "cancel", -- cancel the preview and get back to your last window / buffer / cursor
+    ["r"] = "refresh", -- manually refresh
+    ["o"] = "jump_close", -- jump to the item and close the list
+    ["<tab>"] = { -- switch severity (ERROR, WARNING, INFO, HINT, ALL)
+      action = function(view)
+        local f = view:get_filter("severity")
+        local severity = ((f and f.filter.severity or 0) + 1) % 5
+        view:filter({ severity = severity }, {
+          id = "severity",
+          template = "{hl:Title}Filter:{hl} {severity}",
+          del = severity == 0,
+        })
+      end,
+      desc = "Toggle Severity Filter",
+    },
+    ["<c-s>"] = "jump_split", -- open buffer in new split
+    ["<c-v>"] = "jump_vsplit", -- open buffer in new vsplit
+    ["zA"] = "fold_toggle",
+    ["zR"] = "fold_toggle",
+    ["<space>"] = "fold_toggle", -- toggle fold of one or all diagnostics
   },
 
-  use_diagnostic_signs = true, -- use the signs defined in the lsp client
   cycle_results = true, -- cycle item list when reaching beginning or end
   auto_open = false, -- automatically open the list when you have diagnostics
   auto_close = false, -- automatically close the list when you have no diagnostics
   auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
   auto_fold = false, -- automatically fold a file trouble list at creation
   -- auto_jump = true,
+  warn_no_results = true,
+  open_no_results = true,
 })
 
 local toggle_trouble = function()
-  require("trouble").toggle()
+  local trouble = require("trouble")
+
+  -- Check whether we deal with a quickfix or location list buffer, close the window and open the
+  -- corresponding Trouble window instead.
+  if vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0 then
+    vim.defer_fn(function()
+      vim.cmd.lclose()
+      trouble.toggle("loclist")
+    end, 0)
+  else
+    vim.defer_fn(function()
+      vim.cmd.cclose()
+      trouble.toggle("qflist")
+    end, 0)
+  end
 end
 
 local trouble_next_item = function()
@@ -515,7 +538,7 @@ local trouble_next_item = function()
 end
 
 local trouble_prev_item = function()
-  require("trouble").previous({
+  require("trouble").prev({
     skip_groups = true,
     jump = true,
   })
@@ -541,7 +564,7 @@ local function hijack_qflist()
   else
     vim.defer_fn(function()
       vim.cmd.cclose()
-      trouble.open("quickfix")
+      trouble.open("qflist")
     end, 0)
   end
 end
@@ -722,6 +745,7 @@ require("mason-lspconfig").setup({
         -- "ltex", -- prints too many debug messages
         "taplo",
         "yamlls",
+        "helm_ls",
         "pyright",
         "jsonls",
         "gopls",
@@ -1029,6 +1053,32 @@ local lsp_config_override = {
         settings = {
             yaml = {
                 keyOrdering = false,
+            },
+        },
+    },
+
+    -- See: https://github.com/mrjosh/helm-ls#default-configuration
+    helm_ls = {
+        root_dir = function(fname)
+            local root_files = {
+                'Chart.yaml',
+                'Chart.lock',
+                'helm',
+                'charts',
+                '.git',
+            }
+            return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
+        end,
+        settings = {
+            ['helm-ls'] = {
+                yamlls = {
+                    enabled = false, -- not yet working, see: https://github.com/mrjosh/helm-ls/issues/44
+                    enabledForFilesGlob = "*.{yaml.yml}",
+                    path = "yaml-language-server",
+                    config = {
+                        keyOrdering = false,
+                    },
+                },
             },
         },
     },
@@ -1598,6 +1648,7 @@ augroup ft_go
     require('go').setup({
         luasnip = true,
         lsp_cfg = false, -- use my own lspconfig
+        trouble = true,
     })
 
 EOF
