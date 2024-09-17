@@ -101,8 +101,8 @@
     autoSetupRemote = true
 
 [merge]
-    # set the default tool to vimdiff
-    tool = vimdiff
+    # set the default tool to nvimdiff
+    tool = nvimdiff
 
     # even better diffs
     conflictStyle = diff3

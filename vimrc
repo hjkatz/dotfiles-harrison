@@ -1131,7 +1131,7 @@ end
 
 -- disable watch files until this is fixed
 -- see: https://github.com/neovim/neovim/issues/23291
-require('vim.lsp._watchfiles')._watchfunc = function(_, _, _) return true end
+-- require('vim.lsp._watchfiles')._watchfunc = function(_, _, _) return true end
 
 -- set default value for lsp_config_override that are not configured from defaults
 setmetatable(lsp_config_override, { __index=function() return {} end })
