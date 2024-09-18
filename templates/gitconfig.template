@@ -173,8 +173,10 @@
     cherry-dag = !bash -c 'git log --graph --decorate --oneline HEAD...$(git branch-point)'
     cdag = cherry-dag
 
+    # find commit matching regex message
+    find = !bash -c 'git show HEAD^{/$*}'
 	# git commit --fixup by latest matching commit
-	fix = "!f() { git commit --fixup :/$1 ;}; f"
+    fix = !bash -c 'git commit --fixup HEAD^{/$*}'
 
     # rebase without interactive and using --autosquash
     # [See: https://stackoverflow.com/questions/29094595/git-interactive-rebase-without-opening-the-editor]
@@ -204,8 +206,6 @@
     #   git clone ssh://git@code.squarespace.net:7999/some_owner/some_project.git /Some/path/to/Code/code.squarespace.net/some_owner/some_project/
     go = "!f(){ git clone \"$1\" $(echo \"$1\"|perl -pe 's{^(https?|git|ssh)(://|@)(?:[^@/:]+@)?([^/:]+)[/:](?:scm|\\d+)?/?([^/:]+)/(.+?)(.git)?$}{{{GIT_CODE_DIR}}/\\3/\\4/\\5}');};f"
 
-    format = !bash -c './gradlew format && git commit -am "Formatting"'
-
     co-release = !bash -c 'git checkout -b $USER/release-$(date +%s) origin/release'
     release = !bash -c 'git fetch && git co-release'
     release-master = !bash -c 'git release && git merge origin/master && git push origin HEAD && git pr-release && git checkout master && git pull'
@@ -214,3 +214,5 @@
     pr-release = pr release
     pr-master = pr master
     pr-main = pr main
+
+    trigger-ci = !git commit --allow-empty -m "trigger ci" && git push
