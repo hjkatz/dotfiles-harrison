@@ -215,4 +215,4 @@
     pr-master = pr master
     pr-main = pr main
 
-    trigger-ci = !git commit --allow-empty -m "trigger ci" && git push
+    trigger-ci = !bash -c 'git commit --allow-empty -m "trigger ci" && git push'
