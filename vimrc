@@ -359,6 +359,12 @@ command! Wq wq
 nnoremap <buffer> <localleader>j ^vg_:!python -m json.tool<cr>
 vnoremap <buffer> <localleader>j :!python -m json.tool<cr>
 
+" Move blocks of text while in visual mode
+vnoremap K :m '<-2<CR>gv=gv
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap <S-Up> :m '<-2<CR>gv=gv
+vnoremap <S-Down> :m '>+1<CR>gv=gv
+
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cmap w!! w !sudo tee > /dev/null %
 
