@@ -108,6 +108,11 @@ ZSH_THEME_PYENV_SUFFIX="%{$fg[green]%}%{$FX[bold]%}]%{$reset_color%} "
 ZSH_THEME_PYENV_NAME="py"
 ZSH_THEME_PYENV_SEP=":"
 
+ZSH_THEME_NVM_PREFIX="%{$FX[bold]%}%{$FG[178]%}[%{$FX[no-bold]%}%{$FG[208]%}"
+ZSH_THEME_NVM_SUFFIX="%{$FG[178]%}%{$FX[bold]%}]%{$reset_color%} "
+ZSH_THEME_NVM_NAME="node"
+ZSH_THEME_NVM_SEP=":"
+
 ZSH_THEME_KUBECTL_PREFIX="%{$fg_bold[cyan]%}{%{$FX[no-bold]%}%{$fg[white]%}"
 ZSH_THEME_KUBECTL_SUFFIX="%{$fg_bold[cyan]%}}%{$reset_color%} "
 
@@ -149,6 +154,7 @@ build_prompt '$(display_prompt "local_prompt_info")'
 build_prompt '$(display_prompt "kubectl_prompt_info")'
 build_prompt '$(display_prompt "rbenv_prompt_info")'
 build_prompt '$(display_prompt "pyenv_prompt_info")'
+build_prompt '$(display_prompt "nvm_prompt_info")'
 build_prompt '$(display_prompt "virtualenv_prompt_info")'
 build_prompt '$(display_prompt "git_prompt_info")'
 build_prompt '$(display_prompt "hg_prompt_info")'

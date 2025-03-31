@@ -74,4 +74,10 @@ for nvm_completion in "$NVM_DIR/bash_completion" "$NVM_HOMEBREW/etc/bash_complet
   fi
 done
 
+function nvm_prompt_info() {
+    [[ ${GLOBALS__SHOW_PROMPT_HASH[nvm]} != true ]] && return
+
+    echo "${ZSH_THEME_NVM_PREFIX:=[}${ZSH_THEME_NVM_NAME:=nvm}${ZSH_THEME_NVM_SEP:=:}$(nvm current)${ZSH_THEME_NVM_SUFFIX:=]}"
+}
+
 unset NVM_HOMEBREW NVM_LAZY NVM_AUTOLOAD nvm_completion
