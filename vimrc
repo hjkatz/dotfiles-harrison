@@ -752,7 +752,7 @@ require("mason-lspconfig").setup({
         "taplo",
         "yamlls",
         "helm_ls",
-        "pyright",
+        "pylsp",
         "jsonls",
         "gopls",
         "golangci_lint_ls", -- golangci-lint + lsp
@@ -1052,6 +1052,15 @@ local lsp_attach = function(client, bufnr)
   end
 end
 
+local function dir_has_file(dir, file)
+  return require("lspconfig").util.search_ancestors(dir, function(path)
+    local abs_path = require("lspconfig").util.path.join(path, file)
+    if require("lspconfig").util.path.is_file(abs_path) then
+      return true
+    end
+  end)
+end
+
 -- use the lsp server name (not mason name, see the grey text name in :Mason)
 -- see :Mason then <enter> on server name, then example.setting turns into example = { setting = "<value" } in the table below
 local lsp_config_override = {
@@ -1119,21 +1128,42 @@ local lsp_config_override = {
             return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
         end,
     },
-}
 
--- conditionally override golangci_lint_ls.init_options when in ngrok
-if vim.env.NGROK_HOME and vim.env.GOPATH then
-    lsp_config_override["golangci_lint_ls"] = {
-        init_options = {
-            command = {
-                vim.env.GOPATH .. "/bin/golangci-lint",
-                "run", "--config", vim.env.NGROK_HOME .. "/go/.golangci.yml",
-                "--out-format", "json",
-                "--timeout", "15s",
+    -- See: https://github.com/python-lsp/python-lsp-server/blob/develop/CONFIGURATION.md
+    pylsp = {
+        settings = {
+            pylsp = {
+                plugins = {
+                    pycodestyle = {
+                        enabled = true,
+                        ignore = {
+                            'E402', -- module level import not at top of file
+                            'E501', -- line too long
+                            'E731', -- do not assign a lambda expression, use a def
+                            'W503', -- line break before binary operator
+                            'W504', -- line break after binary operator
+                        },
+                    },
+                },
             },
         },
-    }
-end
+    },
+
+    -- See: https://github.com/microsoft/pyright
+    pyright = {
+      on_new_config = function(new_config, dir)
+        if dir_has_file(dir, "poetry.lock") then
+          -- vim.notify_once("Running `pyright` with `poetry`")
+          new_config.cmd = { "poetry", "run", "pyright-langserver", "--stdio" }
+        elseif dir_has_file(dir, "Pipfile") then
+          -- vim.notify_once("Running `pyright` with `pipenv`")
+          new_config.cmd = { "pipenv", "run", "pyright-langserver", "--stdio" }
+        else
+          -- vim.notify_once("Running `pyright` without a virtualenv")
+        end
+      end,
+    },
+}
 
 -- disable watch files until this is fixed
 -- see: https://github.com/neovim/neovim/issues/23291
@@ -1809,6 +1839,10 @@ augroup ft_python
     au!
 
     au FileType python setlocal define=^\s*\\(def\\\\|class\\)
+
+    " Recursive toggle
+    au FileType python nnoremap <buffer> <Space> zA
+    au FileType python vnoremap <buffer> <Space> zA
 augroup END
 
 " }}}
