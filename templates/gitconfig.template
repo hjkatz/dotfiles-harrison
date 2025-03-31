@@ -178,7 +178,7 @@
     # list branch-point from current branch to default branch (master)
     branch-point = !bash -c 'git merge-base "origin/${1:-`git default-branch`}" "${2:-HEAD}"'
     # list branches that are travesable from HEAD -> default-branch (master)
-    cherry-list-branches = "!f() { git log --format='%-(decorate:prefix=,suffix=,separator=,pointer=/,tag=)' HEAD...$(git branch-point) | grep -v '^$' ; }; f"
+    cherry-list-branches = "!f() { git log --format='%(decorate:prefix=,suffix=,separator=:,pointer=/,tag=)' HEAD...$(git branch-point) | grep -v '^$' | cut -d: -f1 | sed 's;origin/;;' ; }; f"
     # find the closest (immediate parent) branch name that is travesable from HEAD -> default-branch (master)
     parent-branch = "!f() { out=$(git cherry-list-branches | grep -Po '(HEAD/)?\\K.*' -A1 | head -n2 | tail -n1) ; echo \"$out\" ; }; f"
     # list commits traversable from current branch HEAD -> default branch (master)
