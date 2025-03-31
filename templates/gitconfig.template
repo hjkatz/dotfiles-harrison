@@ -20,12 +20,18 @@
 [url "git@github.com:ngrok"]
     insteadOf = https://github.com/ngrok
 
+[url "git@github.com:ramp"]
+    insteadOf = https://github.com/ramp
+
 [gpg]
     format = ssh
 
 [gpg "ssh"]
     defaultKeyCommand = {{DOTFILES}}/bin/git-ssh-key.sh
     allowedSignersFile = {{DOTFILES}}/.git_allowed_signers
+
+[includeIf "gitdir/i:~/Code/ramp-github.com/**"]
+    path = ~/.ramp.gitconfig
 
 [init]
     defaultBranch = main
@@ -169,9 +175,32 @@
     tree = log --all --graph --decorate --oneline
     stump = log --all --graph --decorate --oneline --simplify-by-decoration
     dag = log --graph --decorate --oneline
+    # list branch-point from current branch to default branch (master)
     branch-point = !bash -c 'git merge-base "origin/${1:-`git default-branch`}" "${2:-HEAD}"'
+    # list branches that are travesable from HEAD -> default-branch (master)
+    cherry-list-branches = "!f() { git log --format='%-(decorate:prefix=,suffix=,separator=,pointer=/,tag=)' HEAD...$(git branch-point) | grep -v '^$' ; }; f"
+    # find the closest (immediate parent) branch name that is travesable from HEAD -> default-branch (master)
+    parent-branch = "!f() { out=$(git cherry-list-branches | grep -Po '(HEAD/)?\\K.*' -A1 | head -n2 | tail -n1) ; echo \"$out\" ; }; f"
+    # list commits traversable from current branch HEAD -> default branch (master)
     cherry-dag = !bash -c 'git log --graph --decorate --oneline HEAD...$(git branch-point)'
     cdag = cherry-dag
+    # list commits traversable from current branch HEAD -> parent branch
+    parent-dag = !bash -c 'git log --graph --decorate --oneline HEAD...$(git parent-branch)'
+    pdag = parent-dag
+    # rebase cdag
+    rebase-cdag  = !bash -c 'git rebase -i $(git branch-point)'
+    rdag = rebase-cdag # default all rebasing to branch-point
+    rcdag = rebase-cdag
+    # rebase pdag
+    rebase-pdag  = !bash -c 'git rebase -i $(git parent-branch)'
+    rpdag = rebase-pdag
+    # diff pdag
+    diff-cdag = !bash -c 'git rev-list HEAD...$(git branch-point) | git -p diff-tree --stdin --format=medium -p'
+    diff-pdag = !bash -c 'git rev-list HEAD...$(git parent-branch) | git -p diff-tree --stdin --format=medium -p'
+    # default all diffs to branch-point
+    ddag = diff-cdag
+    ddagc = diff-cdag
+    ddagp = diff-pdag
 
     # find commit matching regex message
     find = !bash -c 'git show HEAD^{/$*}'
@@ -181,9 +210,6 @@
     # rebase without interactive and using --autosquash
     # [See: https://stackoverflow.com/questions/29094595/git-interactive-rebase-without-opening-the-editor]
     auto-rebase = "!f() { git fetch && GIT_SEQUENCE_EDITOR=: git rebase --autosquash -i origin/${1:-`git default-branch`} ; }; f"
-
-    # rebase cdag
-    rdag = !bash -c 'git rebase -i $(git branch-point)'
 
     # prune local branches
     fresh = !git remote prune origin && git branch -vv | grep -E ': (gone|desaparecido)]' | awk '{print $1}' | xargs -r git branch -D

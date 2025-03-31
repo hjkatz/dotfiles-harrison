@@ -5,6 +5,6 @@
 # We _could_ add lines like
 # <email> <ssh-key>
 #
-# to get a fully verified view, but it doesn't matter, we just don't want to be mislef with "No signature"
+# to get a fully verified view, but it doesn't matter, we just don't want to be misled with "No signature"
 #
 # See: https://calebhearth.com/sign-git-with-ssh
