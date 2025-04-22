@@ -1628,8 +1628,8 @@ set foldlevelstart=0
 nnoremap <Space> za
 vnoremap <Space> za
 " Shift+Space to toggle folds recursively.
-nnoremap <S-Space> zA
-vnoremap <S-Space> zA
+nnoremap <Enter> zA
+vnoremap <Enter> zA
 
 " Make zO recursively open whatever fold we're in, even if it's partially open.
 nnoremap zO zczO

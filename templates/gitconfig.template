@@ -162,6 +162,7 @@
 	co = checkout
     l = log --oneline
     lg = log --oneline --decorate --graph
+    ds = diff --staged
     amend = commit --amend
     ammend = amend
 
@@ -241,4 +242,4 @@
     pr-master = pr master
     pr-main = pr main
 
-    trigger-ci = !bash -c 'git commit --allow-empty -m "trigger ci" && git push'
+    trigger-ci = "!f() { git commit --allow-empty -m 'trigger ci' && git push ; }; f"
