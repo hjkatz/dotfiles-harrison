@@ -93,7 +93,7 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 
     " LaTeX Everything
-    Plug 'LaTeX-Box-Team/LaTeX-Box', { 'for': 'tex' }
+    Plug 'lervag/vimtex', { 'for': 'tex' }
 
     " snippets for code insertion
     Plug 'L3MON4D3/LuaSnip', {'tag': 'v1.*'}
@@ -173,7 +173,7 @@ set smartcase                      " ...unless we have atleast 1 capital letter
 set incsearch                      " search incrementally
 set infercase                      " infer the case of the completion word
 set formatoptions=tcqronj          " see :help fo-table for more information
-set pastetoggle=<F12>              " sets <F12> to toggle paste mode
+" set pastetoggle=<F12>              " sets <F12> to toggle paste mode
 set hlsearch                       " highlight search results
 set wrap                           " wrap lines
 set scrolloff=10                   " leave at least 10 lines at the bottom/top of screen when scrolling
@@ -1292,12 +1292,9 @@ END
 
 " }}}
 
-" LatexBox ----------------------------- {{{
-let g:LatexBox_latexmk_options              = "-pdf -pvc"
-let g:LatexBox_output_type                  = "pdf"
-let g:LatexBox_latexmk_preview_continuously = 1
-let g:LatexBox_viewer                       = "zathura"
-let g:LatexBox_Folding                      = 1
+" vimtex ----------------------------- {{{
+
+let g:vimtex_view_method = 'zathura'
 
 " }}}
 

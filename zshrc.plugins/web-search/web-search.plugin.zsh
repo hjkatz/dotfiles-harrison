@@ -1,4 +1,18 @@
 # web_search from terminal
+function open_command() {
+  if command -v xdg-open &> /dev/null; then
+    xdg-open "$1"
+  elif command -v open &> /dev/null; then
+    open "$1"
+  elif command -v gnome-open &> /dev/null; then
+    gnome-open "$1"
+  elif command -v kde-open &> /dev/null; then
+    kde-open "$1"
+  else
+    echo "No command found to open URL."
+    return 1
+  fi
+}
 
 function web_search() {
   emulate -L zsh
