@@ -155,19 +155,19 @@ function setup_vim_plugins () {
     # filepath to the saved plugin list
     local plugin_list_file="$DOTFILES/.plugin_list"
 
-    # command to list the plugins from the init.lua
-    local plugin_list_cmd="cat $DOTFILES/init.lua | grep -E '^\s+Plug\s+' | awk '{print \$2}' | tr -d ','"
+    # command to list the plugins from the init.lua (properly quoted)
+    local plugin_list_cmd="cat \"$DOTFILES/init.lua\" | grep -E '^\s+Plug\s+' | awk '{print \$2}' | tr -d ','"
 
     # initialize to 'false'
     local do_plugin_setup=""
 
     # if the plugin list file does not exist
-    if [[ ! -f $plugin_list_file ]] ; then
+    if [[ ! -f "$plugin_list_file" ]] ; then
         # then list all the plugins from the vimrc, and put them in the plugin list file
-        eval $plugin_list_cmd > $plugin_list_file
+        eval "$plugin_list_cmd" > "$plugin_list_file"
         do_plugin_setup="1"
     # else if the plugin list file is different than the plugin list command
-    elif ! eval $plugin_list_cmd | diff -q - $plugin_list_file &>/dev/null ; then
+    elif ! eval "$plugin_list_cmd" | diff -q - "$plugin_list_file" &>/dev/null ; then
         do_plugin_setup="1"
     fi
 
@@ -188,9 +188,9 @@ function setup_vim_plugins () {
         fi
 
         # then, install new plugins, update the plugins, then quit vim
-        if command nvim --cmd "set runtimepath+=$DOTFILES" -u $DOTFILES/init.lua +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall; then
+        if command nvim --cmd "set runtimepath+=\"$DOTFILES\"" -u "$DOTFILES/init.lua" +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall; then
             # refresh the plugin list file
-            eval $plugin_list_cmd > $plugin_list_file
+            eval "$plugin_list_cmd" > "$plugin_list_file"
             color_echo green 'Done.'
         else
             color_echo red 'Error: Plugin setup failed. Please check nvim configuration.'
@@ -221,7 +221,7 @@ function vim () {
 
     # launch nvim with error handling
     if [[ -f "$DOTFILES/init.lua" ]]; then
-        command nvim --cmd "set runtimepath+=$DOTFILES" -u $DOTFILES/init.lua "$@"
+        command nvim --cmd "set runtimepath+=\"$DOTFILES\"" -u "$DOTFILES/init.lua" "$@"
     else
         color_echo yellow "Warning: init.lua not found, launching nvim with default config"
         command nvim "$@"

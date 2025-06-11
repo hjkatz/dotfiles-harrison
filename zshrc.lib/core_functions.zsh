@@ -304,10 +304,10 @@ print_lines () {
     done <<< "$@"
 }
 
-# echo the command and run
+# echo the command and run (properly quoted)
 echo_run () {
     echo "> $1"
-    eval $1
+    eval "$1"
 }
 
 # Start a dedicated ssh-agent for name
