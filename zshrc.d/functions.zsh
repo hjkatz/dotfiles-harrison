@@ -175,12 +175,27 @@ function setup_vim_plugins () {
     if [[ -n $do_plugin_setup ]] ; then
         color_echo yellow 'Setting up vim plugins...'
 
-        # then, install new plugins, update the plugins, then quit vim
-        command nvim --cmd "set runtimepath+=$DOTFILES" -u $DOTFILES/init.lua +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall
+        # check if nvim is available
+        if ! command_exists nvim; then
+            color_echo red 'Error: nvim not found. Please install Neovim.'
+            return 1
+        fi
 
-        # refresh the plugin list file
-        eval $plugin_list_cmd > $plugin_list_file
-        color_echo green 'Done.'
+        # check if init.lua exists
+        if [[ ! -f "$DOTFILES/init.lua" ]]; then
+            color_echo red "Error: init.lua not found at $DOTFILES/init.lua"
+            return 1
+        fi
+
+        # then, install new plugins, update the plugins, then quit vim
+        if command nvim --cmd "set runtimepath+=$DOTFILES" -u $DOTFILES/init.lua +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall; then
+            # refresh the plugin list file
+            eval $plugin_list_cmd > $plugin_list_file
+            color_echo green 'Done.'
+        else
+            color_echo red 'Error: Plugin setup failed. Please check nvim configuration.'
+            return 1
+        fi
     fi
 
     # set a global for this shell session
@@ -191,10 +206,26 @@ function setup_vim_plugins () {
 #
 # Called: `vim <args>`
 function vim () {
-    if [[ $_setup_vim_plugins_ran != true ]] ; then
-        setup_vim_plugins
+    # check if nvim is available
+    if ! command_exists nvim; then
+        color_echo red 'Error: nvim not found. Please install Neovim.'
+        return 1
     fi
-    command nvim --cmd "set runtimepath+=$DOTFILES" -u $DOTFILES/init.lua "$@"
+
+    # setup plugins if not already done
+    if [[ $_setup_vim_plugins_ran != true ]] ; then
+        if ! setup_vim_plugins; then
+            color_echo red 'Plugin setup failed, launching nvim anyway...'
+        fi
+    fi
+
+    # launch nvim with error handling
+    if [[ -f "$DOTFILES/init.lua" ]]; then
+        command nvim --cmd "set runtimepath+=$DOTFILES" -u $DOTFILES/init.lua "$@"
+    else
+        color_echo yellow "Warning: init.lua not found, launching nvim with default config"
+        command nvim "$@"
+    fi
 }
 
 # Prints a list of zsh command statistics
