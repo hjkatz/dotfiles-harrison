@@ -109,9 +109,21 @@ source $DOTFILES/zshrc.lib/prompt.zsh
 source $DOTFILES/zshrc.lib/exit-tasks.zsh
 
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/bin/terraform terraform
 
-complete -o nospace -C /Users/hkatz/.local/bin/tf tf
+# Setup terraform completion if terraform is available
+if command_exists terraform; then
+    terraform_path=$(which terraform)
+    complete -o nospace -C "$terraform_path" terraform
+fi
+
+# Setup tf completion if tf is available (check common locations)
+tf_locations=("$HOME/.local/bin/tf" "/usr/local/bin/tf")
+for tf_path in "${tf_locations[@]}"; do
+    if [[ -x "$tf_path" ]]; then
+        complete -o nospace -C "$tf_path" tf
+        break
+    fi
+done
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
