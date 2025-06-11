@@ -63,7 +63,7 @@ alias dotfiles='cd $DOTFILES'
 alias path='echo $PATH | tr ':' "\n"'
 
 # aliases for quick editing dotfiles
-alias vimrc="vim $DOTFILES/vimrc"
+alias vimrc="vim $DOTFILES/init.lua"
 alias zshrc="vim $DOTFILES/zshrc"
 alias zshrc_local="vim $HOME/.zshrc_local"
 alias gitconfig="vim $GLOBALS__DOTFILES_TEMPLATES_PATH/gitconfig.template"

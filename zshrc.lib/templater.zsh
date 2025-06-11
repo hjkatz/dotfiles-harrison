@@ -43,4 +43,4 @@ function compile_file () {
 
 # compile some templates
 compile_file gitconfig
-compile_file nvimrc
+# Note: nvimrc template compilation removed - using init.lua directly now

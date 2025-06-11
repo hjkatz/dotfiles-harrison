@@ -24,3 +24,6 @@ symlink .vimrc
 symlink .vim
 symlink .gitconfig
 symlink .psqlrc
+# Create symlink for Neovim config directory
+mkdir -p ~/.config/nvim
+ln -s -f -v $DEFAULT_DOTFILES_HOME/init.lua ~/.config/nvim/init.lua

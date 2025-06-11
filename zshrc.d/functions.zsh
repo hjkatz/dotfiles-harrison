@@ -155,8 +155,8 @@ function setup_vim_plugins () {
     # filepath to the saved plugin list
     local plugin_list_file="$DOTFILES/.plugin_list"
 
-    # command to list the plugins from the vimrc
-    local plugin_list_cmd="cat $DOTFILES/vimrc | grep -E '^\s+Plug\s+' | awk '{print \$2}' | tr -d ','"
+    # command to list the plugins from the init.lua
+    local plugin_list_cmd="cat $DOTFILES/init.lua | grep -E '^\s+Plug\s+' | awk '{print \$2}' | tr -d ','"
 
     # initialize to 'false'
     local do_plugin_setup=""
@@ -176,7 +176,7 @@ function setup_vim_plugins () {
         color_echo yellow 'Setting up vim plugins...'
 
         # then, install new plugins, update the plugins, then quit vim
-        command nvim -u $DOTFILES/nvimrc +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall
+        command nvim --cmd "set runtimepath+=$DOTFILES" -u $DOTFILES/init.lua +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall
 
         # refresh the plugin list file
         eval $plugin_list_cmd > $plugin_list_file
@@ -194,7 +194,7 @@ function vim () {
     if [[ $_setup_vim_plugins_ran != true ]] ; then
         setup_vim_plugins
     fi
-    command nvim -u $DOTFILES/nvimrc "$@"
+    command nvim --cmd "set runtimepath+=$DOTFILES" -u $DOTFILES/init.lua "$@"
 }
 
 # Prints a list of zsh command statistics
