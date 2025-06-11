@@ -29,15 +29,19 @@ function update_dotfiles ()
         # record the old hash
         OLD_HASH=`git rev-parse --verify HEAD`
 
-        # update
-        git pull origin master >/dev/null 2>&1
+        # get the default branch name dynamically
+        local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|^refs/remotes/origin/||')
+        : ${default_branch:="master"}  # fallback to master if detection fails
 
-        # record the new hash
-        NEW_HASH=`git rev-parse --verify HEAD`
+        # update with better error handling
+        if git pull origin "$default_branch" >/dev/null 2>&1; then
+            # record the new hash
+            NEW_HASH=`git rev-parse --verify HEAD`
 
-        # check to see if we actually updated or not
-        if [ ! "$OLD_HASH" = "$NEW_HASH" ] ; then
-            export GLOBALS__DOTFILES_UPDATED=true
+            # check to see if we actually updated or not
+            if [ ! "$OLD_HASH" = "$NEW_HASH" ] ; then
+                export GLOBALS__DOTFILES_UPDATED=true
+            fi
         fi
     fi
 
