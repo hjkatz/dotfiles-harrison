@@ -126,8 +126,9 @@ zstyle ':completion:*:rm:*' ignore-line yes
 zstyle ':completion:*:manuals'       separate-sections true
 zstyle ':completion:*:manuals.(^1*)' insert-sections   true
 
-# Cache
-zstyle ':completion:*' use-cache off
+# Cache - enable for better performance
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
 
 # fuzzy matching of completions for when you mistype them
 zstyle ':completion:*' completer _complete _match _approximate
@@ -161,13 +162,17 @@ function _get_aws_zsh_completer_sh_path () {
     fi
 }
 
-# try to source the aws zsh completion, if it exists
-_aws_completion_path=`_get_aws_zsh_completer_sh_path`
-if [[ -n $_aws_completion_path ]] ; then
-    source $_aws_completion_path
-    unset _aws_completion_path
-# try the new aws_completer binary
-# see: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-completion.html
-elif which aws_completer &>/dev/null ; then
-    complete -C $(which aws_completer) aws
+# AWS completion - cache the path lookup for better performance
+if [[ -z $_aws_completion_setup ]]; then
+    _aws_completion_path=`_get_aws_zsh_completer_sh_path`
+    if [[ -n $_aws_completion_path ]] ; then
+        source $_aws_completion_path
+        unset _aws_completion_path
+    # try the new aws_completer binary
+    # see: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-completion.html
+    elif which aws_completer &>/dev/null ; then
+        complete -C $(which aws_completer) aws
+    fi
+    # mark as setup to avoid re-running slow lookups
+    export _aws_completion_setup=true
 fi
