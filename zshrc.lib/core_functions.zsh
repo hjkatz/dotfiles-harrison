@@ -26,17 +26,26 @@ function add_to_path () {
 
 # tests if the current shell has internet connectivity
 function has_internet () {
-    local test_site='google.com'
+    local test_sites=('8.8.8.8' 'google.com' '1.1.1.1')
+    local timeout=2
 
-    if ping -q -w 1 -c 1 "$test_site" &>/dev/null || # some pings have -t others -w, catch both cases
-       ping -q -t 1 -c 1 "$test_site" &>/dev/null
-    then
-        return 0
-    else
-        return 1
+    # try multiple test sites to increase reliability
+    for site in "${test_sites[@]}"; do
+        # try ping with both -w and -t flags for cross-platform compatibility
+        if ping -q -w $timeout -c 1 "$site" &>/dev/null || \
+           ping -q -t $timeout -c 1 "$site" &>/dev/null; then
+            return 0
+        fi
+    done
+
+    # as a fallback, try a simple HTTP request (faster than ping on some networks)
+    if command_exists curl; then
+        curl -s --max-time $timeout --head http://google.com &>/dev/null && return 0
+    elif command_exists wget; then
+        wget -q --timeout=$timeout --spider http://google.com &>/dev/null && return 0
     fi
 
-    # unreachable
+    return 1
 }
 
 # tests if a given command is available
@@ -48,8 +57,6 @@ function command_exists () {
     else
         return 1
     fi
-
-    # unreachable
 }
 
 # echos out with color
@@ -182,7 +189,6 @@ function ask () {
         return 1
     fi
 
-    # unreachable
 }
 
 # asks the user for input in the form of a [y/n] question
@@ -228,7 +234,6 @@ function ask_with_timeout () {
         return 1
     fi
 
-    # unreachable
 }
 
 # Matches an element against an array of bash regexes
