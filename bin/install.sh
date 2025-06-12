@@ -26,7 +26,7 @@ color_echo() {
 # Uses -f to force overwrite existing symlinks, -v for verbose output
 symlink () {
   local from="$1"
-  echo "🔗 Linking $from"
+  color_echo cyan "🔗 Linking $from"
   ln -s -f -v $DEFAULT_DOTFILES_HOME/$from $HOME/$from
 }
 
@@ -36,14 +36,14 @@ echo "────────────────────────�
 
 # Back up existing zshrc before we overwrite it with our symlink
 if [[ -f ~/.zshrc ]] ; then
-	echo "💾 Backing up existing ~/.zshrc"
+	color_echo yellow "💾 Backing up existing ~/.zshrc"
     echo "# Saved ~/.zshrc to ~/.zshrc_local during .dotfiles-harrison install" > ~/.zshrc_local
 	cat ~/.zshrc >> ~/.zshrc_local
     color_echo green "   Backup saved to ~/.zshrc_local"
 fi
 
 echo
-color_echo blue "🔗 Creating symlinks..."
+color_echo cyan "🔗 Creating symlinks..."
 # Create symlinks for core dotfiles
 symlink .zshrc
 symlink .vimrc
@@ -52,11 +52,11 @@ symlink .gitconfig
 symlink .psqlrc
 
 echo
-echo "📁 Setting up Neovim config..."
+color_echo cyan "📁 Setting up Neovim config..."
 # Create Neovim config directory and symlink our init.lua
 mkdir -p ~/.config/nvim
 ln -s -f -v $DEFAULT_DOTFILES_HOME/init.lua ~/.config/nvim/init.lua
 
 echo
 color_echo green "✅ Installation complete!"
-echo "   Run 'source ~/.zshrc' to activate your dotfiles"
+color_echo white "   Run 'source ~/.zshrc' to activate your dotfiles"

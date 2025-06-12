@@ -4,29 +4,38 @@
 function resource () {
     # don't need to check for git updates to the dotfiles repo,
     # we just want to resource the current dotfiles
-    local GLOBALS__CHECK_FOR_UPDATES=false
+    export GLOBALS__CHECK_FOR_UPDATES=false
+    export _setup_vim_plugins_ran=true  # Skip vim plugin setup since it's already done
+
+    color_echo cyan "🔄 Starting resource..."
+    local start_time=$(date +%s%3N)
+
     source $DOTFILES/zshrc
+
+    local end_time=$(date +%s%3N)
+    local duration=$((end_time - start_time))
+    color_echo green "✅ Resource complete (${duration}ms)"
 }
 
 # re-source zshrc profile with debugging enabled
 function resource_with_debugging () {
-    echo "--- 🔬 DEBUG SESSION MANAGER ---"
+    color_echo white "─── 🔬 DEBUG SESSION MANAGER ───"
 
     # Clear any existing debug file to start fresh
     local debug_path="/tmp/.dotfiles-harrison-debugging"
     if [[ -f "$debug_path" ]]; then
-        echo "🗑️  Clearing previous debug session data..."
+        color_echo yellow "🗑️  Clearing previous debug session data..."
         rm -f "$debug_path"
     fi
 
-    echo "⚙️ Configuration:"
-    echo " • Debug mode:    ENABLED"
-    echo " • Auto-analysis: ENABLED"
-    echo " • Update check:  DISABLED"
-    echo " • Debug file:    $debug_path"
+    color_echo white "⚙️  CONFIGURATION:"
+    color_echo green "   • Debug mode:    ENABLED"
+    color_echo green "   • Auto-analysis: ENABLED"
+    color_echo yellow "   • Update check:  DISABLED"
+    color_echo blue "   • Debug file:    $debug_path"
 
     echo
-    echo "🚀 Initializing instrumented shell startup..."
+    color_echo white "🚀 Initializing instrumented shell startup..."
 
     # Enable debugging for this resource operation
     export ENABLE_DEBUGGING=true
@@ -36,7 +45,7 @@ function resource_with_debugging () {
 
     # Don't need to check for git updates to the dotfiles repo,
     # we just want to resource the current dotfiles
-    local GLOBALS__CHECK_FOR_UPDATES=false
+    export GLOBALS__CHECK_FOR_UPDATES=false
 
     # Begin the instrumented loading
     source $DOTFILES/zshrc
@@ -55,11 +64,11 @@ function check_and_update_git_repo () {
         fi
 
         # Fetch changes for current branch
-        color_echo yellow "Updating git repo..."
+        color_echo yellow "📡 Updating git repo..."
         git fetch
-        color_echo yellow "Pruning local branches..."
+        color_echo yellow "✂️ Pruning local branches..."
         git branch -vv | grep -E ': (gone|desaparecido)]' | awk '{print $1}' | xargs -r git branch -D
-        color_echo green "Done."
+        color_echo green "✅ Done."
     fi
 }
 
@@ -188,14 +197,14 @@ function check_for_caution_server () {
 function setup_vim_plugins () {
     # filepath to the saved plugin list
     local plugin_list_file="$DOTFILES/.plugin_list"
-    
+
     # Use a checksum instead of diff for faster comparison
     local init_lua_checksum_file="$DOTFILES/.init_lua_checksum"
     local current_checksum=$(grep -E '^\s+Plug\s+' "$DOTFILES/init.lua" 2>/dev/null | md5sum | cut -d' ' -f1)
-    
+
     # Check if we need to update plugins
     local do_plugin_setup=""
-    
+
     # if the checksum file doesn't exist or differs
     if [[ ! -f "$init_lua_checksum_file" ]] || [[ "$(cat "$init_lua_checksum_file" 2>/dev/null)" != "$current_checksum" ]] ; then
         # Save the new checksum
@@ -205,7 +214,7 @@ function setup_vim_plugins () {
 
     # if we should do the plugin setup
     if [[ -n $do_plugin_setup ]] ; then
-        color_echo yellow 'Setting up vim plugins...'
+        color_echo yellow '⚙️  Setting up vim plugins...'
 
         # check if nvim is available
         if ! command_exists nvim; then
@@ -221,7 +230,7 @@ function setup_vim_plugins () {
 
         # then, install new plugins, update the plugins, then quit vim
         if command nvim --cmd "set runtimepath+=\"$DOTFILES\"" -u "$DOTFILES/init.lua" +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall; then
-            color_echo green 'Done.'
+            color_echo green '✅ Done.'
         else
             color_echo red 'Error: Plugin setup failed. Please check nvim configuration.'
             return 1
@@ -245,7 +254,7 @@ function vim () {
     # setup plugins if not already done
     if [[ $_setup_vim_plugins_ran != true ]] ; then
         if ! setup_vim_plugins; then
-            color_echo red 'Plugin setup failed, launching nvim anyway...'
+            color_echo red '❌ Plugin setup failed, launching nvim anyway...'
         fi
     fi
 
@@ -253,7 +262,7 @@ function vim () {
     if [[ -f "$DOTFILES/init.lua" ]]; then
         command nvim --cmd "set runtimepath+=\"$DOTFILES\"" -u "$DOTFILES/init.lua" "$@"
     else
-        color_echo yellow "Warning: init.lua not found, launching nvim with default config"
+        color_echo yellow "⚠️  Warning: init.lua not found, launching nvim with default config"
         command nvim "$@"
     fi
 }

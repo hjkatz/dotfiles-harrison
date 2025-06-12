@@ -34,7 +34,7 @@ function zsh_debug () {
         timing_threshold="10"
     fi
 
-    color_echo white "--- ⏱️ SHELL STARTUP PERFORMANCE ANALYSIS ---"
+    color_echo white "──── ⏱️  Shell Startup Performance Analysis ────"
     echo "   Threshold:  ${timing_threshold}ms (showing operations slower than this)"
     echo "   Debug file: $GLOBALS__DEBUGGING_PATH"
     echo
@@ -123,7 +123,7 @@ function zsh_debug () {
     else
         total_time=0
     fi
-    color_echo white "--- 📈 PERFORMANCE SUMMARY ---"
+    color_echo white "──── 📈 Performance Summary ────"
 
     # Get debug info for integration
     local line_count=$(wc -l < "$GLOBALS__DEBUGGING_PATH")
@@ -186,7 +186,7 @@ function zsh_debug_summary() {
         return 1
     fi
 
-    color_echo white "--- 📊 QUICK DEBUG SUMMARY ---"
+    color_echo white "──── 📊 Quick Debug Summary ────"
 
     # Get timing info
     local start_time=$(head -n 1 "$GLOBALS__DEBUGGING_PATH" | awk '{print $1}')
@@ -249,7 +249,7 @@ function zsh_debug_claude() {
     # Function to generate the analysis
     _generate_analysis() {
 
-    color_echo white "--- 🤖 CLAUDE AI PERFORMANCE ANALYSIS ---"
+    color_echo white "──── 🤖 Claude AI Performance Analysis ────"
 
     # Calculate timing info
     local start_time=$(head -n 1 "$GLOBALS__DEBUGGING_PATH" | awk '{print $1}')

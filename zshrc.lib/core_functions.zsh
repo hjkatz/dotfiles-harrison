@@ -136,8 +136,7 @@ function turn_off_keyboard () {
 function q () {
     question="$1"
 
-    # manually run color echo without a newline
-    echo -e -n "\033[1;33m$question \033[0m"
+    color_echo -n yellow "$question"
 
     turn_on_keyboard
     read ANSWER
@@ -160,8 +159,7 @@ function flush_stdin() {
 function ask () {
     question="$1"
 
-    # manually run color echo without a newline
-    echo -e -n "\033[1;33m$question [y/n]: \033[0m"
+    color_echo -n yellow "$question [y/n]: "
 
     turn_on_keyboard
     read -k 1 ANSWER
@@ -172,8 +170,7 @@ function ask () {
 
     # loop until the user responds with a y or n
     while [[ $ANSWER != y ]] && [[ $ANSWER != n ]] ; do
-        # manually run color echo without a newline
-        echo -e -n "\033[1;33m[y/n]: \033[0m"
+        color_echo -n yellow "[y/n]: "
 
         turn_on_keyboard
         read -k 1 ANSWER
@@ -198,9 +195,8 @@ function ask_with_timeout () {
     default="$2"
     question="$3"
 
-    # manually run color echo without a newline
     color_echo yellow "$question [y/n]"
-    echo -e -n "\033[1;33mAssuming \"$default\" in $timeout secs: \033[0m"
+    color_echo -n yellow "Assuming \"$default\" in $timeout secs: "
 
     turn_on_keyboard
     read -t $timeout -k 1 ANSWER
@@ -216,8 +212,7 @@ function ask_with_timeout () {
     else
         # loop until the user responds with a y or n
         while [[ $ANSWER != y ]] && [[ $ANSWER != n ]] ; do
-            # manually run color echo without a newline
-            echo -e -n "\033[1;33m[y/n]: \033[0m"
+            color_echo -n yellow "[y/n]: "
 
             turn_on_keyboard
             read -k 1 ANSWER
@@ -332,7 +327,7 @@ function start_ssh_agent () {
     # is ssh-agent already running?
     ssh_agent_pid=`ps aux | grep "ssh-agent -a $ssh_auth_sock" | grep -v grep | awk '{print $2}'`
     if [[ -z $ssh_agent_pid ]] ; then
-        color_echo yellow "Starting ssh-agent: $agent_name"
+        color_echo yellow "🔑 Starting ssh-agent: $agent_name"
 
         # ssh-agent not running, start it
         ssh-agent -a "$ssh_auth_sock" 2>&1 >/dev/null
@@ -340,7 +335,7 @@ function start_ssh_agent () {
         # grab the now running pid
         ssh_agent_pid=`ps aux | grep "ssh-agent -a $ssh_auth_sock" | grep -v grep | awk '{print $2}'`
     else
-        color_echo green "Connected to ssh-agent: $agent_name"
+        color_echo green "🔗 Connected to ssh-agent: $agent_name"
     fi
 
     # put the pid into the file
@@ -378,10 +373,10 @@ function add_ssh_id_to_agent () {
     # add ssh adentities to the agent if they are not already added
     if SSH_AUTH_SOCK=$ssh_auth_sock SSH_AGENT_PID=$ssh_agent_pid ssh-add -l | grep "The agent has no identities." ; then
         # Personal
-        color_echo yellow "Adding key $key_name to $agent_name ssh-agent"
+        color_echo yellow "🔐 Adding key $key_name to $agent_name ssh-agent"
         SSH_AUTH_SOCK=$ssh_auth_sock SSH_AGENT_PID=$ssh_agent_pid ssh-add "$id_path"
     else
-        color_echo green "Found existing key $key_name attached to $agent_name ssh-agent"
+        color_echo green "✅ Found existing key $key_name attached to $agent_name ssh-agent"
     fi
 }
 
