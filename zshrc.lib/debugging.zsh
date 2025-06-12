@@ -209,8 +209,8 @@ function zsh_debug_summary() {
 
     color_echo white "🎯 Overview:"
     color_echo $rating_color "   Performance   : $rating_icon ${total_time}ms total startup time"
-    echo "   Debug lines   : $line_count operations traced"
-    echo "   Debug file    : $GLOBALS__DEBUGGING_PATH"
+    echo "   Debug lines: $line_count operations traced"
+    echo "   Debug file:  $GLOBALS__DEBUGGING_PATH"
 
     echo
     color_echo white "🏆 Top 5 Slowest Operations:"
@@ -340,7 +340,7 @@ function zsh_debug_claude() {
 
 
     echo
-    echo "🎯 Recommendations:"
+    color_echo white "🎯 Recommendations:"
 
     # Overall recommendations based on timing with priority levels
     if [[ $total_time -gt 1000 ]]; then
@@ -357,10 +357,17 @@ function zsh_debug_claude() {
     fi
 
     echo
-    echo "📚 Available Tools:"
+    color_echo white "📚 Available Tools:"
     echo "   • zsh_debug_summary       → Quick overview with top slowdowns"
-    echo "   • zsh_debug [ms]   → Detailed timing (default 10ms)"
+    echo "   • zsh_debug [ms]    → Detailed timing (default 10ms)"
     echo "   • resource_with_debugging → Fresh analysis session"
+
+    echo
+    color_echo white "🚀 Apply These Optimizations:"
+    echo "   • Open a new Claude session: claude"
+    echo "   • Share this analysis output with Claude"
+    echo "   • Ask Claude to implement the suggested optimizations"
+    echo "   • Test changes with: resource_with_debugging"
 
     echo
     color_echo green "🤖 Analysis Complete!"
