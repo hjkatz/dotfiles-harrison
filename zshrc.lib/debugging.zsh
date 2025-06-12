@@ -46,50 +46,58 @@ function zsh_debug () {
     previous_section="$first_section"
     previous_line="$first_line"
 
-    # read each line
-    while read line ; do
-        current_section=`echo $line | awk '{print $2}' | cut -f1 -d:`
-
-        # skip any line that doesn't match our debugging pattern (improved regex)
-        if ! echo "$line" | grep -q -E '^[0-9]+\s.*:[0-9]+>' ; then
-            continue
-        fi
-
-        # skip sections that are the same
-        if [[ $current_section == $previous_section ]] ; then
-            previous_line="$line"
-            continue
-        fi
-
-        # find the timing of the previous section to now
-        current_section_start_time=`echo $line | awk '{print $1}'`
+    # Use awk for much faster processing of large debug files
+    awk -v threshold="$timing_threshold" '
+    BEGIN {
+        prev_time = 0;
+        prev_section = "";
+        prev_line = "";
+        first_line = 1;
+    }
+    
+    /^[0-9]+ .*:[0-9]+>/ {
+        current_time = $1;
+        current_section = $2;
+        gsub(/:.*/, "", current_section);
         
-        # ensure timestamps are numeric
-        if ! [[ "$current_section_start_time" =~ ^[0-9]+$ ]] || ! [[ "$previous_section_start_time" =~ ^[0-9]+$ ]]; then
-            continue
-        fi
+        if (current_time !~ /^[0-9]+$/) {
+            next;
+        }
         
-        timing=$(( $current_section_start_time - $previous_section_start_time ))
-
-        if [[ $timing -gt $timing_threshold ]] ; then
-            # trim the lines to print
-            trim_previous_line=`echo $previous_line | cut -c1-120`
-            trim_line=`echo $line | cut -c1-120`
+        # Initialize with first valid timestamp
+        if (first_line) {
+            prev_time = current_time;
+            prev_section = current_section;
+            prev_line = $0;
+            first_line = 0;
+            next;
+        }
+        
+        if (current_section == prev_section) {
+            prev_time = current_time;
+            prev_line = $0;
+            next;
+        }
+        
+        timing = current_time - prev_time;
+        
+        if (timing > threshold) {
+            prev_display = substr(prev_line, 1, 120);
+            curr_display = substr($0, 1, 120);
             
-            # print timing and lines with duration info
-            color_echo yellow "Duration: ${timing}ms"
-            color_echo red "$trim_previous_line (took ${timing}ms)"
-            color_echo green "$trim_line"
-        fi
+            print "\033[1;33mDuration: " timing "ms\033[0m";
+            print "\033[1;31m" prev_display " (took " timing "ms)\033[0m";
+            print "\033[1;32m" curr_display "\033[0m";
+        }
+        
+        prev_time = current_time;
+        prev_section = current_section;
+        prev_line = $0;
+    }
+    ' "$GLOBALS__DEBUGGING_PATH"
 
-        # update the previous vars
-        previous_section_start_time="$current_section_start_time"
-        previous_section="$current_section"
-        previous_line="$line"
-    done < $GLOBALS__DEBUGGING_PATH
-
-    # print the total time
-    debugging_end_time=`echo $previous_line | awk '{print $1}'`
+    # Calculate total time using the last line of the debug file
+    debugging_end_time=$(tail -n 1 "$GLOBALS__DEBUGGING_PATH" | awk '{print $1}')
     
     # ensure timestamps are numeric for total calculation
     if [[ "$debugging_end_time" =~ ^[0-9]+$ ]] && [[ "$debugging_start_time" =~ ^[0-9]+$ ]]; then

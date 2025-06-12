@@ -12,6 +12,13 @@ function resource () {
 function resource_with_debugging () {
     color_echo blue "🔍 Re-sourcing zshrc with debugging enabled..."
     
+    # Clear any existing debug file to start fresh
+    local debug_path="/tmp/.dotfiles-harrison-debugging"
+    if [[ -f "$debug_path" ]]; then
+        echo "🗑️  Clearing previous debug session..."
+        rm -f "$debug_path"
+    fi
+    
     # enable debugging for this resource operation
     export ENABLE_DEBUGGING=true
     
