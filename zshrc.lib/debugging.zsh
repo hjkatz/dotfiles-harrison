@@ -245,7 +245,7 @@ function zsh_debug_claude() {
         color_echo red "❌ Debugging information was not saved!"
         return 1
     fi
-    
+
     # Function to generate the analysis
     _generate_analysis() {
 
@@ -362,14 +362,14 @@ function zsh_debug_claude() {
     echo
     color_echo white "📚 Available Tools:"
     echo "   • zsh_debug_summary       → Quick overview with top slowdowns"
-    echo "   • zsh_debug [ms]    → Detailed timing (default 10ms)"
+    echo "   • zsh_debug [ms]          → Detailed timing (default 10ms)"
     echo "   • resource_with_debugging → Fresh analysis session"
     }
-    
+
     # Generate and display the analysis
     local analysis_output=$(_generate_analysis)
     echo "$analysis_output"
-    
+
     # Ask if user wants to launch Claude
     echo
     if ask "Launch Claude to optimize these issues?" ; then
@@ -386,11 +386,11 @@ Please:
 5. Prioritize changes that will have the biggest impact
 
 My dotfiles are located at: $DOTFILES"
-        
+
         echo
         color_echo yellow "🚀 Launching Claude with optimization request..."
         echo
-        
+
         # Launch Claude with the analysis and prompt
         echo "$claude_prompt" | claude
     fi

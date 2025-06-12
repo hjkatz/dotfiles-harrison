@@ -94,9 +94,10 @@ done
 export fpath
 
 # source omz compatible plugins
-plugin_list=( `/bin/ls -d -1 $DOTFILES/zshrc.plugins/* | xargs -n1 basename | tr '\n' ' '` )
-for plugin in $plugin_list ; do
-    source $DOTFILES/zshrc.plugins/$plugin/$plugin.plugin.zsh
+# Optimized plugin loading - avoid subshell and external commands
+for plugin_dir in $DOTFILES/zshrc.plugins/*(/); do
+    plugin=${plugin_dir:t}  # Get basename using zsh parameter expansion
+    [[ -f $plugin_dir/$plugin.plugin.zsh ]] && source $plugin_dir/$plugin.plugin.zsh
 done
 
 # source zsh syntax highlighting settings

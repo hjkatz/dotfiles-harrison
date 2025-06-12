@@ -41,16 +41,17 @@ alias sks="sudo k3s kubectl "
 # for prometheus include: servicemonitors
 alias -g kall="all,configmaps,deployments.apps,secrets,limits,resourcequotas,poddisruptionbudgets,jobs,deployments,cronjobs,statefulsets,serviceaccounts,rolebindings,persistentvolumeclaims"
 
-# add kubectl completion
-source <(kubectl completion zsh)
-# lazy load the completions
-# function kubectl() {
-#     if ! type __start_kubectl >/dev/null 2>&1; then
-#         source <(command kubectl completion zsh)
-#     fi
+# add kubectl completion - using lazy loading to improve startup time
+# source <(kubectl completion zsh)  # This was taking 87ms!
 
-#     command kubectl "$@"
-# }
+# lazy load the completions
+function kubectl() {
+    if ! type __start_kubectl >/dev/null 2>&1; then
+        source <(command kubectl completion zsh)
+    fi
+
+    command kubectl "$@"
+}
 
 # set completion
 compdef kb=kubectl

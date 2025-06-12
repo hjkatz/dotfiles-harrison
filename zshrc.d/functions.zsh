@@ -188,20 +188,18 @@ function check_for_caution_server () {
 function setup_vim_plugins () {
     # filepath to the saved plugin list
     local plugin_list_file="$DOTFILES/.plugin_list"
-
-    # command to list the plugins from the init.lua (properly quoted)
-    local plugin_list_cmd="cat \"$DOTFILES/init.lua\" | grep -E '^\s+Plug\s+' | awk '{print \$2}' | tr -d ','"
-
-    # initialize to 'false'
+    
+    # Use a checksum instead of diff for faster comparison
+    local init_lua_checksum_file="$DOTFILES/.init_lua_checksum"
+    local current_checksum=$(grep -E '^\s+Plug\s+' "$DOTFILES/init.lua" 2>/dev/null | md5sum | cut -d' ' -f1)
+    
+    # Check if we need to update plugins
     local do_plugin_setup=""
-
-    # if the plugin list file does not exist
-    if [[ ! -f "$plugin_list_file" ]] ; then
-        # then list all the plugins from the vimrc, and put them in the plugin list file
-        eval "$plugin_list_cmd" > "$plugin_list_file"
-        do_plugin_setup="1"
-    # else if the plugin list file is different than the plugin list command
-    elif ! eval "$plugin_list_cmd" | diff -q - "$plugin_list_file" &>/dev/null ; then
+    
+    # if the checksum file doesn't exist or differs
+    if [[ ! -f "$init_lua_checksum_file" ]] || [[ "$(cat "$init_lua_checksum_file" 2>/dev/null)" != "$current_checksum" ]] ; then
+        # Save the new checksum
+        echo "$current_checksum" > "$init_lua_checksum_file"
         do_plugin_setup="1"
     fi
 
@@ -223,8 +221,6 @@ function setup_vim_plugins () {
 
         # then, install new plugins, update the plugins, then quit vim
         if command nvim --cmd "set runtimepath+=\"$DOTFILES\"" -u "$DOTFILES/init.lua" +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall; then
-            # refresh the plugin list file
-            eval "$plugin_list_cmd" > "$plugin_list_file"
             color_echo green 'Done.'
         else
             color_echo red 'Error: Plugin setup failed. Please check nvim configuration.'
