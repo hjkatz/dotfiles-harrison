@@ -94,7 +94,7 @@ function color_echo() {
          color="1;36"
          ;;
      white)
-         color="0"
+         color="1;37"
          ;;
      *)
           color=$1

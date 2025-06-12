@@ -10,26 +10,35 @@ function resource () {
 
 # re-source zshrc profile with debugging enabled
 function resource_with_debugging () {
-    color_echo blue "🔍 Re-sourcing zshrc with debugging enabled..."
-    
+    echo "--- 🔬 DEBUG SESSION MANAGER ---"
+
     # Clear any existing debug file to start fresh
     local debug_path="/tmp/.dotfiles-harrison-debugging"
     if [[ -f "$debug_path" ]]; then
-        echo "🗑️  Clearing previous debug session..."
+        echo "🗑️  Clearing previous debug session data..."
         rm -f "$debug_path"
     fi
-    
-    # enable debugging for this resource operation
+
+    echo "⚙️ Configuration:"
+    echo " • Debug mode:    ENABLED"
+    echo " • Auto-analysis: ENABLED"
+    echo " • Update check:  DISABLED"
+    echo " • Debug file:    $debug_path"
+
+    echo
+    echo "🚀 Initializing instrumented shell startup..."
+
+    # Enable debugging for this resource operation
     export ENABLE_DEBUGGING=true
-    
-    # flag to auto-run debug analysis after startup
+
+    # Flag to auto-run debug analysis after startup
     export GLOBALS__AUTO_RUN_DEBUG=true
-    
-    # don't need to check for git updates to the dotfiles repo,
+
+    # Don't need to check for git updates to the dotfiles repo,
     # we just want to resource the current dotfiles
     local GLOBALS__CHECK_FOR_UPDATES=false
-    
-    color_echo yellow "Starting instrumented zshrc load..."
+
+    # Begin the instrumented loading
     source $DOTFILES/zshrc
 }
 
@@ -321,10 +330,10 @@ function set_title() {
 # Usage: netcheck [verbose]
 function netcheck() {
     local verbose=${1:-false}
-    
+
     color_echo blue "🌐 Network Connectivity Check"
     echo
-    
+
     # Basic connectivity
     if has_internet; then
         color_echo green "✅ Internet: Connected"
@@ -332,19 +341,19 @@ function netcheck() {
         color_echo red "❌ Internet: No connectivity"
         return 1
     fi
-    
+
     # DNS resolution test
     if nslookup google.com >/dev/null 2>&1; then
         color_echo green "✅ DNS: Resolving"
     else
         color_echo yellow "⚠️  DNS: Issues detected"
     fi
-    
+
     # Speed test endpoints
     local test_sites=("google.com" "github.com" "cloudflare.com")
     echo
     color_echo blue "📡 Response Times:"
-    
+
     for site in "${test_sites[@]}"; do
         if command_exists ping; then
             # Get average ping time
@@ -353,7 +362,7 @@ function netcheck() {
             else
                 ping_result=$(ping -c 3 "$site" 2>/dev/null | tail -1 | awk -F'/' '{print $5}')
             fi
-            
+
             if [[ -n "$ping_result" ]]; then
                 color_echo green "  $site: ${ping_result}ms"
             else
@@ -361,12 +370,12 @@ function netcheck() {
             fi
         fi
     done
-    
+
     # Verbose output
     if [[ "$verbose" == "true" || "$verbose" == "v" ]]; then
         echo
         color_echo blue "📋 Network Details:"
-        
+
         # Show network interfaces
         if command_exists ip; then
             echo "Active interfaces:"
@@ -375,7 +384,7 @@ function netcheck() {
             echo "Active interfaces:"
             ifconfig | grep -E "(inet|flags)" | head -10
         fi
-        
+
         echo
         # Show routing
         if command_exists ip; then
@@ -386,7 +395,7 @@ function netcheck() {
             route -n | grep UG
         fi
     fi
-    
+
     echo
     color_echo green "✅ Network check complete"
 }
@@ -397,7 +406,7 @@ function netcheck() {
 function devenv() {
     color_echo blue "🔧 Development Environment Detection"
     echo
-    
+
     # Container detection
     if [[ -f /.dockerenv ]]; then
         color_echo green "📦 Container: Docker"
@@ -408,7 +417,7 @@ function devenv() {
     else
         color_echo yellow "📦 Container: None detected"
     fi
-    
+
     # Cloud environment detection
     if [[ -n "${AWS_EXECUTION_ENV:-}" ]]; then
         color_echo green "☁️  Cloud: AWS (${AWS_EXECUTION_ENV})"
@@ -423,11 +432,11 @@ function devenv() {
     else
         color_echo yellow "☁️  Cloud: None detected"
     fi
-    
+
     # Development tools
     echo
     color_echo blue "🛠️  Available Tools:"
-    
+
     local dev_tools=("docker" "kubectl" "git" "node" "python" "go" "rust" "java")
     for tool in "${dev_tools[@]}"; do
         if command_exists "$tool"; then
@@ -447,11 +456,11 @@ function devenv() {
             color_echo red "  ❌ $tool"
         fi
     done
-    
+
     # Project context
     echo
     color_echo blue "📁 Project Context:"
-    
+
     if [[ -f "package.json" ]]; then
         color_echo green "  📦 Node.js project"
     fi
