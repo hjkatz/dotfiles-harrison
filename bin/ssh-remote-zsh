@@ -1,42 +1,33 @@
 #!/bin/zsh
 
-# echos out with color
-#
+# Echos out with color for better visual feedback
 # Called:
 #   `color_echo red "My Error"`
 #   `color_echo yellow "My Warning"`
 #   `color_echo green "My Success"`
 function color_echo () {
     case $1 in
-     red)
-          color=31
-          ;;
-     green)
-          color=32
-          ;;
-     yellow)
-          color=33
-          ;;
-     *)
-          color=$1
-          ;;
+     red)    color="1;31" ;;
+     green)  color="1;32" ;;
+     yellow) color="1;33" ;;
+     blue)   color="1;34" ;;
+     purple) color="1;35" ;;
+     cyan)   color="1;36" ;;
+     *)      color=$1 ;;
     esac
-
-    # remove $1
     shift
-
-    echo -e "\033[1;${color}m$@\033[0m"
+    echo -e "\033[${color}m$@\033[0m"
 }
 
 FLAG=""
 NO_FORWARD=false
 
 if [ $# -eq 0 ] ; then
-    color_echo red "Missing Hostname"
+    color_echo red "❌ Missing hostname argument"
     exit 1
 fi
 
-# parse commandline
+# Parse commandline arguments
 while [ $# -gt 0 ]
 do
       arg="$1"
@@ -49,9 +40,9 @@ do
 done
 
 if [[ -f ~/.ssh/config ]] ; then
-    # parse .ssh/config and find print user@hostname:port info
+    # Parse .ssh/config and find print user@hostname:port info
 
-    # config parser written in awk, prints out lines like
+    # Config parser written in awk, prints out lines like
     #     host:hostname:port:user
     ssh_config_parser_awk='
 { IGNORECASE = 1; } # turn on case insensitivity
@@ -82,46 +73,60 @@ if [[ -f ~/.ssh/config ]] ; then
 /.*/ { next; } # default
 '
 
-    # parse the config
+    # Parse the config
     ssh_config_parsed=`awk $ssh_config_parser_awk ~/.ssh/config | sort | uniq`
     ssh_config_match=`echo "$ssh_config_parsed" | grep -P "^\\Q$1\\E:"`
 
-    # check for a match in the config
+    # Check for a match in the config
     if [[ -n "$ssh_config_match" ]] ; then
-        # match exists
+        # Match exists in SSH config
         user=`echo "$ssh_config_match" | cut -d: -f4`
         port=`echo "$ssh_config_match" | cut -d: -f3`
         hostname=`echo "$ssh_config_match" | cut -d: -f2`
 
-        # print correct parts if they exist (hostname will always exist)
-        # print yellow then cyan using ansi color codes
+        echo "────────────────────────────────────"
+        color_echo purple "🌐 SSH Remote Connection"
+        echo "────────────────────────────────────"
+        
+        # Print connection details in aligned format
         if [[ -n "$user" ]] && [[ -n "$port" ]] ; then
-            color_echo yellow "Connecting to \033[1;36m$user@$hostname:$port\033[0m"
+            echo "   Host      : $hostname"
+            echo "   User      : $user"
+            echo "   Port      : $port"
+            target="$user@$hostname:$port"
         elif [[ -n "$user" ]] && [[ -z "$port" ]] ; then
-            color_echo yellow "Connecting to \033[1;36m$user@$hostname\033[0m"
+            echo "   Host      : $hostname"
+            echo "   User      : $user"
+            target="$user@$hostname"
         elif [[ -z "$user" ]] && [[ -n "$port" ]] ; then
-            color_echo yellow "Connecting to \033[1;36m$hostname:$port\033[0m"
+            echo "   Host      : $hostname"
+            echo "   Port      : $port"
+            target="$hostname:$port"
         elif [[ -z "$user" ]] && [[ -z "$port" ]] ; then
-            color_echo yellow "Connecting to \033[1;36m$hostname\033[0m"
+            echo "   Host      : $hostname"
+            target="$hostname"
         else
-            color_echo red "Impossible case"
+            color_echo red "❌ Configuration error"
+            exit 1
         fi
+        color_echo blue "🚀 Connecting to $target"
     else
-        # no match found in config, print whatever was passed in
-        color_echo yellow "Connecting to \033[1;36m$1\033[0m"
+        # No match found in config, print whatever was passed in
+        color_echo blue "🚀 Connecting to $1"
     fi
 else
-    # no ssh config, print whatever was passed in
-    color_echo yellow "Connecting to \033[1;36m$1\033[0m"
+    # No ssh config, print whatever was passed in
+    color_echo blue "🚀 Connecting to $1"
 fi
 
 REMOTE_DOTFILES='~/.dotfiles-harrison/'
 
-# check for out of date dotfiles on remote server
+# Check for out of date dotfiles on remote server
 if ssh $1 "[[ ! -f $REMOTE_DOTFILES/VERSION ]] || cat $REMOTE_DOTFILES/VERSION | grep -v -q -E '^$DOTFILES_VERSION'" ; then
-    color_echo yellow "Transferring files..."
+    echo
+    echo "📦 Syncing dotfiles to remote server..."
 
-    # construct a list of excluded files for the tar transfer
+    # Construct a list of excluded files for the tar transfer
     tar_exclude_list=(
         '.git/*'
         '.gitignore'
@@ -140,21 +145,26 @@ if ssh $1 "[[ ! -f $REMOTE_DOTFILES/VERSION ]] || cat $REMOTE_DOTFILES/VERSION |
         'zsh-syntax-highlighting/Makefile'
     )
 
-    # add tar flags as an array of separate arguments becuase tar is picky...
+    # Add tar flags as an array of separate arguments because tar is picky...
     tar_excludes=()
     for exclude in $tar_exclude_list ; do
         tar_excludes+='--exclude'
         tar_excludes+="$exclude"
     done
 
+    # Transfer dotfiles to remote server using tar over SSH
     tar c -C${HOME} --gzip ${tar_excludes} .dotfiles-harrison | ssh $1 'tar mxz -C${HOME} --no-same-owner --overwrite --dereference'
-    color_echo green "Updated to $DOTFILES_VERSION"
+    color_echo green "✅ Updated to $DOTFILES_VERSION"
+    echo
 fi
 
-# maybe check if zsh is installed and if not install it? Or return an error?
+# TODO: maybe check if zsh is installed and if not install it? Or return an error?
 
+# Connect to remote server with dotfiles environment
 if [ $NO_FORWARD = true ] ; then
+    # Connect without SSH agent forwarding
     ssh $FLAG -t $1 "export ZDOTDIR=$REMOTE_DOTFILES ; zsh"
 else
+    # Connect with SSH agent forwarding (default)
     ssh $FLAG -A -t $1 "export ZDOTDIR=$REMOTE_DOTFILES ; zsh"
 fi
