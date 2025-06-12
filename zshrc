@@ -2,6 +2,7 @@
 
 # prints debugging info (preserve if already set by resource_with_debugging)
 ENABLE_DEBUGGING=${ENABLE_DEBUGGING:-false}
+ENABLE_DEBUGGING=true
 
 # Where the dotfiles are located to load
 export DOTFILES=$HOME/.dotfiles-harrison
@@ -131,7 +132,7 @@ export NVM_DIR="$HOME/.nvm"
 _load_nvm() {
     # Remove the lazy loading functions
     unset -f nvm node npm npx
-    
+
     # Load NVM
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"

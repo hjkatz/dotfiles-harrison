@@ -9,8 +9,25 @@ for rbenvdir ($rbenvdirs) ; do
     if [ -d $rbenvdir/shims -a $FOUND_RBENV -eq 0 ] ; then
         FOUND_RBENV=1
 
-        # init
-        [[ $PATH == *.rbenv* ]] || eval "$(rbenv init --no-rehash - zsh)"
+        # init - lazy load for performance
+        if [[ $PATH != *.rbenv* ]]; then
+            # Add rbenv shims to PATH immediately for command detection
+            export PATH="$rbenvdir/shims:$PATH"
+            
+            # Lazy load full rbenv initialization
+            _load_rbenv() {
+                unfunction ruby gem irb erb ri rdoc testrb rake &>/dev/null
+                eval "$(command rbenv init --no-rehash - zsh)"
+                export _rbenv_loaded=true
+            }
+            
+            # Create wrapper functions that trigger lazy loading
+            for cmd in ruby gem irb erb ri rdoc testrb rake; do
+                if ! command -v $cmd &>/dev/null; then
+                    eval "$cmd() { _load_rbenv && $cmd \"\$@\"; }"
+                fi
+            done
+        fi
 
         alias rubies="rbenv versions"
 

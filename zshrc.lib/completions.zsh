@@ -193,10 +193,18 @@ if [[ -z $_aws_completion_setup ]]; then
     export _aws_completion_setup=true
 fi
 
-# Modern tool completions
+# Modern tool completions - lazy load for performance
 if command_exists kubectl && [[ -z $_kubectl_completion_setup ]]; then
-    source <(kubectl completion zsh)
-    export _kubectl_completion_setup=true
+    # Lazy load kubectl completion to save ~80ms on startup
+    _load_kubectl_completion() {
+        unfunction kubectl 2>/dev/null
+        source <(command kubectl completion zsh)
+        export _kubectl_completion_setup=true
+    }
+    
+    # Create wrapper function that loads completion on first use
+    kubectl() { _load_kubectl_completion && kubectl "$@"; }
+    export _kubectl_completion_setup=lazy
 fi
 
 if command_exists docker && [[ -z $_docker_completion_setup ]]; then
