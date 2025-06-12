@@ -6,7 +6,7 @@ zmodload -i zsh/complist
 
 # from omz
 
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+# Enhanced matcher-list is set below in the modern completion section
 zstyle ':completion:*' list-colors ''
 
 # should this be in keybindings?
@@ -130,10 +130,26 @@ zstyle ':completion:*:manuals.(^1*)' insert-sections   true
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
 
-# fuzzy matching of completions for when you mistype them
-zstyle ':completion:*' completer _complete _match _approximate
+# Enhanced fuzzy matching and modern completion features
+zstyle ':completion:*' completer _complete _match _approximate _expand_alias
 zstyle ':completion:*:match:*' original only
-zstyle ':completion:*:approximate:*' max-errors 1 numeric
+zstyle ':completion:*:approximate:*' max-errors 2 numeric
+
+# Modern completion styles
+zstyle ':completion:*' squeeze-slashes true
+zstyle ':completion:*' complete-options true
+zstyle ':completion:*' glob true
+zstyle ':completion:*' substitute true
+
+# Better directory completion
+zstyle ':completion:*:cd:*' special-dirs true
+zstyle ':completion:*' special-dirs true
+
+# Case-insensitive (all), partial-word and substring completion
+zstyle ':completion:*' matcher-list \
+  'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
+  'r:|[._-]=* r:|=*' \
+  'l:|=* r:|=*'
 
 # ignore completion functions for commands you don't have
 zstyle ':completion:*:functions' ignored-patterns '_*'
@@ -175,4 +191,32 @@ if [[ -z $_aws_completion_setup ]]; then
     fi
     # mark as setup to avoid re-running slow lookups
     export _aws_completion_setup=true
+fi
+
+# Modern tool completions
+if command_exists kubectl && [[ -z $_kubectl_completion_setup ]]; then
+    source <(kubectl completion zsh)
+    export _kubectl_completion_setup=true
+fi
+
+if command_exists docker && [[ -z $_docker_completion_setup ]]; then
+    # Try to find docker completion
+    for docker_completion in /usr/share/zsh/vendor-completions/_docker \
+                            /opt/homebrew/share/zsh/site-functions/_docker \
+                            /usr/local/share/zsh/site-functions/_docker; do
+        if [[ -f "$docker_completion" ]]; then
+            source "$docker_completion"
+            break
+        fi
+    done
+    export _docker_completion_setup=true
+fi
+
+# Git completion enhancements
+if command_exists git && [[ -z $_git_completion_setup ]]; then
+    # Enable git flow completion if available
+    if [[ -f /usr/local/etc/bash_completion.d/git-flow-completion.bash ]]; then
+        source /usr/local/etc/bash_completion.d/git-flow-completion.bash
+    fi
+    export _git_completion_setup=true
 fi
