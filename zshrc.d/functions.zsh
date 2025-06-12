@@ -15,15 +15,15 @@ function resource_with_debugging () {
     # enable debugging for this resource operation
     export ENABLE_DEBUGGING=true
     
+    # flag to auto-run debug analysis after startup
+    export GLOBALS__AUTO_RUN_DEBUG=true
+    
     # don't need to check for git updates to the dotfiles repo,
     # we just want to resource the current dotfiles
     local GLOBALS__CHECK_FOR_UPDATES=false
     
     color_echo yellow "Starting instrumented zshrc load..."
     source $DOTFILES/zshrc
-    
-    echo
-    color_echo green "✅ Resource complete! Run 'zsh_debug' or 'debug_claude' to analyze performance."
 }
 
 # Checks to see if the pwd is in a git repo, then calls git fetch

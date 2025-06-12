@@ -63,16 +63,22 @@ function zsh_debug () {
 
         # find the timing of the previous section to now
         current_section_start_time=`echo $line | awk '{print $1}'`
+        
+        # ensure timestamps are numeric
+        if ! [[ "$current_section_start_time" =~ ^[0-9]+$ ]] || ! [[ "$previous_section_start_time" =~ ^[0-9]+$ ]]; then
+            continue
+        fi
+        
         timing=$(( $current_section_start_time - $previous_section_start_time ))
 
         if [[ $timing -gt $timing_threshold ]] ; then
-            # print timing
-            color_echo yellow "...$timing"
-
             # trim the lines to print
             trim_previous_line=`echo $previous_line | cut -c1-120`
             trim_line=`echo $line | cut -c1-120`
-            color_echo red "$trim_previous_line"
+            
+            # print timing and lines with duration info
+            color_echo yellow "Duration: ${timing}ms"
+            color_echo red "$trim_previous_line (took ${timing}ms)"
             color_echo green "$trim_line"
         fi
 
@@ -84,7 +90,13 @@ function zsh_debug () {
 
     # print the total time
     debugging_end_time=`echo $previous_line | awk '{print $1}'`
-    total_time=$(( $debugging_end_time - $debugging_start_time ))
+    
+    # ensure timestamps are numeric for total calculation
+    if [[ "$debugging_end_time" =~ ^[0-9]+$ ]] && [[ "$debugging_start_time" =~ ^[0-9]+$ ]]; then
+        total_time=$(( $debugging_end_time - $debugging_start_time ))
+    else
+        total_time=0
+    fi
     color_echo yellow "Total Time: ${total_time}ms"
     
     # provide optimization suggestions
@@ -94,10 +106,10 @@ function zsh_debug () {
         color_echo yellow "  - Check for network-dependent operations" 
         color_echo yellow "  - Consider lazy loading for heavy plugins"
         echo
-        color_echo cyan "💡 Run 'debug_claude' for AI-powered analysis and specific suggestions!"
+        color_echo cyan "💡 Run 'zsh_debug_claude' for AI-powered analysis and specific suggestions!"
     elif [[ $total_time -gt 500 ]]; then
         color_echo yellow "⚠️  Moderate startup time (${total_time}ms). Could be optimized."
-        color_echo cyan "💡 Run 'debug_claude' for detailed analysis and suggestions."
+        color_echo cyan "💡 Run 'zsh_debug_claude' for detailed analysis and suggestions."
     else
         color_echo green "⚡ Fast startup time (${total_time}ms)!"
     fi
@@ -138,7 +150,7 @@ function zsh_debug_summary() {
 }
 
 # AI-powered debugging analysis with specific suggestions
-function debug_claude() {
+function zsh_debug_claude() {
     if [[ "$ENABLE_DEBUGGING" != true ]] ; then
         color_echo red "Debugging was not enabled for this session!"
         color_echo yellow "Enable debugging by setting ENABLE_DEBUGGING=true in your zshrc"

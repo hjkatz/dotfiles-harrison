@@ -1,7 +1,7 @@
 # Main Zshrc that loads all other parts of the dotfiles
 
-# prints debugging info
-ENABLE_DEBUGGING=false
+# prints debugging info (preserve if already set by resource_with_debugging)
+ENABLE_DEBUGGING=${ENABLE_DEBUGGING:-false}
 
 # Where the dotfiles are located to load
 export DOTFILES=$HOME/.dotfiles-harrison

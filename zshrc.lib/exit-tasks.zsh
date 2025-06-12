@@ -32,6 +32,22 @@ fi
 # warn about caution servers
 check_for_caution_server
 
+# auto-run debug analysis if requested
+if [[ "$GLOBALS__AUTO_RUN_DEBUG" == true ]]; then
+    echo
+    color_echo green "✅ Resource complete! Analyzing performance..."
+    echo
+    
+    # run debug analysis
+    zsh_debug
+    
+    echo
+    color_echo cyan "💡 For AI-powered analysis and specific optimization suggestions, run: zsh_debug_claude"
+    
+    # clear the auto-run flag
+    unset GLOBALS__AUTO_RUN_DEBUG
+fi
+
 # turn off debugging if it was on
 if [[ "$ENABLE_DEBUGGING" == true ]]; then
     unsetopt xtrace
