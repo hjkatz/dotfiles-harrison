@@ -290,3 +290,163 @@ function set_title() {
 
     echo -n -e "\033]0;$title\007"
 }
+
+# Comprehensive network diagnostics
+#
+# Usage: netcheck [verbose]
+function netcheck() {
+    local verbose=${1:-false}
+    
+    color_echo blue "🌐 Network Connectivity Check"
+    echo
+    
+    # Basic connectivity
+    if has_internet; then
+        color_echo green "✅ Internet: Connected"
+    else
+        color_echo red "❌ Internet: No connectivity"
+        return 1
+    fi
+    
+    # DNS resolution test
+    if nslookup google.com >/dev/null 2>&1; then
+        color_echo green "✅ DNS: Resolving"
+    else
+        color_echo yellow "⚠️  DNS: Issues detected"
+    fi
+    
+    # Speed test endpoints
+    local test_sites=("google.com" "github.com" "cloudflare.com")
+    echo
+    color_echo blue "📡 Response Times:"
+    
+    for site in "${test_sites[@]}"; do
+        if command_exists ping; then
+            # Get average ping time
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                ping_result=$(ping -c 3 "$site" 2>/dev/null | tail -1 | awk -F'/' '{print $5}')
+            else
+                ping_result=$(ping -c 3 "$site" 2>/dev/null | tail -1 | awk -F'/' '{print $5}')
+            fi
+            
+            if [[ -n "$ping_result" ]]; then
+                color_echo green "  $site: ${ping_result}ms"
+            else
+                color_echo red "  $site: timeout"
+            fi
+        fi
+    done
+    
+    # Verbose output
+    if [[ "$verbose" == "true" || "$verbose" == "v" ]]; then
+        echo
+        color_echo blue "📋 Network Details:"
+        
+        # Show network interfaces
+        if command_exists ip; then
+            echo "Active interfaces:"
+            ip addr show | grep -E "(inet|state UP)" | head -10
+        elif command_exists ifconfig; then
+            echo "Active interfaces:"
+            ifconfig | grep -E "(inet|flags)" | head -10
+        fi
+        
+        echo
+        # Show routing
+        if command_exists ip; then
+            echo "Default route:"
+            ip route | grep default
+        elif command_exists route; then
+            echo "Default route:"
+            route -n | grep UG
+        fi
+    fi
+    
+    echo
+    color_echo green "✅ Network check complete"
+}
+
+# Detect development environment context
+#
+# Usage: devenv
+function devenv() {
+    color_echo blue "🔧 Development Environment Detection"
+    echo
+    
+    # Container detection
+    if [[ -f /.dockerenv ]]; then
+        color_echo green "📦 Container: Docker"
+    elif [[ -n "${container:-}" ]]; then
+        color_echo green "📦 Container: $container"
+    elif grep -q "docker\|lxc" /proc/1/cgroup 2>/dev/null; then
+        color_echo green "📦 Container: Detected (cgroup)"
+    else
+        color_echo yellow "📦 Container: None detected"
+    fi
+    
+    # Cloud environment detection
+    if [[ -n "${AWS_EXECUTION_ENV:-}" ]]; then
+        color_echo green "☁️  Cloud: AWS (${AWS_EXECUTION_ENV})"
+    elif [[ -n "${GOOGLE_CLOUD_PROJECT:-}" ]]; then
+        color_echo green "☁️  Cloud: Google Cloud"
+    elif [[ -n "${AZURE_CLIENT_ID:-}" ]]; then
+        color_echo green "☁️  Cloud: Azure"
+    elif curl -s --max-time 1 http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1; then
+        color_echo green "☁️  Cloud: AWS EC2"
+    elif curl -s --max-time 1 -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/ >/dev/null 2>&1; then
+        color_echo green "☁️  Cloud: Google Compute Engine"
+    else
+        color_echo yellow "☁️  Cloud: None detected"
+    fi
+    
+    # Development tools
+    echo
+    color_echo blue "🛠️  Available Tools:"
+    
+    local dev_tools=("docker" "kubectl" "git" "node" "python" "go" "rust" "java")
+    for tool in "${dev_tools[@]}"; do
+        if command_exists "$tool"; then
+            if [[ "$tool" == "node" ]]; then
+                version=$(node --version 2>/dev/null)
+            elif [[ "$tool" == "python" ]]; then
+                version=$(python --version 2>/dev/null | awk '{print $2}')
+            elif [[ "$tool" == "go" ]]; then
+                version=$(go version 2>/dev/null | awk '{print $3}')
+            elif [[ "$tool" == "git" ]]; then
+                version=$(git --version 2>/dev/null | awk '{print $3}')
+            else
+                version=$(command "$tool" --version 2>/dev/null | head -1 | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)
+            fi
+            color_echo green "  ✅ $tool ${version:+($version)}"
+        else
+            color_echo red "  ❌ $tool"
+        fi
+    done
+    
+    # Project context
+    echo
+    color_echo blue "📁 Project Context:"
+    
+    if [[ -f "package.json" ]]; then
+        color_echo green "  📦 Node.js project"
+    fi
+    if [[ -f "Cargo.toml" ]]; then
+        color_echo green "  🦀 Rust project"
+    fi
+    if [[ -f "go.mod" ]]; then
+        color_echo green "  🐹 Go module"
+    fi
+    if [[ -f "requirements.txt" ]] || [[ -f "pyproject.toml" ]] || [[ -f "setup.py" ]]; then
+        color_echo green "  🐍 Python project"
+    fi
+    if [[ -f "Dockerfile" ]]; then
+        color_echo green "  🐳 Docker project"
+    fi
+    if [[ -f "docker-compose.yml" ]] || [[ -f "docker-compose.yaml" ]]; then
+        color_echo green "  🐙 Docker Compose project"
+    fi
+    if [[ -d ".git" ]]; then
+        local branch=$(git branch --show-current 2>/dev/null)
+        color_echo green "  🌿 Git repository${branch:+ (branch: $branch)}"
+    fi
+}
