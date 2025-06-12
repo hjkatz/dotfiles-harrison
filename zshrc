@@ -109,8 +109,6 @@ source $DOTFILES/zshrc.lib/prompt.zsh
 # source all exit tasks
 source $DOTFILES/zshrc.lib/exit-tasks.zsh
 
-autoload -U +X bashcompinit && bashcompinit
-
 # Setup terraform completion if terraform is available
 if command_exists terraform; then
     terraform_path=$(which terraform)
@@ -126,6 +124,24 @@ for tf_path in "${tf_locations[@]}"; do
     fi
 done
 
+# Lazy load NVM for faster startup (saves ~630ms)
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Function to load NVM when actually needed
+_load_nvm() {
+    # Remove the lazy loading functions
+    unset -f nvm node npm npx
+    
+    # Load NVM
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+}
+
+# Create lazy loading wrapper functions
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    # Only set up lazy loading if NVM exists
+    nvm() { _load_nvm && nvm "$@"; }
+    node() { _load_nvm && node "$@"; }
+    npm() { _load_nvm && npm "$@"; }
+    npx() { _load_nvm && npx "$@"; }
+fi

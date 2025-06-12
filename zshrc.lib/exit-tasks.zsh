@@ -37,11 +37,11 @@ if [[ "$GLOBALS__AUTO_RUN_DEBUG" == true ]]; then
     echo
     color_echo green "✅ Instrumented startup complete! Launching performance analysis..."
     echo
-    
+
     # Run debug analysis
     zsh_debug
-    
-    
+
+
     # Clear the auto-run flag
     unset GLOBALS__AUTO_RUN_DEBUG
 fi
