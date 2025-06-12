@@ -245,6 +245,9 @@ function zsh_debug_claude() {
         color_echo red "❌ Debugging information was not saved!"
         return 1
     fi
+    
+    # Function to generate the analysis
+    _generate_analysis() {
 
     color_echo white "--- 🤖 CLAUDE AI PERFORMANCE ANALYSIS ---"
 
@@ -361,14 +364,34 @@ function zsh_debug_claude() {
     echo "   • zsh_debug_summary       → Quick overview with top slowdowns"
     echo "   • zsh_debug [ms]    → Detailed timing (default 10ms)"
     echo "   • resource_with_debugging → Fresh analysis session"
-
+    }
+    
+    # Generate and display the analysis
+    local analysis_output=$(_generate_analysis)
+    echo "$analysis_output"
+    
+    # Ask if user wants to launch Claude
     echo
-    color_echo white "🚀 Apply These Optimizations:"
-    echo "   • Open a new Claude session: claude"
-    echo "   • Share this analysis output with Claude"
-    echo "   • Ask Claude to implement the suggested optimizations"
-    echo "   • Test changes with: resource_with_debugging"
+    if ask "Launch Claude to optimize these issues?" ; then
+        # Prepare the prompt for Claude
+        local claude_prompt="I've run a performance analysis on my zsh startup. Please help me optimize it based on this analysis:
 
-    echo
-    color_echo green "🤖 Analysis Complete!"
+$analysis_output
+
+Please:
+1. Review the slow operations identified above
+2. Provide specific code changes to optimize the slowest parts
+3. Focus on the AI suggestions provided for each slow section
+4. Give me the exact file edits needed to improve startup performance
+5. Prioritize changes that will have the biggest impact
+
+My dotfiles are located at: $DOTFILES"
+        
+        echo
+        color_echo yellow "🚀 Launching Claude with optimization request..."
+        echo
+        
+        # Launch Claude with the analysis and prompt
+        echo "$claude_prompt" | claude
+    fi
 }
