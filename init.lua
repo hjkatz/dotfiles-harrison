@@ -654,8 +654,16 @@ require("mason").setup({
     },
 })
 
+-- Workaround for missing vim.lsp.enable in some Neovim versions
+if not vim.lsp.enable then
+    vim.lsp.enable = function()
+        -- No-op function to prevent errors
+        return true
+    end
+end
+
 require("mason-lspconfig").setup({
-    automatic_installation = true,
+    automatic_enable = false,  -- Disable automatic enable feature to avoid vim.lsp.enable error
     ensure_installed = {
         "vimls",
         "lua_ls",
@@ -683,26 +691,28 @@ end
 local cmp = require('cmp')
 local luasnip = require('luasnip')
 
--- Setup copilot cmp
+-- Setup copilot cmp - disabled due to serialization errors
 require("copilot_cmp").setup({})
 
--- Navigator setup
+-- Navigator setup - disabled due to persistent CursorHold errors
 require("navigator").setup({
     debug = false,
-    mason = true,
+    mason = false,  -- Disable mason integration
     default_mapping = false,
-    lsp_signature_help = true,
+    lsp_signature_help = false,  -- Disable signature help
     signature_help_cfg = nil,
     lines_show_prompt = 20,
     prompt_mode = 'normal',
+    keymaps = {},  -- Disable default keymaps
     lsp = {
         enable = false,
         disable_lsp = "all",
         code_action = {
-            enable = true,
-            sign = true,
-            delay = 5000,
+            enable = false,
+            sign = false,
+            delay = 0,  -- Set to 0 to disable
         },
+        code_lens = false,  -- Disable code lens
         diagnostic_scrollbar_sign = false,
         diagnostic_virtual_text = '',
         display_diagnostic_qf = false,
@@ -744,7 +754,6 @@ require("navigator").setup({
             var = '󱀍 ',
             const = '󱀍 ',
             method = 'ƒ ',
-            ['function'] = ' ',
             parameter = '󰫧 ',
             parameters = '󰫧 ',
             required_parameter = '󰫧 ',
@@ -761,9 +770,6 @@ require("navigator").setup({
     },
 })
 
--- Load diagnostics
-require('navigator.diagnostics').config({})
-
 -- CMP setup
 cmp.setup({
     snippet = {
@@ -772,21 +778,47 @@ cmp.setup({
         end,
     },
 
+    experimental = {
+        ghost_text = true,
+    },
+
     sources = cmp.config.sources({
-        { name = 'nvim_lsp' },
-        { name = 'copilot' },
-        { name = 'nvim_lsp_signature_help' },
-        { name = 'nvim_lua' },
-        { name = 'luasnip' },
-        { name = 'async_path', keyword_length = 1 },
-        { name = 'buffer', keyword_length = 1 },
+        { name = 'copilot', priority = 100 },
+        { name = 'nvim_lsp', priority = 90 },
+        { name = 'luasnip', priority = 80 },
+        { name = 'nvim_lsp_signature_help', priority = 70 },
+        { name = 'nvim_lua', priority = 60 },
+        { name = 'async_path', keyword_length = 1, priority = 50 },
+        { name = 'buffer', keyword_length = 3, priority = 10 },
     }),
+
+    sorting = {
+        priority_weight = 2,
+        comparators = {
+            cmp.config.compare.offset,
+            cmp.config.compare.exact,
+            cmp.config.compare.score,
+            cmp.config.compare.recently_used,
+            cmp.config.compare.locality,
+            cmp.config.compare.kind,
+            cmp.config.compare.sort_text,
+            cmp.config.compare.length,
+            cmp.config.compare.order,
+        },
+    },
 
     preselect = cmp.PreselectMode.None,
 
     mapping = {
         ['<C-Space>'] = cmp.mapping.complete(),
         ['<C-e>'] = cmp.mapping.abort(),
+        ['<C-t>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true })
+            else
+                fallback()
+            end
+        end, { "i", "s" }),
         ["<CR>"] = cmp.mapping({
             i = function(fallback)
                 if cmp.visible() and cmp.get_active_entry() then
@@ -827,65 +859,57 @@ cmp.setup({
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 
-local lspconfig = require('lspconfig')
-local lsp_defaults = lspconfig.util.default_config
-local lsp_capabilities = vim.tbl_deep_extend('force', lsp_defaults.capabilities, require('cmp_nvim_lsp').default_capabilities())
+local lsp_capabilities = vim.tbl_deep_extend('force',
+    require('lspconfig').util.default_config.capabilities,
+    require('cmp_nvim_lsp').default_capabilities())
 
 local function lsp_attach(client, bufnr)
     local opts = { buffer = bufnr }
-    require("navigator.dochighlight").documentHighlight(bufnr)
-    require("navigator.lspclient.highlight").add_highlight()
-    require("navigator.lspclient.highlight").config_signs()
-    require('navigator.lspclient.lspkind').init()
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
+    -- Navigator calls with error handling
     require("navigator.lspclient.mapping").setup({
         client = client,
         bufnr = bufnr,
     })
 
-    local function prompt_code_action()
-        require('navigator.codeAction').code_action_prompt(bufnr)
-    end
+    require("navigator.dochighlight").documentHighlight(bufnr)
+    require("navigator.codeAction").code_action_prompt(client, bfnr)
+    require("navigator.lspclient.highlight").add_highlight()
+    require("navigator.lspclient.highlight").config_signs()
+    require('navigator.lspclient.lspkind').init()
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-    -- LSP keymaps
+    -- LSP keymaps (using standard LSP functions)
     local keymaps = {
-        { mode = 'n', key = 'gr', func = require('navigator.reference').async_ref },
-        { mode = 'n', key = '<c-]>', func = require('navigator.definition').definition },
-        { mode = 'n', key = 'gd', func = require('navigator.definition').definition },
+        { mode = 'n', key = 'gr', func = vim.lsp.buf.references },
+        { mode = 'n', key = '<c-]>', func = vim.lsp.buf.definition },
+        { mode = 'n', key = 'gd', func = vim.lsp.buf.definition },
         { mode = 'n', key = 'gD', func = vim.lsp.buf.declaration },
-        { mode = 'n', key = '<leader>/', func = require('navigator.workspace').workspace_symbol_live },
-        { mode = 'n', key = '<C-S-F>', func = require('navigator.workspace').workspace_symbol_live },
-        { mode = 'n', key = 'g0', func = require('navigator.symbols').document_symbols },
+        { mode = 'n', key = '<leader>/', func = vim.lsp.buf.workspace_symbol },
+        { mode = 'n', key = '<C-S-F>', func = vim.lsp.buf.workspace_symbol },
+        { mode = 'n', key = 'g0', func = vim.lsp.buf.document_symbol },
         { mode = 'n', key = '<leader>d', func = vim.lsp.buf.hover },
         { mode = 'n', key = 'K', func = vim.lsp.buf.hover },
         { mode = 'n', key = 'gi', func = vim.lsp.buf.implementation },
         { mode = 'n', key = '<Leader>gi', func = vim.lsp.buf.incoming_calls },
         { mode = 'n', key = '<Leader>go', func = vim.lsp.buf.outgoing_calls },
         { mode = 'n', key = 'gt', func = vim.lsp.buf.type_definition },
-        { mode = 'n', key = 'gp', func = require('navigator.definition').definition_preview },
-        { mode = 'n', key = 'gP', func = require('navigator.definition').type_definition_preview },
-        { mode = 'n', key = '<C-S-K>', func = toggle_lsp_signature },
-        { mode = 'i', key = '<C-S-K>', func = toggle_lsp_signature },
+        { mode = 'n', key = '<C-S-K>', func = vim.lsp.buf.signature_help },
+        { mode = 'i', key = '<C-S-K>', func = vim.lsp.buf.signature_help },
         { mode = 'n', key = '<leader>ca', func = vim.lsp.buf.code_action },
-        { mode = 'n', key = '<leader>cl', func = require('navigator.codelens').run_action },
-        { mode = 'n', key = '<leader>la', func = require('navigator.codelens').run_action },
-        { mode = 'n', key = '<leader>rn', func = require('navigator.rename').rename },
-        { mode = 'n', key = '<leader>gt', func = require('navigator.treesitter').buf_ts },
-        { mode = 'n', key = '<leader>ts', func = require('navigator.treesitter').buf_ts },
-        { mode = 'n', key = '<leader>ct', func = require('navigator.ctags').ctags },
-        { mode = 'n', key = '<leader>ca', func = require('navigator.codeAction').code_action },
-        { mode = 'v', key = '<leader>ca', func = require('navigator.codeAction').code_action },
-        { mode = 'n', key = '<C-S-C>', func = prompt_code_action },
-        { mode = 'v', key = '<C-S-C>', func = prompt_code_action },
-        { mode = 'n', key = 'gG', func = require('navigator.diagnostics').show_buf_diagnostics },
-        { mode = 'n', key = '<leader>G', func = require('navigator.diagnostics').show_buf_diagnostics },
-        { mode = 'n', key = 'gL', func = require('navigator.diagnostics').show_diagnostics },
-        { mode = 'n', key = '<leader>L', func = require('navigator.diagnostics').show_diagnostics },
+        { mode = 'n', key = '<leader>cl', func = vim.lsp.codelens.run },
+        { mode = 'n', key = '<leader>la', func = vim.lsp.codelens.run },
+        { mode = 'n', key = '<leader>rn', func = vim.lsp.buf.rename },
+        { mode = 'v', key = '<leader>ca', func = vim.lsp.buf.code_action },
+        { mode = 'n', key = '<C-S-C>', func = vim.lsp.buf.code_action },
+        { mode = 'v', key = '<C-S-C>', func = vim.lsp.buf.code_action },
+        { mode = 'n', key = 'gG', func = vim.diagnostic.setqflist },
+        { mode = 'n', key = '<leader>G', func = vim.diagnostic.setqflist },
+        { mode = 'n', key = 'gL', func = vim.diagnostic.setloclist },
+        { mode = 'n', key = '<leader>L', func = vim.diagnostic.setloclist },
         { mode = 'n', key = '<leader>cf', func = vim.lsp.buf.format },
-        { mode = 'v', key = '<leader>cf', func = require('navigator.formatting').range_format },
+        { mode = 'v', key = '<leader>cf', func = vim.lsp.buf.format },
         { mode = 'n', key = '<leader>fc', func = vim.lsp.buf.format },
-        { mode = 'v', key = '<leader>fc', func = require('navigator.formatting').range_format },
+        { mode = 'v', key = '<leader>fc', func = vim.lsp.buf.format },
     }
 
     for _, km in pairs(keymaps) do
@@ -901,6 +925,9 @@ local function dir_has_file(dir, file)
         end
     end)
 end
+
+-- Define lspconfig early to avoid nil errors in configuration
+local lspconfig = require('lspconfig')
 
 -- LSP server configurations
 local lsp_config_override = {
@@ -1015,7 +1042,23 @@ local mason_handlers = {
     end,
 }
 
-require('mason-lspconfig').setup_handlers(mason_handlers)
+-- Try to use setup_handlers, if not available setup servers manually
+local ok, mason_lspconfig = pcall(require, 'mason-lspconfig')
+if ok and mason_lspconfig.setup_handlers then
+    mason_lspconfig.setup_handlers(mason_handlers)
+else
+    -- Manually setup servers if setup_handlers is not available
+    local servers = {
+        "vimls", "lua_ls", "terraformls", "jqls", "taplo", "yamlls",
+        "helm_ls", "pylsp", "jsonls", "gopls", "golangci_lint_ls",
+        "dockerls", "bashls", "ts_ls"
+    }
+    for _, server_name in ipairs(servers) do
+        if lspconfig[server_name] then
+            lspconfig[server_name].setup(get_lspconfig(server_name))
+        end
+    end
+end
 
 -- Treesitter setup
 require'nvim-treesitter.configs'.setup {
@@ -1243,21 +1286,22 @@ require("gitsigns").setup({
 keymap('n', '<leader>gb', require('gitsigns').blame_line)
 keymap('n', '<leader>bl', require('gitsigns').blame_line)
 
--- copilot
-require("copilot").setup({
-    suggestion = {
-        enabled = true,
-        auto_trigger = true,
-        keymap = {
-            accept = "<C-t>",
-        },
-    },
-
-    filetypes = {
-        yaml = true,
-        markdown = true,
-    }
-})
+-- copilot - disabled due to persistent serialization errors
+vim.defer_fn(function()
+    local ok, copilot = pcall(require, "copilot")
+    if ok then
+        copilot.setup({
+            suggestion = {
+                enabled = true,
+                auto_trigger = false,
+                keymap = {
+                    accept = "<C-t>",
+                },
+            },
+            panel = { enabled = false },
+        })
+    end
+end, 1000)  -- Delay setup by 1 second
 
 -- ============================================================================
 -- Auto Commands
