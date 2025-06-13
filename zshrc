@@ -95,9 +95,12 @@ for plugin in $DOTFILES/zshrc.plugins/* ; do
 done
 export fpath
 
+# source zsh syntax highlighting settings (must be loaded before the plugin)
+source $DOTFILES/zshrc.lib/syntax-highlighting-settings.zsh
+
 # source omz compatible plugins
 # Cache plugin paths for faster loading
-PLUGIN_CACHE_FILE="$HOME/.cache/dotfiles_plugins"
+PLUGIN_CACHE_FILE="$DOTFILES_CACHE/plugins"
 if [[ -f "$PLUGIN_CACHE_FILE" && "$PLUGIN_CACHE_FILE" -nt "$DOTFILES/zshrc.plugins" ]]; then
     # Use cached plugin list
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "📦 Loading plugins from cache..."
@@ -119,9 +122,6 @@ else
         fi
     done
 fi
-
-# source zsh syntax highlighting settings
-source $DOTFILES/zshrc.lib/syntax-highlighting-settings.zsh
 
 # source the prompt
 source $DOTFILES/zshrc.lib/prompt.zsh

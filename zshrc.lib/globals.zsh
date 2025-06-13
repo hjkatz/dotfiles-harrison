@@ -45,6 +45,12 @@ export GLOBALS__DOTFILES_COMPILED_PATH="$DOTFILES/compiled"
 # custom / vendor completions path
 export GLOBALS__DOTFILES_COMPLETIONS_PATH="$DOTFILES/completions"
 
+# cache directory for dotfiles
+export DOTFILES_CACHE="$DOTFILES/.cache"
+
+# ensure cache directory exists
+[[ ! -d "$DOTFILES_CACHE" ]] && mkdir -p "$DOTFILES_CACHE"
+
 # exit task hook function name for zshrc_local
 export GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION="_local_exit_function"
 
@@ -110,7 +116,7 @@ function which_distro ()
 }
 
 # Cache distro detection for performance (expensive operation)
-DISTRO_CACHE_FILE="$HOME/.cache/dotfiles_distro"
+DISTRO_CACHE_FILE="$DOTFILES_CACHE/distro"
 if [[ -f "$DISTRO_CACHE_FILE" && -n "$(cat "$DISTRO_CACHE_FILE" 2>/dev/null)" ]]; then
     export GLOBALS__DISTRO="$(cat "$DISTRO_CACHE_FILE")"
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "🖥️ Using cached distro: $GLOBALS__DISTRO"

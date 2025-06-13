@@ -91,14 +91,19 @@ esac
 
 # Clean up async background jobs and cache files on shell exit
 function cleanup_async_jobs () {
-    local cache_dir="$HOME/.cache"
+    local cache_dir="$DOTFILES_CACHE"
 
     # Clean up dotfiles-related PID files and kill orphaned processes
     local pid_files=(
-        "$cache_dir/dotfiles_update_pid"
-        "$cache_dir/dotfiles_vim_pid"
-        "$cache_dir/dotfiles_connectivity_pid"
+        "$cache_dir/update_pid"
+        "$cache_dir/vim_pid"
+        "$cache_dir/connectivity_pid"
     )
+    
+    # Add template compilation PID files
+    for pid_file in "$cache_dir"/template_*_pid; do
+        [[ -f "$pid_file" ]] && pid_files+=("$pid_file")
+    done
 
     for pid_file in "${pid_files[@]}"; do
         if [[ -f "$pid_file" ]]; then
@@ -115,7 +120,7 @@ function cleanup_async_jobs () {
     done
 
     # Clean up stale cache files older than 1 day
-    find "$cache_dir" -name "dotfiles_*" -type f -mtime +1 -delete 2>/dev/null
+    [[ -d "$cache_dir" ]] && find "$cache_dir" -type f -mtime +1 -delete 2>/dev/null
 }
 
 # Set up exit handler for async job cleanup

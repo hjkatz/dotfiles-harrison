@@ -1,5 +1,13 @@
 # Utility function for the various git prompts
 
+# Check git version for feature compatibility
+autoload -Uz is-at-least
+if is-at-least 1.7.2 "$(git --version | cut -d' ' -f3)"; then
+    POST_1_7_2_GIT=1
+else
+    POST_1_7_2_GIT=0
+fi
+
 # Checks if working tree is dirty
 function parse_git_dirty() {
     local STATUS=''

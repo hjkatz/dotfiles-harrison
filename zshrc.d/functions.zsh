@@ -211,8 +211,8 @@ function _async_check_vim_plugins() {
 
 # Check for async vim plugin results
 function _check_async_vim_results() {
-    local result_file="$HOME/.cache/dotfiles_vim_check"
-    local pid_file="$HOME/.cache/dotfiles_vim_pid"
+    local result_file="$DOTFILES_CACHE/vim_check"
+    local pid_file="$DOTFILES_CACHE/vim_pid"
 
     # Check if background check is still running
     if [[ -f "$pid_file" ]]; then
@@ -292,8 +292,8 @@ function setup_vim_plugins () {
     else
         # Start async check for next time if nvim exists and plugins haven't been checked recently
         if command_exists nvim && [[ -f "$DOTFILES/init.lua" ]]; then
-            local result_file="$HOME/.cache/dotfiles_vim_check"
-            local pid_file="$HOME/.cache/dotfiles_vim_pid"
+            local result_file="$DOTFILES_CACHE/vim_check"
+            local pid_file="$DOTFILES_CACHE/vim_pid"
 
             # Only start async check if not already running and no recent results
             if [[ ! -f "$pid_file" && ! -f "$result_file" ]]; then
@@ -478,12 +478,12 @@ function dotfiles_async_status() {
     color_echo blue "🔄 Dotfiles Async Job Status"
     echo
 
-    local cache_dir="$HOME/.cache"
+    local cache_dir="$DOTFILES_CACHE"
     local jobs_found=false
 
     # Check git update job
-    if [[ -f "$cache_dir/dotfiles_update_pid" ]]; then
-        local pid=$(cat "$cache_dir/dotfiles_update_pid" 2>/dev/null)
+    if [[ -f "$cache_dir/update_pid" ]]; then
+        local pid=$(cat "$cache_dir/update_pid" 2>/dev/null)
         if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
             color_echo yellow "📦 Git update check running (PID: $pid)"
             jobs_found=true
@@ -491,8 +491,8 @@ function dotfiles_async_status() {
     fi
 
     # Check vim plugin job
-    if [[ -f "$cache_dir/dotfiles_vim_pid" ]]; then
-        local pid=$(cat "$cache_dir/dotfiles_vim_pid" 2>/dev/null)
+    if [[ -f "$cache_dir/vim_pid" ]]; then
+        local pid=$(cat "$cache_dir/vim_pid" 2>/dev/null)
         if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
             color_echo yellow "🔧 Vim plugin check running (PID: $pid)"
             jobs_found=true
@@ -500,8 +500,8 @@ function dotfiles_async_status() {
     fi
 
     # Check connectivity job
-    if [[ -f "$cache_dir/dotfiles_connectivity_pid" ]]; then
-        local pid=$(cat "$cache_dir/dotfiles_connectivity_pid" 2>/dev/null)
+    if [[ -f "$cache_dir/connectivity_pid" ]]; then
+        local pid=$(cat "$cache_dir/connectivity_pid" 2>/dev/null)
         if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
             color_echo yellow "🌐 Network connectivity test running (PID: $pid)"
             jobs_found=true
@@ -511,9 +511,9 @@ function dotfiles_async_status() {
     # Check for completed results
     local results_found=false
     local result_files=(
-        "$cache_dir/dotfiles_async_update"
-        "$cache_dir/dotfiles_vim_check"
-        "$cache_dir/dotfiles_connectivity"
+        "$cache_dir/async_update"
+        "$cache_dir/vim_check"
+        "$cache_dir/connectivity"
     )
 
     for result_file in "${result_files[@]}"; do

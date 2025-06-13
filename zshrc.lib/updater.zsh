@@ -40,8 +40,8 @@ function _async_update_dotfiles() {
 
 # Check for async update results and apply if needed
 function _check_async_update_results() {
-    local temp_result_file="$HOME/.cache/dotfiles_async_update"
-    local pid_file="$HOME/.cache/dotfiles_update_pid"
+    local temp_result_file="$DOTFILES_CACHE/async_update"
+    local pid_file="$DOTFILES_CACHE/update_pid"
 
     # Check if background update is still running
     if [[ -f "$pid_file" ]]; then
@@ -101,8 +101,8 @@ function update_dotfiles() {
     has_internet || return 0
 
     # Start async update in background
-    local temp_result_file="$HOME/.cache/dotfiles_async_update"
-    local pid_file="$HOME/.cache/dotfiles_update_pid"
+    local temp_result_file="$DOTFILES_CACHE/async_update"
+    local pid_file="$DOTFILES_CACHE/update_pid"
 
     # Ensure cache directory exists
     mkdir -p "$(dirname "$temp_result_file")"

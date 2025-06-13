@@ -102,7 +102,7 @@ function _async_test_connectivity() {
 
 # Check cached connectivity results
 function _check_connectivity_cache() {
-    local cache_file="$HOME/.cache/dotfiles_connectivity"
+    local cache_file="$DOTFILES_CACHE/connectivity"
     local cache_age=30  # Cache for 30 seconds
 
     if [[ -f "$cache_file" ]]; then
@@ -130,13 +130,13 @@ function has_internet () {
 
     # Fast synchronous test first (single ping)
     if ping -q -w 1 -c 1 8.8.8.8 &>/dev/null; then
-        echo "connected" > "$HOME/.cache/dotfiles_connectivity"
+        echo "connected" > "$DOTFILES_CACHE/connectivity"
         return 0
     fi
 
     # If quick test fails, start async comprehensive test for next time
-    local result_file="$HOME/.cache/dotfiles_connectivity"
-    local pid_file="$HOME/.cache/dotfiles_connectivity_pid"
+    local result_file="$DOTFILES_CACHE/connectivity"
+    local pid_file="$DOTFILES_CACHE/connectivity_pid"
 
     # Start async test if not already running
     if [[ ! -f "$pid_file" ]]; then
