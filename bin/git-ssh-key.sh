@@ -25,7 +25,7 @@ get_repo_context() {
     local repo_url=""
     local repo_org=""
     local repo_host=""
-    
+
     # Try to get repository URL from git config
     if command -v git >/dev/null 2>&1 && git rev-parse --git-dir >/dev/null 2>&1; then
         repo_url=$(git config --get remote.origin.url 2>/dev/null)
@@ -40,7 +40,7 @@ get_repo_context() {
             fi
         fi
     fi
-    
+
     echo "$repo_host|$repo_org|$repo_url"
 }
 
@@ -50,17 +50,17 @@ select_ssh_key() {
     local repo_host=$(echo "$repo_info" | cut -d'|' -f1)
     local repo_org=$(echo "$repo_info" | cut -d'|' -f2)
     local repo_url=$(echo "$repo_info" | cut -d'|' -f3)
-    
+
     # Get all available keys from agent
     local all_keys=$(ssh-add -L 2>/dev/null)
     if [[ $? != 0 || -z "$all_keys" ]]; then
         color_echo red "❌ No SSH keys found in agent" >&2
         return 1
     fi
-    
+
     local selected_key=""
     local selection_reason=""
-    
+
     # Strategy 1: Look for organization-specific keys (e.g., ramp, ngrok, etc.)
     if [[ -n "$repo_org" ]]; then
         case "$repo_org" in
@@ -78,7 +78,7 @@ select_ssh_key() {
                 ;;
         esac
     fi
-    
+
     # Strategy 2: Look for host-specific keys
     if [[ -z "$selected_key" && -n "$repo_host" ]]; then
         case "$repo_host" in
@@ -88,19 +88,19 @@ select_ssh_key() {
                 ;;
         esac
     fi
-    
+
     # Strategy 3: Look for Yubikey if available (hardware security)
     if [[ -z "$selected_key" ]]; then
         selected_key=$(echo "$all_keys" | grep -i "yubikey\|cardno" | head -n1)
         [[ -n "$selected_key" ]] && selection_reason="Yubikey hardware key"
     fi
-    
+
     # Strategy 4: Use the first available key as fallback
     if [[ -z "$selected_key" ]]; then
         selected_key=$(echo "$all_keys" | head -n1)
         [[ -n "$selected_key" ]] && selection_reason="default first key"
     fi
-    
+
     if [[ -n "$selected_key" ]]; then
         color_echo green "✅ Selected SSH key: $selection_reason" >&2
         if [[ -n "$repo_url" ]]; then

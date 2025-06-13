@@ -87,7 +87,7 @@ if [[ -f ~/.ssh/config ]] ; then
         echo "────────────────────────────────────"
         color_echo purple "🌐 SSH Remote Connection"
         echo "────────────────────────────────────"
-        
+
         # Print connection details in aligned format
         if [[ -n "$user" ]] && [[ -n "$port" ]] ; then
             echo "   Host      : $hostname"

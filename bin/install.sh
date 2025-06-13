@@ -59,4 +59,4 @@ ln -s -f -v $DEFAULT_DOTFILES_HOME/init.lua ~/.config/nvim/init.lua
 
 echo
 color_echo green "✅ Installation complete!"
-color_echo white "   Run 'source ~/.zshrc' to activate your dotfiles"
+color_echo white "   Run 'source ~/.dotfiles-harrison/zshrc' to activate your dotfiles"
