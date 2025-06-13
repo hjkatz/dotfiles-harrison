@@ -24,15 +24,15 @@ function resource_with_debugging () {
     # Clear any existing debug file to start fresh
     local debug_path="/tmp/.dotfiles-harrison-debugging"
     if [[ -f "$debug_path" ]]; then
-        color_echo yellow "🗑️  Clearing previous debug session data..."
+        color_echo yellow "🗑️ Clearing previous debug session data..."
         rm -f "$debug_path"
     fi
 
-    color_echo white "⚙️  CONFIGURATION:"
-    color_echo green "   • Debug mode:    ENABLED"
-    color_echo green "   • Auto-analysis: ENABLED"
-    color_echo yellow "   • Update check:  DISABLED"
-    color_echo blue "   • Debug file:    $debug_path"
+    color_echo white "⚙️ CONFIGURATION:"
+    color_echo green "  • Debug mode:    ENABLED"
+    color_echo green "  • Auto-analysis: ENABLED"
+    color_echo yellow "  • Update check:  DISABLED"
+    color_echo blue "  • Debug file:    $debug_path"
 
     echo
     color_echo white "🚀 Initializing instrumented shell startup..."
@@ -214,11 +214,11 @@ function setup_vim_plugins () {
 
     # if we should do the plugin setup
     if [[ -n $do_plugin_setup ]] ; then
-        color_echo yellow '⚙️  Setting up vim plugins...'
+        color_echo yellow "⚙️ Setting up vim plugins..."
 
         # check if nvim is available
         if ! command_exists nvim; then
-            color_echo red 'Error: nvim not found. Please install Neovim.'
+            color_echo red "Error: nvim not found. Please install Neovim."
             return 1
         fi
 
@@ -230,9 +230,9 @@ function setup_vim_plugins () {
 
         # then, install new plugins, update the plugins, then quit vim
         if command nvim --cmd "set runtimepath+=\"$DOTFILES\"" -u "$DOTFILES/init.lua" +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall; then
-            color_echo green '✅ Done.'
+            color_echo green "✅ Done."
         else
-            color_echo red 'Error: Plugin setup failed. Please check nvim configuration.'
+            color_echo red "Error: Plugin setup failed. Please check nvim configuration."
             return 1
         fi
     fi
@@ -247,14 +247,14 @@ function setup_vim_plugins () {
 function vim () {
     # check if nvim is available
     if ! command_exists nvim; then
-        color_echo red 'Error: nvim not found. Please install Neovim.'
+        color_echo red "Error: nvim not found. Please install Neovim."
         return 1
     fi
 
     # setup plugins if not already done
     if [[ $_setup_vim_plugins_ran != true ]] ; then
         if ! setup_vim_plugins; then
-            color_echo red '❌ Plugin setup failed, launching nvim anyway...'
+            color_echo red "❌ Plugin setup failed, launching nvim anyway..."
         fi
     fi
 
@@ -262,7 +262,7 @@ function vim () {
     if [[ -f "$DOTFILES/init.lua" ]]; then
         command nvim --cmd "set runtimepath+=\"$DOTFILES\"" -u "$DOTFILES/init.lua" "$@"
     else
-        color_echo yellow "⚠️  Warning: init.lua not found, launching nvim with default config"
+        color_echo yellow "⚠️ Warning: init.lua not found, launching nvim with default config"
         command nvim "$@"
     fi
 }
@@ -351,7 +351,7 @@ function netcheck() {
     if nslookup google.com >/dev/null 2>&1; then
         color_echo green "✅ DNS: Resolving"
     else
-        color_echo yellow "⚠️  DNS: Issues detected"
+        color_echo yellow "⚠️ DNS: Issues detected"
     fi
 
     # Speed test endpoints
@@ -425,11 +425,11 @@ function devenv() {
 
     # Cloud environment detection
     if [[ -n "${AWS_EXECUTION_ENV:-}" ]]; then
-        color_echo green "☁️  Cloud: AWS (${AWS_EXECUTION_ENV})"
+        color_echo green "☁️ Cloud: AWS (${AWS_EXECUTION_ENV})"
     elif [[ -n "${GOOGLE_CLOUD_PROJECT:-}" ]]; then
-        color_echo green "☁️  Cloud: Google Cloud"
+        color_echo green "☁️ Cloud: Google Cloud"
     elif [[ -n "${AZURE_CLIENT_ID:-}" ]]; then
-        color_echo green "☁️  Cloud: Azure"
+        color_echo green "☁️ Cloud: Azure"
     elif curl -s --max-time 1 http://169.254.169.254/latest/meta-data/ >/dev/null 2>&1; then
         color_echo green "☁️  Cloud: AWS EC2"
     elif curl -s --max-time 1 -H "Metadata-Flavor: Google" http://169.254.169.254/computeMetadata/v1/ >/dev/null 2>&1; then
@@ -440,7 +440,7 @@ function devenv() {
 
     # Development tools
     echo
-    color_echo blue "🛠️  Available Tools:"
+    color_echo blue "🛠️ Available Tools:"
 
     local dev_tools=("docker" "kubectl" "git" "node" "python" "go" "rust" "java")
     for tool in "${dev_tools[@]}"; do

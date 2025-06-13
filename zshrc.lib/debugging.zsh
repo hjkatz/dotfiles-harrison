@@ -34,7 +34,7 @@ function zsh_debug () {
         timing_threshold="10"
     fi
 
-    color_echo white "──── ⏱️  Shell Startup Performance Analysis ────"
+    color_echo white "──── ⏱️ Shell Startup Performance Analysis ────"
     echo "   Threshold:  ${timing_threshold}ms (showing operations slower than this)"
     echo "   Debug file: $GLOBALS__DEBUGGING_PATH"
     echo
@@ -268,7 +268,7 @@ function zsh_debug_claude() {
         color_echo green "   Rating             : ✅ Good (300-500ms)"
         echo "   Status             : Good performance with room for minor improvements."
     elif [[ $total_time -lt 1000 ]]; then
-        color_echo yellow "   Rating             : ⚠️  Moderate (500ms-1s)"
+        color_echo yellow "   Rating             : ⚠️ Moderate (500ms-1s)"
         echo "   Status             : Noticeable startup delay - optimization recommended."
     else
         color_echo red "   Rating             : 🐌 Slow (>1s)"
@@ -294,50 +294,50 @@ function zsh_debug_claude() {
             case "$section" in
                 *"plugin"*|*"Plugin"*)
                     color_echo cyan "   💡 Plugin loading detected. Suggestions:"
-                    color_echo white "      • Consider lazy loading: defer non-essential plugins"
-                    color_echo white "      • Check if plugin uses network calls during load"
-                    color_echo white "      • Move heavy plugins to on-demand loading"
+                    color_echo white "    • Consider lazy loading: defer non-essential plugins"
+                    color_echo white "    • Check if plugin uses network calls during load"
+                    color_echo white "    • Move heavy plugins to on-demand loading"
                     ;;
                 *"completion"*|*"compinit"*)
                     color_echo cyan "   💡 Completion system slowdown. Suggestions:"
-                    color_echo white "      • Enable completion caching (already done ✅)"
-                    color_echo white "      • Reduce completion search paths"
-                    color_echo white "      • Check for slow completion functions"
+                    color_echo white "    • Enable completion caching (already done ✅)"
+                    color_echo white "    • Reduce completion search paths"
+                    color_echo white "    • Check for slow completion functions"
                     ;;
                 *"git"*|*"Git"*)
                     color_echo cyan "   💡 Git operation detected. Suggestions:"
-                    color_echo white "      • Check if git commands are running during startup"
-                    color_echo white "      • Consider async git status updates"
-                    color_echo white "      • Verify git repo integrity (run 'git fsck')"
+                    color_echo white "    • Check if git commands are running during startup"
+                    color_echo white "    • Consider async git status updates"
+                    color_echo white "    • Verify git repo integrity (run 'git fsck')"
                     ;;
                 *"update"*|*"Update"*)
                     color_echo cyan "   💡 Update process detected. Suggestions:"
-                    color_echo white "      • Move update checks to background process"
-                    color_echo white "      • Increase update check interval"
-                    color_echo white "      • Consider async updates"
+                    color_echo white "    • Move update checks to background process"
+                    color_echo white "    • Increase update check interval"
+                    color_echo white "    • Consider async updates"
                     ;;
                 *"network"*|*"curl"*|*"wget"*|*"ping"*)
                     color_echo cyan "   💡 Network operation detected. Suggestions:"
-                    color_echo white "      • Move network checks to background"
-                    color_echo white "      • Add network connectivity checks before slow operations"
-                    color_echo white "      • Cache network-dependent results"
+                    color_echo white "    • Move network checks to background"
+                    color_echo white "    • Add network connectivity checks before slow operations"
+                    color_echo white "    • Cache network-dependent results"
                     ;;
                 *"templater"*|*"template"*)
                     color_echo cyan "   💡 Template processing detected. Suggestions:"
-                    color_echo white "      • Cache compiled templates"
-                    color_echo white "      • Only recompile when templates change"
-                    color_echo white "      • Consider pre-compiling templates"
+                    color_echo white "    • Cache compiled templates"
+                    color_echo white "    • Only recompile when templates change"
+                    color_echo white "    • Consider pre-compiling templates"
                     ;;
                 *)
                     color_echo cyan "   💡 General optimization suggestions:"
-                    color_echo white "      • Profile this section: $section"
-                    color_echo white "      • Check for file I/O operations"
-                    color_echo white "      • Look for external command calls"
+                    color_echo white "    • Profile this section: $section"
+                    color_echo white "    • Check for file I/O operations"
+                    color_echo white "    • Look for external command calls"
                     ;;
             esac
             echo
         elif [[ $timing -gt 20 ]]; then
-            color_echo yellow "⚠️  MODERATE: ${section} (${timing}ms)"
+            color_echo yellow "⚠️ MODERATE: ${section} (${timing}ms)"
         fi
     done
 
@@ -353,7 +353,7 @@ function zsh_debug_claude() {
         echo "   • Disable non-essential plugins temporarily"
         echo "   • Check for network dependencies in startup"
     elif [[ $total_time -gt 500 ]]; then
-        color_echo yellow "⚠️  MODERATE: Target sub-500ms startup"
+        color_echo yellow "⚠️ MODERATE: Target sub-500ms startup"
         echo "   • Focus on sections >50ms"
         echo "   • Enable lazy loading for heavy features"
         echo "   • Cache expensive operations"
