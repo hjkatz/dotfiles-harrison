@@ -7,6 +7,29 @@ function _async_compile_template() {
     local checksum_file="$3"
     local result_file="$4"
 
+    # Create lock file to prevent concurrent compilation
+    local lock_file="${compiled_file}.lock"
+    local lock_acquired=false
+
+    # Try to acquire lock with timeout
+    local timeout=10
+    local start_time=$(date +%s)
+    while [[ $(($(date +%s) - start_time)) -lt $timeout ]]; do
+        if (set -C; echo $$ > "$lock_file") 2>/dev/null; then
+            lock_acquired=true
+            break
+        fi
+        sleep 0.1
+    done
+
+    if [[ "$lock_acquired" != "true" ]]; then
+        echo "lock_failed" > "$result_file"
+        return 1
+    fi
+
+    # Ensure lock is cleaned up on exit
+    trap "rm -f '$lock_file'" EXIT
+
     # Validate template exists
     if [[ ! -f "$template_file" ]]; then
         echo "template_missing" > "$result_file"
@@ -25,33 +48,46 @@ function _async_compile_template() {
         fi
     fi
 
-    # Copy template to compiled location
-    if ! \cp -f "$template_file" "$compiled_file" 2>/dev/null; then
-        echo "copy_failed" > "$result_file"
+    # Use atomic file creation with temporary file
+    local temp_compiled="${compiled_file}.tmp.$$"
+
+    # Read template content into memory
+    local template_content
+    if ! template_content=$(<"$template_file"); then
+        echo "read_failed" > "$result_file"
         return 1
     fi
 
     # Extract template variables using grep (safer than regex in zsh)
     local vars=()
     local found_vars=$(grep -o '{{[A-Za-z_][A-Za-z0-9_]*}}' "$template_file" 2>/dev/null | sed 's/{{//g; s/}}//g' | sort -u)
-    
+
     # Convert to array
     while IFS= read -r var; do
         [[ -n "$var" ]] && vars+=("$var")
     done <<< "$found_vars"
 
-    # Replace variables in compiled file
+    # Replace variables in content
     for var in "${vars[@]}"; do
         local var_value="${(P)var:-}"
         if [[ -n "$var_value" ]]; then
-            # Use a safer approach with temporary file to avoid sed delimiter issues
-            local temp_file=$(mktemp)
-            # Escape special characters in the replacement value
-            local escaped_value=$(printf '%s\n' "$var_value" | sed 's/[[\.*^$()+?{|]/\\&/g')
-            sed "s/{{${var}}}/${escaped_value}/g" "$compiled_file" > "$temp_file" 2>/dev/null && mv "$temp_file" "$compiled_file"
-            rm -f "$temp_file"
+            # Use Zsh parameter expansion for replacement (safer than sed)
+            template_content="${template_content//\{\{${var}\}\}/${var_value}}"
         fi
     done
+
+    # Write compiled content directly to temporary file, then move atomically
+    if ! printf '%s' "$template_content" > "$temp_compiled" 2>/dev/null; then
+        echo "write_failed" > "$result_file"
+        return 1
+    fi
+
+    # Atomically move temporary file to final location using command instead of alias
+    if ! command mv "$temp_compiled" "$compiled_file" 2>/dev/null; then
+        rm -f "$temp_compiled"
+        echo "move_failed" > "$result_file"
+        return 1
+    fi
 
     # Save checksum for future caching
     echo "$current_checksum" > "$checksum_file"
@@ -88,8 +124,17 @@ function _check_async_template_results() {
             "template_missing")
                 color_echo red "❌ Template $file.template not found"
                 ;;
-            "copy_failed")
-                color_echo red "❌ Failed to copy template $file"
+            "read_failed")
+                color_echo red "❌ Failed to read template $file"
+                ;;
+            "write_failed")
+                color_echo red "❌ Failed to write compiled template $file"
+                ;;
+            "lock_failed")
+                [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "⏳ Template $file compilation lock timeout"
+                ;;
+            "move_failed")
+                color_echo red "❌ Failed to finalize template $file compilation"
                 ;;
         esac
         rm -f "$result_file"
@@ -127,7 +172,7 @@ function compile_file() {
     # For critical files or forced sync, compile synchronously
     if [[ "$force_sync" == "true" || "$file" == "gitconfig" ]]; then
         [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Compiling template $file synchronously..."
-        
+
         mkdir -p "$(dirname "$checksum_file")"
         _async_compile_template "$template" "$compiled" "$checksum_file" "$result_file"
         _check_async_template_results "$file"
@@ -138,19 +183,22 @@ function compile_file() {
     if [[ -f "$compiled" && -f "$checksum_file" ]]; then
         local template_checksum=$(md5sum "$template" 2>/dev/null | cut -d' ' -f1)
         local cached_checksum=$(cat "$checksum_file" 2>/dev/null)
-        
+
         if [[ "$template_checksum" == "$cached_checksum" ]]; then
             [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "📋 Template $file is up to date"
             return 0
         fi
     fi
 
-    # Start async compilation if not already running
-    if [[ ! -f "$pid_file" ]]; then
+    # Start async compilation if not already running and no lock exists
+    local lock_file="${compiled}.lock"
+    if [[ ! -f "$pid_file" && ! -f "$lock_file" ]]; then
         mkdir -p "$(dirname "$result_file")"
         { _async_compile_template "$template" "$compiled" "$checksum_file" "$result_file" } &!
         echo $! > "$pid_file"
         [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Starting async template compilation for $file..."
+    elif [[ -f "$lock_file" ]]; then
+        [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "⏳ Template $file compilation already in progress..."
     fi
 
     return 0
@@ -165,9 +213,8 @@ function dotfiles_template_status() {
     local templates_found=false
 
     # Check for running compilations
-    local pid_files=("$cache_dir"/template_*_pid)
-    if [[ -e "${pid_files[1]}" ]]; then
-        for pid_file in "${pid_files[@]}"; do
+    if [[ -n $(find "$cache_dir" -name "template_*_pid" -type f 2>/dev/null) ]]; then
+        for pid_file in "$cache_dir"/template_*_pid; do
             if [[ -f "$pid_file" ]]; then
                 local pid=$(cat "$pid_file" 2>/dev/null)
                 local template_name=$(basename "$pid_file" _pid | sed 's/template_//')
@@ -180,11 +227,10 @@ function dotfiles_template_status() {
     fi
 
     # Check for cached results
-    local checksum_files=("$cache_dir"/dotfiles_template_*_checksum)
-    if [[ -e "${checksum_files[1]}" ]]; then
-        for checksum_file in "${checksum_files[@]}"; do
+    if [[ -n $(find "$cache_dir" -name "template_*_checksum" -type f 2>/dev/null) ]]; then
+        for checksum_file in "$cache_dir"/template_*_checksum; do
             if [[ -f "$checksum_file" ]]; then
-                local template_name=$(basename "$checksum_file" _checksum | sed 's/dotfiles_template_//')
+                local template_name=$(basename "$checksum_file" _checksum | sed 's/template_//')
                 local age=$(( $(date +%s) - $(stat -c %Y "$checksum_file" 2>/dev/null || stat -f %m "$checksum_file" 2>/dev/null || echo 0) ))
                 color_echo green "📋 Template $template_name cached (${age}s old)"
                 templates_found=true
@@ -199,7 +245,11 @@ function dotfiles_template_status() {
 
 function dotfiles_template_clean() {
     color_echo yellow "🧹 Cleaning template cache..."
-    rm -f "$DOTFILES_CACHE"/template_*
+    find "$DOTFILES_CACHE" -name "template_*" -type f -delete 2>/dev/null || true
+    if [[ -d "$GLOBALS__DOTFILES_COMPILED_PATH" ]]; then
+        find "$GLOBALS__DOTFILES_COMPILED_PATH" -name "*.lock" -type f -delete 2>/dev/null || true
+        find "$GLOBALS__DOTFILES_COMPILED_PATH" -name "*.tmp.*" -type f -delete 2>/dev/null || true
+    fi
     color_echo green "✅ Template cache cleaned"
 }
 
