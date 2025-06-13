@@ -134,8 +134,8 @@ function zsh_debug () {
         # Round external total to integer for cleaner display
         external_total=$(printf "%.0f" "$external_total")
 
-        # Scalar-based heuristic: 65% of debug time = estimated actual time
-        local debug_factor=65
+        # Scalar-based heuristic: 75% of debug time = estimated actual time
+        local debug_factor=75
         actual_time=$(( external_total * debug_factor / 100 ))
         overhead_time=$(( external_total - actual_time ))
 
@@ -152,13 +152,13 @@ function zsh_debug () {
         if [[ $cache_benefit -gt 0 ]]; then
             # Include cache benefit in the display - show the breakdown clearly
             if [[ $rating_base -lt 100 ]]; then
-                printf "   Rating:     ⚡\033[32mAMAZING!\033[0m \033[32m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.65 overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     ⚡\033[32mAMAZING!\033[0m \033[32m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             elif [[ $rating_base -lt 200 ]]; then
-                printf "   Rating:     ✅\033[32mGOOD\033[0m \033[32m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.65 overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     ✅\033[32mGOOD\033[0m \033[32m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             elif [[ $rating_base -lt 500 ]]; then
-                printf "   Rating:     ⚠️\033[33mOK\033[0m \033[33m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.65 overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     ⚠️\033[33mOK\033[0m \033[33m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             else
-                printf "   Rating:     🐌\033[31mSLOW\033[0m \033[31m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.65 overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     🐌\033[31mSLOW\033[0m \033[31m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             fi
         else
             # No cache benefit, use original format
@@ -238,12 +238,12 @@ function zsh_debug () {
                 # Calculate cache overhead per ms of debug time
                 cache_overhead_per_ms=$(( cache_benefit * 100 / external_total ))
             fi
-            
+
             # Subtract cache overhead from this operation's timing
             local timing_minus_cache=$(( timing - (timing * cache_overhead_per_ms / 100) ))
-            
-            # Then apply the debug overhead scalar (65% of remaining time = actual time)
-            local debug_factor=65  # 65% (debug operations are ~1.5x slower than normal)
+
+            # Then apply the debug overhead scalar (75% of remaining time = actual time)
+            local debug_factor=75  # 75% (debug operations are ~1.5x slower than normal)
             local estimated_actual=$(( timing_minus_cache * debug_factor / 100 ))
             local debug_overhead=$(( timing - estimated_actual ))
 
@@ -338,8 +338,8 @@ function zsh_debug_summary() {
     ' "$GLOBALS__DEBUGGING_PATH" | \
     sort -k1 -nr | head -5 | \
     while read timing section; do
-        # Apply scalar heuristic: 65% of debug time = estimated actual time
-        local estimated_actual=$(( timing * 65 / 100 ))
+        # Apply scalar heuristic: 75% of debug time = estimated actual time
+        local estimated_actual=$(( timing * 75 / 100 ))
 
         if [[ $timing -gt 100 ]]; then
             printf "   \033[31m🔴 ~%dms : %s\033[0m \033[90m(%dms debug)\033[0m\n" $estimated_actual $(basename $section) $timing
