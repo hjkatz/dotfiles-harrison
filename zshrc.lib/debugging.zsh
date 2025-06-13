@@ -150,15 +150,15 @@ function zsh_debug () {
         # Performance rating based on fresh startup estimate (the real performance)
         local rating_base=$fresh_startup_estimate
         if [[ $cache_benefit -gt 0 ]]; then
-            # Include cache benefit in the display
+            # Include cache benefit in the display - show the breakdown clearly
             if [[ $rating_base -lt 100 ]]; then
-                printf "   Rating:     ⚡\033[32mAMAZING!\033[0m (\033[32m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     ⚡\033[32mAMAZING!\033[0m \033[32m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.65 overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             elif [[ $rating_base -lt 200 ]]; then
-                printf "   Rating:     ✅\033[32mGOOD\033[0m (\033[32m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     ✅\033[32mGOOD\033[0m \033[32m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.65 overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             elif [[ $rating_base -lt 500 ]]; then
-                printf "   Rating:     ⚠️\033[33mOK\033[0m (\033[33m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     ⚠️\033[33mOK\033[0m \033[33m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.65 overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             else
-                printf "   Rating:     🐌\033[31mSLOW\033[0m (\033[31m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     🐌\033[31mSLOW\033[0m \033[31m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.65 overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             fi
         else
             # No cache benefit, use original format
@@ -194,7 +194,7 @@ function zsh_debug () {
         fi
     fi
 
-    printf "\033[37m🏆 Top 6 Slowest Operations:\033[0m \033[90m(debug adds ~1.5x overhead)\033[0m\n"
+    printf "\033[37m🏆 Top 5 Slowest Operations:\033[0m \033[90m(debug adds ~1.5x overhead)\033[0m\n"
     # Show top slow sections with proper field handling - filter valid timestamp lines only
     awk '
     # Only process lines that start with a valid timestamp
