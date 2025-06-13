@@ -139,19 +139,47 @@ function zsh_debug () {
         actual_time=$(( external_total * debug_factor / 100 ))
         overhead_time=$(( external_total - actual_time ))
 
-        # Performance rating based on actual time (without overhead)
-        if [[ $actual_time -lt 100 ]]; then
-            printf "   Rating:   ⚡\033[32mAMAZING!\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
-        elif [[ $actual_time -lt 200 ]]; then
-            printf "   Rating:   ✅\033[32mGOOD\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
-        elif [[ $actual_time -lt 500 ]]; then
-            printf "   Rating:   ⚠️\033[33mOK\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+        # Calculate fresh startup estimate and cache benefit first
+        local cache_benefit=0
+        local fresh_startup_estimate=0
+        local cache_multiplier=275  # 2.75x factor
+
+        fresh_startup_estimate=$(( actual_time * 100 / cache_multiplier ))
+        cache_benefit=$(( actual_time - fresh_startup_estimate ))
+
+        # Performance rating based on fresh startup estimate (the real performance)
+        local rating_base=$fresh_startup_estimate
+        if [[ $cache_benefit -gt 0 ]]; then
+            # Include cache benefit in the display
+            if [[ $rating_base -lt 100 ]]; then
+                printf "   Rating:     ⚡\033[32mAMAZING!\033[0m (\033[32m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+            elif [[ $rating_base -lt 200 ]]; then
+                printf "   Rating:     ✅\033[32mGOOD\033[0m (\033[32m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+            elif [[ $rating_base -lt 500 ]]; then
+                printf "   Rating:     ⚠️\033[33mOK\033[0m (\033[33m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+            else
+                printf "   Rating:     🐌\033[31mSLOW\033[0m (\033[31m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+            fi
         else
-            printf "   Rating:   🐌\033[31mSLOW\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+            # No cache benefit, use original format
+            if [[ $actual_time -lt 100 ]]; then
+                printf "   Rating:     ⚡\033[32mAMAZING!\033[0m (\033[32m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+            elif [[ $actual_time -lt 200 ]]; then
+                printf "   Rating:     ✅\033[32mGOOD\033[0m (\033[32m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+            elif [[ $actual_time -lt 500 ]]; then
+                printf "   Rating:     ⚠️\033[33mOK\033[0m (\033[33m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+            else
+                printf "   Rating:     🐌\033[31mSLOW\033[0m (\033[31m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+            fi
         fi
 
         printf "   \033[90mThreshold:  %dms\033[0m\n" "$timing_threshold"
         printf "   \033[90mFile:       %s\033[0m\n" "$GLOBALS__DEBUGGING_PATH"
+
+        if [[ $cache_benefit -gt 0 ]]; then
+            printf "   \033[90mCache:      ~%dms overhead (\033[90m~%dms\033[90m fresh, 2.75x slower)\033[0m\n" "$cache_benefit" "$fresh_startup_estimate"
+        fi
+
         printf "\n" # formatting
     else
         # Fallback to old behavior
@@ -166,7 +194,7 @@ function zsh_debug () {
         fi
     fi
 
-    printf "\033[37m🏆 Top 5 Slowest Operations:\033[0m \033[90m(debug adds ~1.5x overhead)\033[0m\n"
+    printf "\033[37m🏆 Top 6 Slowest Operations:\033[0m \033[90m(debug adds ~1.5x overhead)\033[0m\n"
     # Show top slow sections with proper field handling - filter valid timestamp lines only
     awk '
     # Only process lines that start with a valid timestamp
@@ -185,22 +213,39 @@ function zsh_debug () {
         prev_section = section
     }
     ' "$GLOBALS__DEBUGGING_PATH" | \
-    sort -k1 -nr | head -5 | \
+    {
+        # Add synthetic cache entry if we calculated cache benefit
+        if [[ -n "$cache_benefit" && $cache_benefit -gt 0 ]]; then
+            # Convert cache benefit back to debug timing equivalent for proper sorting
+            local cache_debug_equiv=$(( cache_benefit * 100 / 65 ))
+            echo "$cache_debug_equiv cache"
+        fi
+        cat  # Pass through all other entries
+    } | \
+    sort -k1 -nr | head -6 | \
     while read timing section; do
-        # Scalar-based heuristic: xtrace makes operations ~1.5x slower (65% of debug time = actual time)
-        local debug_factor=65  # 65% (debug operations are ~1.5x slower than normal)
-        local estimated_actual=$(( timing * debug_factor / 100 ))
-        local debug_overhead=$(( timing - estimated_actual ))
-
-        if [[ $estimated_actual -gt 325 ]]; then  # 500ms debug = ~325ms actual
-            printf "   \033[31m🔴 ~%dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
-                $estimated_actual $(basename $section) $timing
-        elif [[ $estimated_actual -gt 32 ]]; then  # 50ms debug = ~32ms actual
-            printf "   \033[33m🟡 ~%dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
-                $estimated_actual $(basename $section) $timing
+        # Special handling for synthetic cache entry
+        if [[ "$section" == "cache" ]]; then
+            # Cache entry uses actual cache benefit value, not debug timing
+            local cache_benefit_display=$(( timing * 65 / 100 ))
+            printf "   \033[36m💾 %6s\033[0m : %s \033[90m(~2.5x overhead)\033[0m\n" \
+                "~${cache_benefit_display}ms" "cache"
         else
-            printf "   \033[32m🟢 ~%dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
-                $estimated_actual $(basename $section) $timing
+            # Scalar-based heuristic: xtrace makes operations ~1.5x slower (65% of debug time = actual time)
+            local debug_factor=65  # 65% (debug operations are ~1.5x slower than normal)
+            local estimated_actual=$(( timing * debug_factor / 100 ))
+            local debug_overhead=$(( timing - estimated_actual ))
+
+            if [[ $estimated_actual -gt 325 ]]; then  # 500ms debug = ~325ms actual
+                printf "   \033[31m🔴 %6s\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
+                    "~${estimated_actual}ms" $(basename $section) $timing
+            elif [[ $estimated_actual -gt 32 ]]; then  # 50ms debug = ~32ms actual
+                printf "   \033[33m🟡 %6s\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
+                    "~${estimated_actual}ms" $(basename $section) $timing
+            else
+                printf "   \033[32m🟢 %6s\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
+                    "~${estimated_actual}ms" $(basename $section) $timing
+            fi
         fi
     done
 
