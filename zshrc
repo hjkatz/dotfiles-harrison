@@ -133,13 +133,13 @@ source $DOTFILES/zshrc.lib/exit-tasks.zsh
 _load_terraform_completion() {
     # Remove the lazy loading functions
     unset -f terraform tf
-    
+
     # Setup terraform completion if terraform is available
     if command_exists terraform; then
         terraform_path=$(which terraform)
         complete -o nospace -C "$terraform_path" terraform
     fi
-    
+
     # Setup tf completion if tf is available (check common locations)
     tf_locations=("$HOME/.local/bin/tf" "/usr/local/bin/tf")
     for tf_path in "${tf_locations[@]}"; do

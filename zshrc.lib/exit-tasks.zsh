@@ -89,5 +89,39 @@ case "$GLOBALS__DISTRO" in
         ;;
 esac
 
+# Clean up async background jobs and cache files on shell exit
+function cleanup_async_jobs () {
+    local cache_dir="$HOME/.cache"
+
+    # Clean up dotfiles-related PID files and kill orphaned processes
+    local pid_files=(
+        "$cache_dir/dotfiles_update_pid"
+        "$cache_dir/dotfiles_vim_pid"
+        "$cache_dir/dotfiles_connectivity_pid"
+    )
+
+    for pid_file in "${pid_files[@]}"; do
+        if [[ -f "$pid_file" ]]; then
+            local pid=$(cat "$pid_file" 2>/dev/null)
+            if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+                # Gracefully terminate background job
+                kill -TERM "$pid" 2>/dev/null
+                sleep 0.1
+                # Force kill if still running
+                kill -KILL "$pid" 2>/dev/null
+            fi
+            rm -f "$pid_file"
+        fi
+    done
+
+    # Clean up stale cache files older than 1 day
+    find "$cache_dir" -name "dotfiles_*" -type f -mtime +1 -delete 2>/dev/null
+}
+
+# Set up exit handler for async job cleanup
+function zshexit () {
+    cleanup_async_jobs
+}
+
 # ensure the exit code of startup is 0
 echo "" >/dev/null 2>&1

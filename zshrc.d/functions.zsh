@@ -191,12 +191,66 @@ function check_for_caution_server () {
     done
 }
 
+# Async vim plugin checking function
+function _async_check_vim_plugins() {
+    local dotfiles_dir="$1"
+    local checksum_file="$2"
+    local result_file="$3"
+
+    # Calculate current checksum
+    local current_checksum=$(grep -E '^\s+Plug\s+' "$dotfiles_dir/init.lua" 2>/dev/null | md5sum | cut -d' ' -f1)
+
+    # Check if update needed
+    if [[ ! -f "$checksum_file" ]] || [[ "$(cat "$checksum_file" 2>/dev/null)" != "$current_checksum" ]]; then
+        echo "plugins_need_update" > "$result_file"
+        echo "$current_checksum" >> "$result_file"
+    else
+        echo "plugins_up_to_date" > "$result_file"
+    fi
+}
+
+# Check for async vim plugin results
+function _check_async_vim_results() {
+    local result_file="$HOME/.cache/dotfiles_vim_check"
+    local pid_file="$HOME/.cache/dotfiles_vim_pid"
+
+    # Check if background check is still running
+    if [[ -f "$pid_file" ]]; then
+        local bg_pid=$(cat "$pid_file" 2>/dev/null)
+        if kill -0 "$bg_pid" 2>/dev/null; then
+            return 0  # Still running
+        else
+            rm -f "$pid_file"  # Clean up
+        fi
+    fi
+
+    # Process results if available
+    if [[ -f "$result_file" ]]; then
+        local result=$(head -n1 "$result_file" 2>/dev/null)
+
+        case "$result" in
+            "plugins_need_update")
+                local new_checksum=$(sed -n '2p' "$result_file" 2>/dev/null)
+                if [[ -n "$new_checksum" ]]; then
+                    echo "$new_checksum" > "$DOTFILES/.init_lua_checksum"
+                    color_echo yellow "🔄 Vim plugins will be updated on next vim launch"
+                fi
+                ;;
+            "plugins_up_to_date")
+                [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "✅ Vim plugins up to date"
+                ;;
+        esac
+
+        rm -f "$result_file"
+    fi
+}
+
 # Installs, updates, and manages vim plugins upon load.
 #
 # Called: `setup_vim_plugins`
 function setup_vim_plugins () {
-    # filepath to the saved plugin list
-    local plugin_list_file="$DOTFILES/.plugin_list"
+    # Check for previous async results first
+    _check_async_vim_results
 
     # Use a checksum instead of diff for faster comparison
     local init_lua_checksum_file="$DOTFILES/.init_lua_checksum"
@@ -234,6 +288,20 @@ function setup_vim_plugins () {
         else
             color_echo red "Error: Plugin setup failed. Please check nvim configuration."
             return 1
+        fi
+    else
+        # Start async check for next time if nvim exists and plugins haven't been checked recently
+        if command_exists nvim && [[ -f "$DOTFILES/init.lua" ]]; then
+            local result_file="$HOME/.cache/dotfiles_vim_check"
+            local pid_file="$HOME/.cache/dotfiles_vim_pid"
+
+            # Only start async check if not already running and no recent results
+            if [[ ! -f "$pid_file" && ! -f "$result_file" ]]; then
+                mkdir -p "$(dirname "$result_file")"
+                { _async_check_vim_plugins "$DOTFILES" "$init_lua_checksum_file" "$result_file" } &!
+                echo $! > "$pid_file"
+                [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Starting async vim plugin check..."
+            fi
         fi
     fi
 
@@ -403,6 +471,69 @@ function netcheck() {
 
     echo
     color_echo green "✅ Network check complete"
+}
+
+# Async job management utilities
+function dotfiles_async_status() {
+    color_echo blue "🔄 Dotfiles Async Job Status"
+    echo
+
+    local cache_dir="$HOME/.cache"
+    local jobs_found=false
+
+    # Check git update job
+    if [[ -f "$cache_dir/dotfiles_update_pid" ]]; then
+        local pid=$(cat "$cache_dir/dotfiles_update_pid" 2>/dev/null)
+        if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+            color_echo yellow "📦 Git update check running (PID: $pid)"
+            jobs_found=true
+        fi
+    fi
+
+    # Check vim plugin job
+    if [[ -f "$cache_dir/dotfiles_vim_pid" ]]; then
+        local pid=$(cat "$cache_dir/dotfiles_vim_pid" 2>/dev/null)
+        if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+            color_echo yellow "🔧 Vim plugin check running (PID: $pid)"
+            jobs_found=true
+        fi
+    fi
+
+    # Check connectivity job
+    if [[ -f "$cache_dir/dotfiles_connectivity_pid" ]]; then
+        local pid=$(cat "$cache_dir/dotfiles_connectivity_pid" 2>/dev/null)
+        if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+            color_echo yellow "🌐 Network connectivity test running (PID: $pid)"
+            jobs_found=true
+        fi
+    fi
+
+    # Check for completed results
+    local results_found=false
+    local result_files=(
+        "$cache_dir/dotfiles_async_update"
+        "$cache_dir/dotfiles_vim_check"
+        "$cache_dir/dotfiles_connectivity"
+    )
+
+    for result_file in "${result_files[@]}"; do
+        if [[ -f "$result_file" ]]; then
+            local age=$(( $(date +%s) - $(stat -c %Y "$result_file" 2>/dev/null || stat -f %m "$result_file" 2>/dev/null || echo 0) ))
+            local basename=$(basename "$result_file")
+            color_echo green "📋 $basename result available (${age}s old)"
+            results_found=true
+        fi
+    done
+
+    if [[ "$jobs_found" == false && "$results_found" == false ]]; then
+        color_echo green "✅ No async jobs running, no cached results"
+    fi
+}
+
+function dotfiles_async_clean() {
+    color_echo yellow "🧹 Cleaning up async jobs and cache..."
+    cleanup_async_jobs
+    color_echo green "✅ Cleanup complete"
 }
 
 # Detect development environment context

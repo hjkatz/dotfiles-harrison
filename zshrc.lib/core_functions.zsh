@@ -24,27 +24,135 @@ function add_to_path () {
     fi
 }
 
-# tests if the current shell has internet connectivity
-function has_internet () {
+# Async network connectivity test
+function _async_test_connectivity() {
+    local result_file="$1"
     local test_sites=('8.8.8.8' 'google.com' '1.1.1.1')
     local timeout=2
 
-    # try multiple test sites to increase reliability
-    for site in "${test_sites[@]}"; do
-        # try ping with both -w and -t flags for cross-platform compatibility
-        if ping -q -w $timeout -c 1 "$site" &>/dev/null || \
-           ping -q -t $timeout -c 1 "$site" &>/dev/null; then
+    # Try multiple test sites in parallel
+    local pids=()
+    local temp_dir=$(mktemp -d)
+
+    # Start parallel tests
+    for i in "${!test_sites[@]}"; do
+        site="${test_sites[$i]}"
+        (
+            if ping -q -w $timeout -c 1 "$site" &>/dev/null || \
+               ping -q -t $timeout -c 1 "$site" &>/dev/null; then
+                echo "success" > "$temp_dir/$i"
+            else
+                echo "failed" > "$temp_dir/$i"
+            fi
+        ) &
+        pids+=($!)
+    done
+
+    # Wait for all tests with overall timeout
+    local wait_count=0
+    while [[ $wait_count -lt 3 ]]; do
+        local completed=0
+        for pid in "${pids[@]}"; do
+            if ! kill -0 "$pid" 2>/dev/null; then
+                ((completed++))
+            fi
+        done
+
+        if [[ $completed -eq ${#pids[@]} ]]; then
+            break
+        fi
+
+        sleep 0.5
+        ((wait_count++))
+    done
+
+    # Kill any remaining processes
+    for pid in "${pids[@]}"; do
+        kill "$pid" 2>/dev/null
+    done
+
+    # Check results - if any test succeeded, we have internet
+    for i in "${!test_sites[@]}"; do
+        if [[ -f "$temp_dir/$i" && "$(cat "$temp_dir/$i")" == "success" ]]; then
+            echo "connected" > "$result_file"
+            rm -rf "$temp_dir"
             return 0
         fi
     done
 
-    # as a fallback, try a simple HTTP request (faster than ping on some networks)
+    # All failed, try HTTP fallback
     if command_exists curl; then
-        curl -s --max-time $timeout --head http://google.com &>/dev/null && return 0
+        if curl -s --max-time 2 --head http://google.com &>/dev/null; then
+            echo "connected" > "$result_file"
+            rm -rf "$temp_dir"
+            return 0
+        fi
     elif command_exists wget; then
-        wget -q --timeout=$timeout --spider http://google.com &>/dev/null && return 0
+        if wget -q --timeout=2 --spider http://google.com &>/dev/null; then
+            echo "connected" > "$result_file"
+            rm -rf "$temp_dir"
+            return 0
+        fi
     fi
 
+    echo "disconnected" > "$result_file"
+    rm -rf "$temp_dir"
+    return 1
+}
+
+# Check cached connectivity results
+function _check_connectivity_cache() {
+    local cache_file="$HOME/.cache/dotfiles_connectivity"
+    local cache_age=30  # Cache for 30 seconds
+
+    if [[ -f "$cache_file" ]]; then
+        local file_age=$(( $(date +%s) - $(stat -c %Y "$cache_file" 2>/dev/null || stat -f %m "$cache_file" 2>/dev/null || echo 0) ))
+        if [[ $file_age -lt $cache_age ]]; then
+            local result=$(cat "$cache_file" 2>/dev/null)
+            [[ "$result" == "connected" ]] && return 0 || return 1
+        fi
+    fi
+
+    return 2  # Cache miss/expired
+}
+
+# tests if the current shell has internet connectivity
+function has_internet () {
+    # Check cache first
+    _check_connectivity_cache
+    local cache_result=$?
+
+    case $cache_result in
+        0) return 0 ;;  # Cached: connected
+        1) return 1 ;;  # Cached: disconnected
+        2) ;;           # Cache miss, continue to test
+    esac
+
+    # Fast synchronous test first (single ping)
+    if ping -q -w 1 -c 1 8.8.8.8 &>/dev/null; then
+        echo "connected" > "$HOME/.cache/dotfiles_connectivity"
+        return 0
+    fi
+
+    # If quick test fails, start async comprehensive test for next time
+    local result_file="$HOME/.cache/dotfiles_connectivity"
+    local pid_file="$HOME/.cache/dotfiles_connectivity_pid"
+
+    # Start async test if not already running
+    if [[ ! -f "$pid_file" ]]; then
+        mkdir -p "$(dirname "$result_file")"
+        { _async_test_connectivity "$result_file" } &!
+        echo $! > "$pid_file"
+
+        # Clean up PID file when done (background)
+        {
+            wait
+            rm -f "$pid_file"
+        } &!
+    fi
+
+    # Return failure for this call, but next call might have cached result
+    echo "disconnected" > "$result_file"
     return 1
 }
 
@@ -52,7 +160,7 @@ function has_internet () {
 typeset -A _command_cache
 function command_exists () {
     command="$1"
-    
+
     # Check cache first
     if [[ -n "${_command_cache[$command]}" ]]; then
         return ${_command_cache[$command]}
