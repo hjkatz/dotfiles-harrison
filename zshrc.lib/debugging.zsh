@@ -231,9 +231,20 @@ function zsh_debug () {
             printf "   \033[36m💾 %6s\033[0m : %s \033[90m(~2.5x overhead)\033[0m\n" \
                 "~${cache_benefit_display}ms" "cache"
         else
-            # Scalar-based heuristic: xtrace makes operations ~1.5x slower (65% of debug time = actual time)
+            # First subtract proportional cache overhead, then apply scalar
+            # Cache overhead is distributed proportionally across all operations
+            local cache_overhead_per_ms=0
+            if [[ -n "$cache_benefit" && $cache_benefit -gt 0 && -n "$external_total" && $external_total -gt 0 ]]; then
+                # Calculate cache overhead per ms of debug time
+                cache_overhead_per_ms=$(( cache_benefit * 100 / external_total ))
+            fi
+            
+            # Subtract cache overhead from this operation's timing
+            local timing_minus_cache=$(( timing - (timing * cache_overhead_per_ms / 100) ))
+            
+            # Then apply the debug overhead scalar (65% of remaining time = actual time)
             local debug_factor=65  # 65% (debug operations are ~1.5x slower than normal)
-            local estimated_actual=$(( timing * debug_factor / 100 ))
+            local estimated_actual=$(( timing_minus_cache * debug_factor / 100 ))
             local debug_overhead=$(( timing - estimated_actual ))
 
             if [[ $estimated_actual -gt 325 ]]; then  # 500ms debug = ~325ms actual
