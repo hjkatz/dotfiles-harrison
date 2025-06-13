@@ -3,6 +3,9 @@
 # turn on various highlighters
 ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets pattern )
 
+# Declare ZSH_HIGHLIGHT_STYLES as associative array
+typeset -A ZSH_HIGHLIGHT_STYLES
+
 # main
 ZSH_HIGHLIGHT_STYLES[default]='none'
 ZSH_HIGHLIGHT_STYLES[unknown-token]='bg=red,bold'
