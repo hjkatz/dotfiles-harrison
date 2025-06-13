@@ -100,10 +100,12 @@ function cleanup_async_jobs () {
         "$cache_dir/connectivity_pid"
     )
     
-    # Add template compilation PID files
-    for pid_file in "$cache_dir"/template_*_pid; do
-        [[ -f "$pid_file" ]] && pid_files+=("$pid_file")
-    done
+    # Add template compilation PID files (only if they exist)
+    if [[ -n $(echo "$cache_dir"/template_*_pid(N)) ]]; then
+        for pid_file in "$cache_dir"/template_*_pid; do
+            [[ -f "$pid_file" ]] && pid_files+=("$pid_file")
+        done
+    fi
 
     for pid_file in "${pid_files[@]}"; do
         if [[ -f "$pid_file" ]]; then

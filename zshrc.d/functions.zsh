@@ -68,7 +68,7 @@ function check_and_update_git_repo () {
         git fetch
         color_echo yellow "✂️ Pruning local branches..."
         git branch -vv | grep -E ': (gone|desaparecido)]' | awk '{print $1}' | xargs -r git branch -D
-        color_echo green "✅ Done."
+        color_echo green "✅ Done"
     fi
 }
 
@@ -284,7 +284,7 @@ function setup_vim_plugins () {
 
         # then, install new plugins, update the plugins, then quit vim
         if command nvim --cmd "set runtimepath+=\"$DOTFILES\"" -u "$DOTFILES/init.lua" +PlugInstall +PlugUpdate +MasonUpdate +TSUpdate +qall; then
-            color_echo green "✅ Done."
+            color_echo green "✅ Done"
         else
             color_echo red "Error: Plugin setup failed. Please check nvim configuration."
             return 1
