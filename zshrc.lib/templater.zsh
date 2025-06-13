@@ -6,7 +6,7 @@ function compile_file () {
     file="$1"
 
     if [[ ! -d $GLOBALS__DOTFILES_TEMPLATES_PATH ]] ; then
-        color_echo red 'Unable to find templates path! Please \`export GLOBALS__DOTFILES_TEMPLATES_PATH="$DOTFILES/path/to/templates/"\`.'
+        color_echo red "Unable to find templates path! Please \`export GLOBALS__DOTFILES_TEMPLATES_PATH=\"\$DOTFILES/path/to/templates/\"\`."
         return 1
     fi
 
