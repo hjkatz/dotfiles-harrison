@@ -620,3 +620,157 @@ function devenv() {
         color_echo green "  🌿 Git repository${branch:+ (branch: $branch)}"
     fi
 }
+
+# Enhanced git workflow functions that complement graphite-cli
+
+# Quick commit with message
+function gc() {
+    if [[ $# -eq 0 ]]; then
+        git commit
+    else
+        git commit -m "$*"
+    fi
+}
+
+# Quick add and commit
+function gac() {
+    git add -A && git commit -m "$*"
+}
+
+# Interactive branch switcher using graphite-aware logic
+function gsw() {
+    if [[ $# -eq 0 ]]; then
+        # Show recent branches if no args
+        local branch=$(git recent | head -10 | awk '{print $1}' | fzf --prompt="Switch to branch: " 2>/dev/null)
+        [[ -n "$branch" ]] && git switch "$branch"
+    else
+        git switch "$@"
+    fi
+}
+
+# Smart git pull that works with graphite stacks
+function gpl() {
+    if command -v gt >/dev/null 2>&1; then
+        # Use graphite sync if available (better for stacks)
+        gt sync
+    else
+        git pull "$@"
+    fi
+}
+
+# Create new branch with graphite if available
+function gnb() {
+    if [[ $# -eq 0 ]]; then
+        color_echo red "Branch name required"
+        return 1
+    fi
+
+    if command -v gt >/dev/null 2>&1; then
+        gt create "$1"
+    else
+        git switch -c "$1"
+    fi
+}
+
+# Show git status with graphite stack info if available
+function gst() {
+    git status -sb
+    echo
+
+    if command -v gt >/dev/null 2>&1 && gt status >/dev/null 2>&1; then
+        echo "📚 Graphite Stack:"
+        gt status 2>/dev/null | head -10
+    elif git rev-parse --git-dir >/dev/null 2>&1; then
+        echo "🌳 Branch Stack:"
+        git stack-status 2>/dev/null || git log --oneline --graph $(git default-branch)..HEAD 2>/dev/null
+    fi
+}
+
+# Enhanced git log that shows stack context
+function glog() {
+    if [[ "$1" == "--stack" || "$1" == "-s" ]]; then
+        if command -v gt >/dev/null 2>&1; then
+            gt log --stack
+        else
+            git stack-status
+        fi
+    else
+        git log --oneline --graph --decorate "${@:---10}"
+    fi
+}
+
+# Quick git stash with automatic naming
+function gstash() {
+    local message="${*:-WIP: $(date +'%Y-%m-%d %H:%M')}"
+    git stash push -m "$message"
+}
+
+# Interactive git stash pop
+function gstashpop() {
+    local stash=$(git stash list | fzf --prompt="Select stash to pop: " 2>/dev/null | cut -d: -f1)
+    [[ -n "$stash" ]] && git stash pop "$stash"
+}
+
+# Git maintenance helper
+function gmaint() {
+    color_echo blue "🔧 Running git maintenance..."
+    git maintenance run --auto
+    git gc --auto
+    color_echo green "✅ Maintenance complete"
+}
+
+# Git repository health check
+function ghealthcheck() {
+    color_echo blue "🏥 Git Repository Health Check"
+    echo
+
+    # Basic repo info
+    echo "Repository: $(basename $(git rev-parse --show-toplevel))"
+    echo "Current branch: $(git current-branch)"
+    echo "Default branch: $(git default-branch)"
+    echo
+
+    # Check for issues
+    local issues=0
+
+    # Check for uncommitted changes
+    if ! git diff-index --quiet HEAD --; then
+        color_echo yellow "⚠️  Uncommitted changes detected"
+        ((issues++))
+    fi
+
+    # Check for untracked files
+    if [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
+        color_echo yellow "⚠️  Untracked files detected"
+        ((issues++))
+    fi
+
+    # Check if branch is ahead/behind remote
+    local remote_status=$(git rev-list --count --left-right HEAD...@{upstream} 2>/dev/null)
+    if [[ -n "$remote_status" ]]; then
+        local ahead=$(echo $remote_status | cut -f1)
+        local behind=$(echo $remote_status | cut -f2)
+        if [[ $ahead -gt 0 ]]; then
+            color_echo yellow "⚠️  Branch is $ahead commits ahead of remote"
+            ((issues++))
+        fi
+        if [[ $behind -gt 0 ]]; then
+            color_echo yellow "⚠️  Branch is $behind commits behind remote"
+            ((issues++))
+        fi
+    fi
+
+    # Check for large files
+    local large_files=$(git ls-files | xargs -I {} sh -c 'test -f "{}" && test $(stat -c%s "{}") -gt 10485760 && echo "{}"' 2>/dev/null)
+    if [[ -n "$large_files" ]]; then
+        color_echo yellow "⚠️  Large files (>10MB) detected:"
+        echo "$large_files"
+        ((issues++))
+    fi
+
+    if [[ $issues -eq 0 ]]; then
+        color_echo green "✅ Repository is healthy!"
+    else
+        color_echo yellow "⚠️  $issues potential issues found"
+    fi
+}

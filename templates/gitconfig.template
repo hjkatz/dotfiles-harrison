@@ -49,6 +49,15 @@
     # use standard unix line endings "\n"
     eol = lf
 
+    # performance: preload index for faster operations
+    preloadindex = true
+
+    # performance: use filesystem monitor when available
+    fsmonitor = true
+
+    # performance: enable untracked cache
+    untrackedCache = true
+
 [color]
     # turn on auto coloring
 	ui = auto
@@ -73,6 +82,12 @@
 [fetch]
     # auto prune refs that are no longer tracking remotes upon `git fetch`
     prune = true
+
+    # performance: run fetch operations in parallel
+    parallel = 0
+
+    # enable partial clone support
+    filterBlobLimit = 512k
 
 [log]
     # show refs, heads, tags, remotes, etc... in log output
@@ -136,6 +151,18 @@
     enabled = true
     autoupdate = true
 
+[maintenance]
+    # enable background maintenance
+    auto = false
+    strategy = incremental
+
+[gc]
+    # performance: enable multipack bitmaps
+    writeBitmaps = true
+
+    # performance: automatically run gc when needed
+    auto = 6700
+
 [tag]
     # default tag sorting to date authored desc
     sort = -taggerdate
@@ -148,6 +175,38 @@
     patternType = perl
 
 [alias]
+    # MODERN GIT COMMANDS (prefer these over checkout)
+    sw = switch
+    swc = switch -c
+    swd = switch --detach
+    rs = restore
+    rss = restore --staged
+
+    # ENHANCED SHORTCUTS
+    a = add
+    aa = add -A
+    ap = add -p
+    c = commit
+    ca = commit -a
+    cm = commit -m
+    cam = commit -am
+    co = checkout
+    cob = checkout -b
+    b = branch
+    ba = branch -a
+    bd = branch -d
+    bD = branch -D
+    f = fetch
+    fa = fetch --all
+    m = merge
+    p = push
+    pf = push --force-with-lease
+    pl = pull
+    r = reset
+    rh = reset --hard
+    rs = reset --soft
+    s = status -sb
+
     # git debug <git-command>
     debug  = "!set -x; GIT_TRACE=2 GIT_CURL_VERBOSE=2 GIT_TRACE_PERFORMANCE=2 GIT_TRACE_PACK_ACCESS=2 GIT_TRACE_PACKET=2 GIT_TRACE_PACKFILE=2 GIT_TRACE_SETUP=2 GIT_TRACE_SHALLOW=2 git"
 
@@ -243,3 +302,39 @@
     pr-main = pr main
 
     trigger-ci = "!f() { git commit --allow-empty -m 'trigger ci' && git push ; }; f"
+
+    # GRAPHITE-CLI INTEGRATION AND STACK-AWARE ALIASES
+    # Enhanced branch management that works with graphite stacks
+    stack-branches = !git branch --format='%(refname:short)' | grep -v "^$(git default-branch)$" | head -10
+    stack-status = !git log --oneline --graph $(git default-branch)..HEAD
+    stack-diff = !git diff $(git default-branch)...HEAD
+    stack-fixup = !bash -c 'git add -A && git commit --fixup HEAD~${1:-0}'
+
+    # Maintenance helpers
+    maintenance-start = maintenance start
+    maintenance-stop = maintenance stop
+    tidy = !git for-each-ref --format='%(refname:short)' refs/heads | xargs -r git branch -d 2>/dev/null || true
+
+    # Enhanced stash operations
+    stash-staged = stash push --staged
+    stash-unstaged = stash push --keep-index
+    stash-untracked = stash push --include-untracked
+    stash-all = stash push --include-untracked --all
+
+    # Better log views
+    ll = log --oneline --graph --decorate -10
+    recent = for-each-ref --sort=-committerdate --count=10 --format='%(refname:short) - %(committerdate:relative) - %(authorname)'
+    authors = shortlog -sn
+
+    # File-level operations
+    untrack = rm --cached
+    tracked = ls-tree -r --name-only HEAD
+
+    # Improved search
+    find-file = "!f() { git ls-files | grep -i \"$1\"; }; f"
+    find-text = "!f() { git grep -n \"$1\"; }; f"
+
+    # Safety helpers
+    undo = reset --soft HEAD~1
+    uncommit = reset --soft HEAD~1
+    recommit = commit --amend --no-edit

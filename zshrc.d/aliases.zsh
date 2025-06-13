@@ -10,6 +10,42 @@ alias cp='cp -i '
 # rip g script :(
 alias g="git "
 
+# graphite-cli aliases for faster workflow
+alias gt="gt"
+alias gts="gt status"
+alias gtc="gt create"
+alias gtsub="gt submit"
+alias gtss="gt submit --stack"
+alias gtsy="gt sync"
+alias gtm="gt modify"
+alias gtco="gt checkout"
+alias gtl="gt log"
+alias gtls="gt log --stack"
+
+# enhanced git aliases that complement graphite (note: gst is a function in functions.zsh)
+alias gaa="git add -A"
+alias gap="git add -p"
+alias gcm="git commit -m"
+alias gca="git commit --amend"
+alias gcan="git commit --amend --no-edit"
+alias gsw="git switch"
+alias gswc="git switch -c"
+alias grs="git restore"
+alias grss="git restore --staged"
+alias gf="git fetch"
+alias gfa="git fetch --all"
+alias gp="git push"
+alias gpf="git push --force-with-lease"
+alias gpl="git pull"
+alias grh="git reset --hard"
+alias gundo="git reset --soft HEAD~1"
+
+# stack-aware aliases
+alias gstack="git stack-status"
+alias gstackd="git stack-diff"
+alias gbr="git stack-branches"
+alias grecent="git recent"
+
 # various listing aliases
 if ls --color=auto &> /dev/null ; then
     # --color is valid
@@ -118,6 +154,21 @@ alias -g EHAD='HEAD'
 
 # resolves to the current matching stash in `git stash list` for the current branch, i.e. "stash@{1}"
 alias -g GCURRENT='$(git stash list | grep $(git rev-parse --symbolic-full-name --abbrev-ref "@{u}" | sed "s#\w*/##") | sed "s/\(stash@{.*}\):.*/\1/")'
+
+# resolves to the current branch name
+alias -g GBRANCH='$(git current-branch)'
+
+# resolves to the default branch name (main/master)
+alias -g GDEFAULT='$(git default-branch)'
+
+# resolves to the current commit hash
+alias -g GHASH='$(git rev-parse HEAD)'
+
+# resolves to the short commit hash
+alias -g GSHORT='$(git rev-parse --short HEAD)'
+
+# resolves to the git root directory
+alias -g GROOT='$(git rev-parse --show-toplevel)'
 
 # expands to the most recent file in a directory
 #
