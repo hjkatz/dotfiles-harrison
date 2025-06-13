@@ -74,10 +74,12 @@ fi
 autoload bashcompinit
 bashcompinit
 
-# source bash completions
-for file in $GLOBALS__DOTFILES_COMPLETIONS_PATH.bash/* ; do
-    source $file
-done
+# source bash completions (only if they exist)
+if [[ -d "$GLOBALS__DOTFILES_COMPLETIONS_PATH.bash" && -n "$(echo $GLOBALS__DOTFILES_COMPLETIONS_PATH.bash/*(.N))" ]]; then
+    for file in $GLOBALS__DOTFILES_COMPLETIONS_PATH.bash/* ; do
+        source $file
+    done
+fi
 
 # source completion config
 source $DOTFILES/zshrc.lib/completions.zsh
@@ -94,11 +96,29 @@ done
 export fpath
 
 # source omz compatible plugins
-# Optimized plugin loading - avoid subshell and external commands
-for plugin_dir in $DOTFILES/zshrc.plugins/*(/); do
-    plugin=${plugin_dir:t}  # Get basename using zsh parameter expansion
-    [[ -f $plugin_dir/$plugin.plugin.zsh ]] && source $plugin_dir/$plugin.plugin.zsh
-done
+# Cache plugin paths for faster loading
+PLUGIN_CACHE_FILE="$HOME/.cache/dotfiles_plugins"
+if [[ -f "$PLUGIN_CACHE_FILE" && "$PLUGIN_CACHE_FILE" -nt "$DOTFILES/zshrc.plugins" ]]; then
+    # Use cached plugin list
+    [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "📦 Loading plugins from cache..."
+    while IFS= read -r plugin_file; do
+        [[ -f "$plugin_file" ]] && source "$plugin_file"
+    done < "$PLUGIN_CACHE_FILE"
+else
+    # Create cache directory if it doesn't exist
+    mkdir -p "$(dirname "$PLUGIN_CACHE_FILE")"
+    # Build and cache plugin list
+    [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Rebuilding plugin cache..."
+    > "$PLUGIN_CACHE_FILE"  # Clear cache file
+    for plugin_dir in $DOTFILES/zshrc.plugins/*(/); do
+        plugin=${plugin_dir:t}  # Get basename using zsh parameter expansion
+        plugin_file="$plugin_dir/$plugin.plugin.zsh"
+        if [[ -f "$plugin_file" ]]; then
+            echo "$plugin_file" >> "$PLUGIN_CACHE_FILE"
+            source "$plugin_file"
+        fi
+    done
+fi
 
 # source zsh syntax highlighting settings
 source $DOTFILES/zshrc.lib/syntax-highlighting-settings.zsh
@@ -109,17 +129,37 @@ source $DOTFILES/zshrc.lib/prompt.zsh
 # source all exit tasks
 source $DOTFILES/zshrc.lib/exit-tasks.zsh
 
-# Setup terraform completion if terraform is available
+# Lazy load terraform completion for faster startup
+_load_terraform_completion() {
+    # Remove the lazy loading functions
+    unset -f terraform tf
+    
+    # Setup terraform completion if terraform is available
+    if command_exists terraform; then
+        terraform_path=$(which terraform)
+        complete -o nospace -C "$terraform_path" terraform
+    fi
+    
+    # Setup tf completion if tf is available (check common locations)
+    tf_locations=("$HOME/.local/bin/tf" "/usr/local/bin/tf")
+    for tf_path in "${tf_locations[@]}"; do
+        if [[ -x "$tf_path" ]]; then
+            complete -o nospace -C "$tf_path" tf
+            break
+        fi
+    done
+}
+
+# Create lazy loading wrapper functions for terraform
 if command_exists terraform; then
-    terraform_path=$(which terraform)
-    complete -o nospace -C "$terraform_path" terraform
+    terraform() { _load_terraform_completion && terraform "$@"; }
 fi
 
-# Setup tf completion if tf is available (check common locations)
+# Check for tf in common locations and create lazy wrapper if found
 tf_locations=("$HOME/.local/bin/tf" "/usr/local/bin/tf")
 for tf_path in "${tf_locations[@]}"; do
     if [[ -x "$tf_path" ]]; then
-        complete -o nospace -C "$tf_path" tf
+        tf() { _load_terraform_completion && tf "$@"; }
         break
     fi
 done
@@ -130,7 +170,7 @@ export NVM_DIR="$HOME/.nvm"
 # Function to load NVM when actually needed
 _load_nvm() {
     # Remove the lazy loading functions
-    unset -f nvm node npm npx
+    unset -f nvm node npm npx claude
 
     # Load NVM
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -140,6 +180,7 @@ _load_nvm() {
 # Create lazy loading wrapper functions
 if [ -s "$NVM_DIR/nvm.sh" ]; then
     # Only set up lazy loading if NVM exists
+    claude() { _load_nvm && claude "$@"; } # claude is nodejs
     nvm() { _load_nvm && nvm "$@"; }
     node() { _load_nvm && node "$@"; }
     npm() { _load_nvm && npm "$@"; }

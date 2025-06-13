@@ -109,5 +109,18 @@ function which_distro ()
     echo ""
 }
 
-# which distro the dotfiles thinks is running
-export GLOBALS__DISTRO=`which_distro`
+# Cache distro detection for performance (expensive operation)
+DISTRO_CACHE_FILE="$HOME/.cache/dotfiles_distro"
+if [[ -f "$DISTRO_CACHE_FILE" && -n "$(cat "$DISTRO_CACHE_FILE" 2>/dev/null)" ]]; then
+    export GLOBALS__DISTRO="$(cat "$DISTRO_CACHE_FILE")"
+    [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "🖥️ Using cached distro: $GLOBALS__DISTRO"
+else
+    # Create cache directory if it doesn't exist
+    mkdir -p "$(dirname "$DISTRO_CACHE_FILE")"
+    # Detect and cache the distro
+    [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔍 Detecting distro..."
+    detected_distro=$(which_distro)
+    export GLOBALS__DISTRO="$detected_distro"
+    echo "$detected_distro" > "$DISTRO_CACHE_FILE"
+    [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "✅ Cached distro: $GLOBALS__DISTRO"
+fi

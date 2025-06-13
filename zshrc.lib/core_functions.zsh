@@ -48,13 +48,22 @@ function has_internet () {
     return 1
 }
 
-# tests if a given command is available
+# tests if a given command is available with caching
+typeset -A _command_cache
 function command_exists () {
     command="$1"
+    
+    # Check cache first
+    if [[ -n "${_command_cache[$command]}" ]]; then
+        return ${_command_cache[$command]}
+    fi
 
+    # Check if command exists and cache result
     if type "$command" &>/dev/null ; then
+        _command_cache[$command]=0
         return 0
     else
+        _command_cache[$command]=1
         return 1
     fi
 }
