@@ -55,6 +55,8 @@ clean: ## Clean cache files and async jobs
 	@if [[ -d .cache ]]; then \
 		find .cache -type f -name "*.pid" -delete 2>/dev/null || true; \
 		find .cache -type f -mtime +1 -delete 2>/dev/null || true; \
+		rm -f .cache/plugins_combined.zsh .cache/zshrc_d_combined.zsh 2>/dev/null || true; \
+		rm -f .cache/completion_* .cache/bash_completions_loaded 2>/dev/null || true; \
 	fi
 	@rm -f .init_lua_checksum 2>/dev/null || true
 	@if command -v zsh >/dev/null 2>&1; then \

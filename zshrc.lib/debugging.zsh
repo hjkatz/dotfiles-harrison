@@ -5,8 +5,9 @@
 export GLOBALS__DEBUGGING_PATH="/tmp/.dotfiles-harrison-debugging"
 
 if [[ "$ENABLE_DEBUGGING" == true ]]; then
-    # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
-    PS4=$'%D{%M%S%.} %N:%i> '
+    # Use epoch time in milliseconds for reliable timing calculations
+    # %D{%s%.} gives seconds since epoch + fractional seconds
+    PS4=$'%D{%s%.} %N:%i> '
     exec 3>&2 2>$GLOBALS__DEBUGGING_PATH
     setopt xtrace prompt_subst
 fi
@@ -143,11 +144,26 @@ function zsh_debug () {
     echo
 
     color_echo white "🏆 Top 5 Slowest Operations:"
-    # Show top slow sections
-    awk '{print $1, $2}' "$GLOBALS__DEBUGGING_PATH" | \
-    awk 'NR>1 {print prev_time, prev_section, ($1-prev_time)} {prev_time=$1; prev_section=$2}' | \
-    sort -k3 -nr | head -5 | \
-    while read start section timing; do
+    # Show top slow sections with proper field handling - filter valid timestamp lines only
+    awk '
+    # Only process lines that start with a valid timestamp
+    /^[0-9]{10}[0-9.]* / {
+        timestamp = $1
+        section = $2
+        gsub(/:.*/, "", section)  # Remove everything after first colon
+        
+        if (NR > 1 && prev_time != "" && timestamp > prev_time) {
+            timing = timestamp - prev_time
+            if (timing > 0 && timing < 60000) {  # Reasonable timing range (< 60 seconds)
+                printf "%d %s\n", timing, prev_section
+            }
+        }
+        prev_time = timestamp
+        prev_section = section
+    }
+    ' "$GLOBALS__DEBUGGING_PATH" | \
+    sort -k1 -nr | head -5 | \
+    while read timing section; do
         if [[ $timing -gt 500 ]]; then
             printf "   \033[31m🔴 %4dms : %s\033[0m\n" $timing $(basename $section)
         elif [[ $timing -gt 50 ]]; then
@@ -215,11 +231,26 @@ function zsh_debug_summary() {
     echo
     color_echo white "🏆 Top 5 Slowest Operations:"
 
-    # Show top slow sections with better formatting
-    awk '{print $1, $2}' "$GLOBALS__DEBUGGING_PATH" | \
-    awk 'NR>1 {print prev_time, prev_section, ($1-prev_time)} {prev_time=$1; prev_section=$2}' | \
-    sort -k3 -nr | head -5 | \
-    while read start section timing; do
+    # Show top slow sections with proper field handling - filter valid timestamp lines only
+    awk '
+    # Only process lines that start with a valid timestamp
+    /^[0-9]{10}[0-9.]* / {
+        timestamp = $1
+        section = $2
+        gsub(/:.*/, "", section)  # Remove everything after first colon
+        
+        if (NR > 1 && prev_time != "" && timestamp > prev_time) {
+            timing = timestamp - prev_time
+            if (timing > 0 && timing < 60000) {  # Reasonable timing range (< 60 seconds)
+                printf "%d %s\n", timing, prev_section
+            }
+        }
+        prev_time = timestamp
+        prev_section = section
+    }
+    ' "$GLOBALS__DEBUGGING_PATH" | \
+    sort -k1 -nr | head -5 | \
+    while read timing section; do
         if [[ $timing -gt 100 ]]; then
             printf "   \033[31m🔴 %4dms : %s\033[0m\n" $timing $(basename $section)
         elif [[ $timing -gt 50 ]]; then

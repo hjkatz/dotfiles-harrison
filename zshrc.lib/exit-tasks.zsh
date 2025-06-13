@@ -41,15 +41,20 @@ if [[ "$GLOBALS__AUTO_RUN_DEBUG" == true ]]; then
     # Run debug analysis
     zsh_debug
 
-
     # Clear the auto-run flag
     unset GLOBALS__AUTO_RUN_DEBUG
-fi
-
-# turn off debugging if it was on
-if [[ "$ENABLE_DEBUGGING" == true ]]; then
+    
+    # Also clear debugging flag since this was a debug session
+    if [[ "$ENABLE_DEBUGGING" == true ]]; then
+        unsetopt xtrace
+        exec 2>&3 3>&-
+        unset ENABLE_DEBUGGING
+    fi
+elif [[ "$ENABLE_DEBUGGING" == true ]]; then
+    # turn off debugging if it was on (but no auto-analysis requested)
     unsetopt xtrace
     exec 2>&3 3>&-
+    unset ENABLE_DEBUGGING
 fi
 
 # set distro specific completions
@@ -123,6 +128,12 @@ function cleanup_async_jobs () {
 
     # Clean up stale cache files older than 1 day
     [[ -d "$cache_dir" ]] && find "$cache_dir" -type f -mtime +1 -delete 2>/dev/null
+    
+    # Clean up any orphaned template lock files
+    [[ -d "$GLOBALS__DOTFILES_COMPILED_PATH" ]] && {
+        find "$GLOBALS__DOTFILES_COMPILED_PATH" -name "*.lock" -type f -delete 2>/dev/null
+        find "$GLOBALS__DOTFILES_COMPILED_PATH" -name "*.tmp.*" -type f -delete 2>/dev/null
+    }
 }
 
 # Set up exit handler for async job cleanup

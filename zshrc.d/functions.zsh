@@ -37,18 +37,9 @@ function resource_with_debugging () {
     echo
     color_echo white "🚀 Initializing instrumented shell startup..."
 
-    # Enable debugging for this resource operation
-    export ENABLE_DEBUGGING=true
-
-    # Flag to auto-run debug analysis after startup
-    export GLOBALS__AUTO_RUN_DEBUG=true
-
-    # Don't need to check for git updates to the dotfiles repo,
-    # we just want to resource the current dotfiles
-    export GLOBALS__CHECK_FOR_UPDATES=false
-
-    # Begin the instrumented loading
-    source $DOTFILES/zshrc
+    # Set debugging variables only for this specific resource operation
+    # Use command substitution to avoid setting them in cached files
+    ENABLE_DEBUGGING=true GLOBALS__AUTO_RUN_DEBUG=true GLOBALS__CHECK_FOR_UPDATES=false source $DOTFILES/zshrc
 }
 
 # Checks to see if the pwd is in a git repo, then calls git fetch

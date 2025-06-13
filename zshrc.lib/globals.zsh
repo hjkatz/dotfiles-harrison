@@ -60,7 +60,7 @@ typeset -A GLOBALS__SHOW_PROMPT_HASH=(
     git        true
     rbenv      true
     virtualenv false
-    pyenv      true
+    pyenv      false
     nvm        false
     hg         true
     kubectl    false

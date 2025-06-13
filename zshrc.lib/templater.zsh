@@ -244,13 +244,17 @@ function dotfiles_template_status() {
 }
 
 function dotfiles_template_clean() {
-    color_echo yellow "🧹 Cleaning template cache..."
+    color_echo yellow "🧹 Cleaning all caches..."
     find "$DOTFILES_CACHE" -name "template_*" -type f -delete 2>/dev/null || true
+    rm -f "$DOTFILES_CACHE/plugins_combined.zsh" 2>/dev/null || true
+    rm -f "$DOTFILES_CACHE/zshrc_d_combined.zsh" 2>/dev/null || true
+    rm -f "$DOTFILES_CACHE/completion_*" 2>/dev/null || true
+    rm -f "$DOTFILES_CACHE/bash_completions_loaded" 2>/dev/null || true
     if [[ -d "$GLOBALS__DOTFILES_COMPILED_PATH" ]]; then
         find "$GLOBALS__DOTFILES_COMPILED_PATH" -name "*.lock" -type f -delete 2>/dev/null || true
         find "$GLOBALS__DOTFILES_COMPILED_PATH" -name "*.tmp.*" -type f -delete 2>/dev/null || true
     fi
-    color_echo green "✅ Template cache cleaned"
+    color_echo green "✅ All caches cleaned"
 }
 
 function dotfiles_template_recompile() {

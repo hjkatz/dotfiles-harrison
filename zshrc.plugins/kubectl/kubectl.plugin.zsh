@@ -53,10 +53,12 @@ function kubectl() {
     command kubectl "$@"
 }
 
-# set completion
-compdef kb=kubectl
-compdef kube=kubectl
-compdef k=kubectl
+# set completion (only if compdef is available)
+if command -v compdef >/dev/null 2>&1; then
+    compdef kb=kubectl 2>/dev/null || true
+    compdef kube=kubectl 2>/dev/null || true
+    compdef k=kubectl 2>/dev/null || true
+fi
 
 # kubectx config
 export KUBECTX_CURRENT_FGCOLOR=$(tput setaf 6) # blue text
