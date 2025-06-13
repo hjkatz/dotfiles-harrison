@@ -2,7 +2,6 @@
 
 # prints debugging info (preserve if already set by resource_with_debugging)
 ENABLE_DEBUGGING=${ENABLE_DEBUGGING:-false}
-ENABLE_DEBUGGING=true
 
 # Where the dotfiles are located to load
 export DOTFILES=$HOME/.dotfiles-harrison
