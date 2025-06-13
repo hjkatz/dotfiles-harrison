@@ -6,6 +6,10 @@ function resource () {
     # we just want to resource the current dotfiles
     export GLOBALS__CHECK_FOR_UPDATES=false
     export _setup_vim_plugins_ran=true  # Skip vim plugin setup since it's already done
+    
+    # Prevent startup timing display during resource
+    export DOTFILES_STARTUP_TIME="1"
+    unset DOTFILES_STARTUP_START DOTFILES_ZSHRC_LOCAL_START DOTFILES_ZSHRC_LOCAL_TIME
 
     color_echo cyan "🔄 Starting resource..."
     local start_time=$(date +%s%3N)
@@ -15,6 +19,24 @@ function resource () {
     local end_time=$(date +%s%3N)
     local duration=$((end_time - start_time))
     color_echo green "✅ Resource complete (${duration}ms)"
+}
+
+# Show shell startup timing breakdown
+function startup_timing() {
+    color_echo blue "🕐 Testing shell startup timing..."
+    echo
+    
+    local temp_file=$(mktemp)
+    
+    # Test with timing
+    (
+        export FORCE_TIMING_DISPLAY=true
+        time zsh -i -c "sleep 0.1; exit" 2>&1
+    ) > "$temp_file"
+    
+    # Show results
+    cat "$temp_file"
+    rm -f "$temp_file"
 }
 
 # re-source zshrc profile with debugging enabled

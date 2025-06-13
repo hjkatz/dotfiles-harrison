@@ -1,5 +1,12 @@
 # Main Zshrc that loads all other parts of the dotfiles
 
+# Startup timing (only for interactive shells, and only if timing is enabled)
+if [[ $- == *i* ]] && [[ -z "$DOTFILES_STARTUP_TIME" ]] && [[ "${DOTFILES_ENABLE_TIMING:-true}" == "true" ]]; then
+    # Load datetime module for fast timing
+    zmodload zsh/datetime 2>/dev/null
+    DOTFILES_STARTUP_START=${EPOCHREALTIME}
+fi
+
 # prints debugging info (preserve if already set by resource_with_debugging)
 ENABLE_DEBUGGING=${ENABLE_DEBUGGING:-false}
 
@@ -43,7 +50,15 @@ source $DOTFILES/zshrc.lib/environment.zsh
 
 # Source any local files for custom environments
 if [ -f $HOME/.zshrc_local ] ; then
+    # Time zshrc_local loading
+    if [[ -n "$DOTFILES_STARTUP_START" ]]; then
+        DOTFILES_ZSHRC_LOCAL_START=${EPOCHREALTIME}
+    fi
     source $HOME/.zshrc_local
+    if [[ -n "$DOTFILES_STARTUP_START" ]]; then
+        # Convert to milliseconds (EPOCHREALTIME is in seconds with decimals)
+        DOTFILES_ZSHRC_LOCAL_TIME=$(( (${EPOCHREALTIME} - DOTFILES_ZSHRC_LOCAL_START) * 1000 ))
+    fi
 fi
 
 # Conditional templater loading (non-interactive shells rarely need templates)
@@ -289,6 +304,40 @@ if [[ $- == *i* ]]; then
 else
     # Non-interactive shell - minimal prompt
     PROMPT='$ '
+fi
+
+# Calculate and display startup timing (before exit tasks)
+if [[ -n "$DOTFILES_STARTUP_START" ]]; then
+    # Single time measurement to minimize overhead
+    local end_time=${EPOCHREALTIME}
+    
+    # Set flag to prevent showing timing on resource calls
+    export DOTFILES_STARTUP_TIME="1"
+    
+    # Display timing breakdown (only for truly interactive shells or when forced)
+    if ([[ $- == *i* ]] && [[ -t 0 ]]) || [[ "$FORCE_TIMING_DISPLAY" == "true" ]]; then
+        # Calculate timing in background to avoid blocking startup
+        {
+            # Convert to milliseconds (EPOCHREALTIME is in seconds with decimals)
+            local total_time=$(( (end_time - DOTFILES_STARTUP_START) * 1000 ))
+            local local_time=${DOTFILES_ZSHRC_LOCAL_TIME:-0}
+            local core_time=$((total_time - local_time))
+            
+            echo
+            if [[ $local_time -gt 0 ]]; then
+                printf "⚡ Startup: \033[32m%dms\033[0m total (\033[36m%dms\033[0m dotfiles + \033[33m%dms\033[0m local)\n" \
+                    "$total_time" "$core_time" "$local_time"
+            else
+                printf "⚡ Startup: \033[32m%dms\033[0m dotfiles\n" "$core_time"
+            fi
+            
+            # Clean up timing variables in background
+            unset DOTFILES_STARTUP_START DOTFILES_ZSHRC_LOCAL_START DOTFILES_ZSHRC_LOCAL_TIME
+        } &!
+    else
+        # Clean up timing variables immediately if not displaying
+        unset DOTFILES_STARTUP_START DOTFILES_ZSHRC_LOCAL_START DOTFILES_ZSHRC_LOCAL_TIME
+    fi
 fi
 
 # Defer exit tasks for interactive shells (saves ~5ms on startup)
