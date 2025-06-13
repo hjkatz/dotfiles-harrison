@@ -49,6 +49,9 @@ if [[ "$GLOBALS__AUTO_RUN_DEBUG" == true ]]; then
         unsetopt xtrace
         exec 2>&3 3>&-
         unset ENABLE_DEBUGGING
+        # Clean up debug timing variables and functions
+        unset DEBUG_OVERHEAD_START EXTERNAL_DEBUG_TIMING_FUNC
+        unset -f _calculate_debug_timing 2>/dev/null
     fi
 elif [[ "$ENABLE_DEBUGGING" == true ]]; then
     # turn off debugging if it was on (but no auto-analysis requested)

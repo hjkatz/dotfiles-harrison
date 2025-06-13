@@ -35,19 +35,12 @@ function zsh_debug () {
         timing_threshold="10"
     fi
 
-    color_echo white "──── ⏱️ Shell Startup Performance Analysis ────"
-    echo "   Threshold:  ${timing_threshold}ms (showing operations slower than this)"
-    echo "   Debug file: $GLOBALS__DEBUGGING_PATH"
-    echo
-
     # Get the starting time
     debugging_start_time=`head -n 1 $GLOBALS__DEBUGGING_PATH | awk '{print $1}'`
 
-    # Print out the first line for consistency
+    # Get the first section for compatibility
     first_line=`head -n 1 $GLOBALS__DEBUGGING_PATH`
     first_section=`echo $first_line | awk '{print $2}' | cut -f1 -d:`
-    echo "🚀 Starting: $first_line"
-    echo
 
     # For recording the timing
     previous_section_start_time="$debugging_start_time"
@@ -129,21 +122,51 @@ function zsh_debug () {
     # Get debug info for integration
     local line_count=$(wc -l < "$GLOBALS__DEBUGGING_PATH")
 
-    # Performance rating with visual indicators
-    if [[ $total_time -lt 300 ]]; then
-        color_echo green "⚡ Overall Rating: EXCELLENT (${total_time}ms)"
-    elif [[ $total_time -lt 500 ]]; then
-        color_echo green "✅ Overall Rating: GOOD (${total_time}ms)"
-    elif [[ $total_time -lt 1000 ]]; then
-        color_echo yellow "⚠️ Overall Rating: MODERATE (${total_time}ms)"
+    # Calculate overhead using heuristic based on trace operations
+    local measured_time="$total_time"
+    local overhead_time=0
+    local actual_time="$total_time"
+
+    if [[ -n "$EXTERNAL_DEBUG_TIMING_FUNC" ]] && type "$EXTERNAL_DEBUG_TIMING_FUNC" >/dev/null 2>&1; then
+        # We have external timing measurement function
+        local external_total=$($EXTERNAL_DEBUG_TIMING_FUNC)
+
+        # Round external total to integer for cleaner display
+        external_total=$(printf "%.0f" "$external_total")
+
+        # Scalar-based heuristic: 20% of debug time = estimated actual time
+        local debug_factor=20
+        actual_time=$(( external_total * debug_factor / 100 ))
+        overhead_time=$(( external_total - actual_time ))
+
+        # Performance rating based on actual time (without overhead)
+        if [[ $actual_time -lt 100 ]]; then
+            printf "   Rating:   ⚡\033[32mEXCELLENT\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+        elif [[ $actual_time -lt 200 ]]; then
+            printf "   Rating:   ✅\033[32mGOOD\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+        elif [[ $actual_time -lt 500 ]]; then
+            printf "   Rating:   ⚠️\033[33mMODERATE\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+        else
+            printf "   Rating:   🐌\033[31mSLOW\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+        fi
+
+        printf "   \033[90mThreshold:  %dms\033[0m\n" "$timing_threshold"
+        printf "   \033[90mFile:       %s\033[0m\n" "$GLOBALS__DEBUGGING_PATH"
+        printf "\n" # formatting
     else
-        color_echo red "🐌 Overall Rating: SLOW (${total_time}ms)"
+        # Fallback to old behavior
+        if [[ $total_time -lt 300 ]]; then
+            color_echo green "⚡ Overall Rating: AMAZING! (${total_time}ms)"
+        elif [[ $total_time -lt 500 ]]; then
+            color_echo green "✅ Overall Rating: GOOD (${total_time}ms)"
+        elif [[ $total_time -lt 1000 ]]; then
+            color_echo yellow "⚠️ Overall Rating: OK (${total_time}ms)"
+        else
+            color_echo red "🐌 Overall Rating: SLOW (${total_time}ms)"
+        fi
     fi
 
-    echo "   Debug lines: $line_count operations traced"
-    echo
-
-    color_echo white "🏆 Top 5 Slowest Operations:"
+    printf "\033[37m🏆 Top 5 Slowest Operations:\033[0m \033[90mestimated 20%% debug overhead\033[0m\n"
     # Show top slow sections with proper field handling - filter valid timestamp lines only
     awk '
     # Only process lines that start with a valid timestamp
@@ -151,7 +174,7 @@ function zsh_debug () {
         timestamp = $1
         section = $2
         gsub(/:.*/, "", section)  # Remove everything after first colon
-        
+
         if (NR > 1 && prev_time != "" && timestamp > prev_time) {
             timing = timestamp - prev_time
             if (timing > 0 && timing < 60000) {  # Reasonable timing range (< 60 seconds)
@@ -164,12 +187,20 @@ function zsh_debug () {
     ' "$GLOBALS__DEBUGGING_PATH" | \
     sort -k1 -nr | head -5 | \
     while read timing section; do
+        # Scalar-based heuristic: xtrace makes operations ~5x slower (20% of debug time = actual time)
+        local debug_factor=20  # 20% (debug operations are ~5x slower than normal)
+        local estimated_actual=$(( timing * debug_factor / 100 ))
+        local debug_overhead=$(( timing - estimated_actual ))
+
         if [[ $timing -gt 500 ]]; then
-            printf "   \033[31m🔴 %4dms : %s\033[0m\n" $timing $(basename $section)
+            printf "   \033[31m🔴 %3dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
+                $estimated_actual $(basename $section) $timing
         elif [[ $timing -gt 50 ]]; then
-            printf "   \033[33m🟡 %4dms : %s\033[0m\n" $timing $(basename $section)
+            printf "   \033[33m🟡 %3dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
+                $estimated_actual $(basename $section) $timing
         else
-            printf "   \033[32m🟢 %4dms : %s\033[0m\n" $timing $(basename $section)
+            printf "   \033[32m🟢 %3dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
+                $estimated_actual $(basename $section) $timing
         fi
     done
 
@@ -238,7 +269,7 @@ function zsh_debug_summary() {
         timestamp = $1
         section = $2
         gsub(/:.*/, "", section)  # Remove everything after first colon
-        
+
         if (NR > 1 && prev_time != "" && timestamp > prev_time) {
             timing = timestamp - prev_time
             if (timing > 0 && timing < 60000) {  # Reasonable timing range (< 60 seconds)
@@ -251,12 +282,15 @@ function zsh_debug_summary() {
     ' "$GLOBALS__DEBUGGING_PATH" | \
     sort -k1 -nr | head -5 | \
     while read timing section; do
+        # Apply scalar heuristic: 20% of debug time = estimated actual time
+        local estimated_actual=$(( timing * 20 / 100 ))
+
         if [[ $timing -gt 100 ]]; then
-            printf "   \033[31m🔴 %4dms : %s\033[0m\n" $timing $(basename $section)
+            printf "   \033[31m🔴 ~%dms : %s\033[0m \033[90m(%dms debug)\033[0m\n" $estimated_actual $(basename $section) $timing
         elif [[ $timing -gt 50 ]]; then
-            printf "   \033[33m🟡 %4dms : %s\033[0m\n" $timing $(basename $section)
+            printf "   \033[33m🟡 ~%dms : %s\033[0m \033[90m(%dms debug)\033[0m\n" $estimated_actual $(basename $section) $timing
         else
-            printf "   \033[32m🟢 %4dms : %s\033[0m\n" $timing $(basename $section)
+            printf "   \033[32m🟢 ~%dms : %s\033[0m \033[90m(%dms debug)\033[0m\n" $estimated_actual $(basename $section) $timing
         fi
     done
 

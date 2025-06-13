@@ -59,8 +59,19 @@ function resource_with_debugging () {
     echo
     color_echo white "🚀 Initializing instrumented shell startup..."
 
-    # Set debugging variables only for this specific resource operation
-    # Use command substitution to avoid setting them in cached files
+    # Time the full operation including debug overhead
+    zmodload zsh/datetime 2>/dev/null
+    local total_start=${EPOCHREALTIME}
+
+    # Set debugging variables and track overhead
+    export DEBUG_OVERHEAD_START=${EPOCHREALTIME}
+    
+    # Store external timing function for debug analysis to use
+    export EXTERNAL_DEBUG_TIMING_FUNC="_calculate_debug_timing"
+    _calculate_debug_timing() {
+        echo $(( (${EPOCHREALTIME} - $total_start) * 1000 ))
+    }
+    
     ENABLE_DEBUGGING=true GLOBALS__AUTO_RUN_DEBUG=true GLOBALS__CHECK_FOR_UPDATES=false source $DOTFILES/zshrc
 }
 

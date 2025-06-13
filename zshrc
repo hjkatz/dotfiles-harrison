@@ -1,7 +1,7 @@
 # Main Zshrc that loads all other parts of the dotfiles
 
-# Startup timing (only for interactive shells, and only if timing is enabled)
-if [[ $- == *i* ]] && [[ -z "$DOTFILES_STARTUP_TIME" ]] && [[ "${DOTFILES_ENABLE_TIMING:-true}" == "true" ]]; then
+# Startup timing (only for interactive shells, and only if timing is enabled and not debugging)
+if [[ $- == *i* ]] && [[ -z "$DOTFILES_STARTUP_TIME" ]] && [[ "${DOTFILES_ENABLE_TIMING:-true}" == "true" ]] && [[ "$ENABLE_DEBUGGING" != "true" ]]; then
     # Load datetime module for fast timing
     zmodload zsh/datetime 2>/dev/null
     DOTFILES_STARTUP_START=${EPOCHREALTIME}
