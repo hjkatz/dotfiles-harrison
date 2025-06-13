@@ -91,7 +91,7 @@ function _load_completions_async() {
     local cache_dir="$DOTFILES_CACHE"
     local completion_ready="$cache_dir/completions_ready"
     local completion_pid="$cache_dir/completion_init_pid"
-    
+
     # Check if completions are already being loaded
     if [[ -f "$completion_pid" ]]; then
         local pid=$(cat "$completion_pid" 2>/dev/null)
@@ -99,7 +99,7 @@ function _load_completions_async() {
             return 0  # Already loading
         fi
     fi
-    
+
     # Start async completion loading
     {
         # Perform compinit only once a day
@@ -125,7 +125,7 @@ function _load_completions_async() {
                 touch "$bash_comp_cache"
             fi
         fi
-        
+
         echo "ready" > "$completion_ready"
         rm -f "$completion_pid"
     } &!
@@ -137,23 +137,23 @@ function _completion_stub() {
     # Remove stub and load real completions
     unset -f _completion_stub
     zle -D complete-word
-    
+
     # Wait for async completions or load them now
     local completion_ready="$DOTFILES_CACHE/completions_ready"
     local wait_time=0
-    
+
     # Wait up to 100ms for async completions
     while [[ $wait_time -lt 10 && ! -f "$completion_ready" ]]; do
         sleep 0.01
         ((wait_time++))
     done
-    
+
     # If not ready, load synchronously (fallback)
     if [[ ! -f "$completion_ready" ]]; then
         autoload -Uz compinit
         compinit -C -d $ZSH_COMPDUMP
     fi
-    
+
     # Setup real completion widget
     zle -C complete-word .complete-word _main_complete
     zle complete-word
@@ -168,14 +168,14 @@ _load_completions_async
 # Defer completion config until completion system is ready
 function _load_completion_config() {
     local completion_ready="$DOTFILES_CACHE/completions_ready"
-    
+
     # Wait for completions to be ready or load them now
     local wait_time=0
     while [[ $wait_time -lt 50 && ! -f "$completion_ready" ]]; do
         sleep 0.01
         ((wait_time++))
     done
-    
+
     # Load completion config once system is ready
     if [[ -f "$completion_ready" ]] || command -v compdef >/dev/null 2>&1; then
         source $DOTFILES/zshrc.lib/completions.zsh
@@ -196,13 +196,13 @@ else
     # Rebuild combined file
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Rebuilding zshrc.d cache..."
     mkdir -p "$(dirname "$ZSHRC_D_COMBINED")"
-    
+
     # Create combined file
     {
         echo "# Combined zshrc.d file - auto-generated $(date)"
         echo "# Do not edit manually - will be regenerated"
         echo ""
-        
+
         for file in $DOTFILES/zshrc.d/*.zsh; do
             if [[ -f "$file" ]]; then
                 echo "# --- File: $(basename "$file") ---"
@@ -211,7 +211,7 @@ else
             fi
         done
     } > "$ZSHRC_D_COMBINED"
-    
+
     # Source the combined file
     source "$ZSHRC_D_COMBINED"
 fi
@@ -229,7 +229,7 @@ source $DOTFILES/zshrc.lib/syntax-highlighting-settings.zsh
 PLUGIN_CACHE_FILE="$DOTFILES_CACHE/plugins"
 PLUGIN_COMBINED_FILE="$DOTFILES_CACHE/plugins_combined.zsh"
 
-# Check if we can use the super-fast combined plugin file  
+# Check if we can use the super-fast combined plugin file
 # Note: Combined file disabled due to dependency issues with functions like command_exists
 if false && [[ -f "$PLUGIN_COMBINED_FILE" && "$PLUGIN_COMBINED_FILE" -nt "$DOTFILES/zshrc.plugins" ]]; then
     # Ultra-fast: source single combined file (disabled)
@@ -238,20 +238,20 @@ if false && [[ -f "$PLUGIN_COMBINED_FILE" && "$PLUGIN_COMBINED_FILE" -nt "$DOTFI
 elif [[ -f "$PLUGIN_CACHE_FILE" && "$PLUGIN_CACHE_FILE" -nt "$DOTFILES/zshrc.plugins" ]]; then
     # Fast: use cached plugin list but create combined file for next time
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "📦 Loading plugins from cache..."
-    
+
     # Create combined file in background for next startup
     if [[ ! -f "$PLUGIN_COMBINED_FILE" ]]; then
         {
             echo "# Combined plugin file - auto-generated $(date)" > "$PLUGIN_COMBINED_FILE"
             echo "# Do not edit manually - will be regenerated" >> "$PLUGIN_COMBINED_FILE"
             echo "" >> "$PLUGIN_COMBINED_FILE"
-            
+
             while IFS= read -r plugin_file; do
                 if [[ -f "$plugin_file" ]]; then
                     plugin=$(basename "$(dirname "$plugin_file")")
                     plugin_dir=$(dirname "$plugin_file")
                     echo "# --- Plugin: $plugin ---" >> "$PLUGIN_COMBINED_FILE"
-                    
+
                     # Fix relative paths in plugin content
                     sed -e "s|dir=\$(dirname \$0)|dir=\"$plugin_dir\"|g" \
                         -e "s|\${0:A:h}|$plugin_dir|g" \
@@ -262,7 +262,7 @@ elif [[ -f "$PLUGIN_CACHE_FILE" && "$PLUGIN_CACHE_FILE" -nt "$DOTFILES/zshrc.plu
             done < "$PLUGIN_CACHE_FILE"
         } &!
     fi
-    
+
     # Load plugins normally for this startup
     while IFS= read -r plugin_file; do
         [[ -f "$plugin_file" ]] && source "$plugin_file"
@@ -271,15 +271,15 @@ else
     # Slow: rebuild cache and create combined file
     mkdir -p "$(dirname "$PLUGIN_CACHE_FILE")"
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Rebuilding plugin cache..."
-    
+
     > "$PLUGIN_CACHE_FILE"  # Clear cache file
     > "$PLUGIN_COMBINED_FILE"  # Clear combined file
-    
+
     # Add header to combined file
     echo "# Combined plugin file - auto-generated $(date)" >> "$PLUGIN_COMBINED_FILE"
     echo "# Do not edit manually - will be regenerated" >> "$PLUGIN_COMBINED_FILE"
     echo "" >> "$PLUGIN_COMBINED_FILE"
-    
+
     for plugin_dir in $DOTFILES/zshrc.plugins/*(/); do
         plugin=${plugin_dir:t}
         plugin_file="$plugin_dir/$plugin.plugin.zsh"
@@ -307,51 +307,44 @@ else
 fi
 
 # Calculate and display startup timing (before exit tasks)
+local show_timing="false"
+local total_time=0
+local core_time=0 
+local local_time=0
+
 if [[ -n "$DOTFILES_STARTUP_START" ]]; then
     # Single time measurement to minimize overhead
     local end_time=${EPOCHREALTIME}
-    
+
     # Set flag to prevent showing timing on resource calls
     export DOTFILES_STARTUP_TIME="1"
-    
+
     # Display timing breakdown (only for truly interactive shells or when forced)
     if ([[ $- == *i* ]] && [[ -t 0 ]]) || [[ "$FORCE_TIMING_DISPLAY" == "true" ]]; then
-        # Calculate timing in background to avoid blocking startup
-        {
-            # Convert to milliseconds (EPOCHREALTIME is in seconds with decimals)
-            local total_time=$(( (end_time - DOTFILES_STARTUP_START) * 1000 ))
-            local local_time=${DOTFILES_ZSHRC_LOCAL_TIME:-0}
-            local core_time=$((total_time - local_time))
-            
-            echo
-            if [[ $local_time -gt 0 ]]; then
-                printf "⚡ Startup: \033[32m%dms\033[0m total (\033[36m%dms\033[0m dotfiles + \033[33m%dms\033[0m local)\n" \
-                    "$total_time" "$core_time" "$local_time"
-            else
-                printf "⚡ Startup: \033[32m%dms\033[0m dotfiles\n" "$core_time"
-            fi
-            
-            # Clean up timing variables in background
-            unset DOTFILES_STARTUP_START DOTFILES_ZSHRC_LOCAL_START DOTFILES_ZSHRC_LOCAL_TIME
-        } &!
-    else
-        # Clean up timing variables immediately if not displaying
-        unset DOTFILES_STARTUP_START DOTFILES_ZSHRC_LOCAL_START DOTFILES_ZSHRC_LOCAL_TIME
+        show_timing="true"
+        # Calculate timing synchronously so it displays at the actual end of startup
+        # Convert to milliseconds (EPOCHREALTIME is in seconds with decimals)
+        total_time=$(( (end_time - DOTFILES_STARTUP_START) * 1000 ))
+        local_time=${DOTFILES_ZSHRC_LOCAL_TIME:-0}
+        core_time=$((total_time - local_time))
     fi
+
+    # Clean up timing variables
+    unset DOTFILES_STARTUP_START DOTFILES_ZSHRC_LOCAL_START DOTFILES_ZSHRC_LOCAL_TIME
 fi
 
-# Defer exit tasks for interactive shells (saves ~5ms on startup)
-if [[ $- == *i* ]]; then
-    # Interactive shell - defer exit tasks
-    function _load_exit_tasks() {
-        unset -f _load_exit_tasks
-        source $DOTFILES/zshrc.lib/exit-tasks.zsh
-    }
-    # Load after a short delay to not block startup
-    { sleep 0.1 && _load_exit_tasks } &!
-else
-    # Non-interactive shell - load normally
-    source $DOTFILES/zshrc.lib/exit-tasks.zsh
+# Load exit tasks
+source $DOTFILES/zshrc.lib/exit-tasks.zsh
+
+# Display startup timing at the very end
+if [[ "$show_timing" == "true" ]]; then
+    echo
+    if [[ $local_time -gt 0 ]]; then
+        printf "⚡Startup: \033[32m%dms\033[0m total (\033[36m%dms\033[0m dotfiles + \033[33m%dms\033[0m local)\n" \
+            "$total_time" "$core_time" "$local_time"
+    else
+        printf "⚡Startup: \033[32m%dms\033[0m dotfiles\n" "$core_time"
+    fi
 fi
 
 # Lazy load terraform completion for faster startup

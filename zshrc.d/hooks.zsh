@@ -50,24 +50,30 @@ function periodic () {
 #   - determines the correct lengths for PWDLEN and FILLBAR
 #
 # Literally magic (see:http://aperiodic.net/phil/prompt/)
+# Optimized to avoid expensive operations on every prompt
 function precmd () {
-    local TERMWIDTH
-
-    # use one character less because zsh auto puts a
-    # space at the end of the terminal for some reason
-    (( TERMWIDTH = ${COLUMNS} - 1 ))
+    # Skip expensive calculations if terminal size hasn't changed
+    local TERMWIDTH=$(( ${COLUMNS} - 1 ))
+    if [[ "$TERMWIDTH" == "$_LAST_TERMWIDTH" && -n "$PR_FILLCHAR" ]]; then
+        return 0
+    fi
+    _LAST_TERMWIDTH=$TERMWIDTH
 
     PR_FILLCHAR=""
     PR_PWDLEN=""
 
-    # use the extra spaces at the end for padding and manual adjustment
-    local promptsize=${#${(%):-- %n@%M [00:00:00]}}
+    # Cache prompt size (doesn't change often)
+    if [[ -z "$_CACHED_PROMPTSIZE" ]]; then
+        _CACHED_PROMPTSIZE=${#${(%):-- %n@%M [00:00:00]}}
+    fi
+    
+    # Only calculate pwd size (this changes with directory)
     local pwdsize=${#${(%):-%~}}
 
     # determine which size to use
-    if [[ "$promptsize + $pwdsize" -gt $TERMWIDTH ]]; then
-	    ((PR_PWDLEN=$TERMWIDTH - $promptsize))
+    if [[ $(( _CACHED_PROMPTSIZE + pwdsize )) -gt $TERMWIDTH ]]; then
+        ((PR_PWDLEN=$TERMWIDTH - _CACHED_PROMPTSIZE))
     else
-        PR_FILLCHAR="\${(l.(($TERMWIDTH - ($promptsize + $pwdsize))).. .)}"
+        PR_FILLCHAR="\${(l.(($TERMWIDTH - ($_CACHED_PROMPTSIZE + $pwdsize))).. .)}"
     fi
 }

@@ -43,7 +43,7 @@ if [[ "$GLOBALS__AUTO_RUN_DEBUG" == true ]]; then
 
     # Clear the auto-run flag
     unset GLOBALS__AUTO_RUN_DEBUG
-    
+
     # Also clear debugging flag since this was a debug session
     if [[ "$ENABLE_DEBUGGING" == true ]]; then
         unsetopt xtrace
@@ -107,7 +107,7 @@ function cleanup_async_jobs () {
         "$cache_dir/vim_pid"
         "$cache_dir/connectivity_pid"
     )
-    
+
     # Add template compilation PID files (only if they exist)
     if [[ -n $(echo "$cache_dir"/template_*_pid(N)) ]]; then
         for pid_file in "$cache_dir"/template_*_pid; do
@@ -131,7 +131,7 @@ function cleanup_async_jobs () {
 
     # Clean up stale cache files older than 1 day
     [[ -d "$cache_dir" ]] && find "$cache_dir" -type f -mtime +1 -delete 2>/dev/null
-    
+
     # Clean up any orphaned template lock files
     [[ -d "$GLOBALS__DOTFILES_COMPILED_PATH" ]] && {
         find "$GLOBALS__DOTFILES_COMPILED_PATH" -name "*.lock" -type f -delete 2>/dev/null

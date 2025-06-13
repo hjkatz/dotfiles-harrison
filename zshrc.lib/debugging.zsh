@@ -134,18 +134,18 @@ function zsh_debug () {
         # Round external total to integer for cleaner display
         external_total=$(printf "%.0f" "$external_total")
 
-        # Scalar-based heuristic: 20% of debug time = estimated actual time
-        local debug_factor=20
+        # Scalar-based heuristic: 65% of debug time = estimated actual time
+        local debug_factor=65
         actual_time=$(( external_total * debug_factor / 100 ))
         overhead_time=$(( external_total - actual_time ))
 
         # Performance rating based on actual time (without overhead)
         if [[ $actual_time -lt 100 ]]; then
-            printf "   Rating:   ⚡\033[32mEXCELLENT\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+            printf "   Rating:   ⚡\033[32mAMAZING!\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
         elif [[ $actual_time -lt 200 ]]; then
             printf "   Rating:   ✅\033[32mGOOD\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
         elif [[ $actual_time -lt 500 ]]; then
-            printf "   Rating:   ⚠️\033[33mMODERATE\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+            printf "   Rating:   ⚠️\033[33mOK\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
         else
             printf "   Rating:   🐌\033[31mSLOW\033[0m (\033[36m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
         fi
@@ -156,17 +156,17 @@ function zsh_debug () {
     else
         # Fallback to old behavior
         if [[ $total_time -lt 300 ]]; then
-            color_echo green "⚡ Overall Rating: AMAZING! (${total_time}ms)"
+            color_echo green "⚡Overall Rating: AMAZING! (${total_time}ms)"
         elif [[ $total_time -lt 500 ]]; then
-            color_echo green "✅ Overall Rating: GOOD (${total_time}ms)"
+            color_echo green "✅Overall Rating: GOOD (${total_time}ms)"
         elif [[ $total_time -lt 1000 ]]; then
-            color_echo yellow "⚠️ Overall Rating: OK (${total_time}ms)"
+            color_echo yellow "⚠️Overall Rating: OK (${total_time}ms)"
         else
-            color_echo red "🐌 Overall Rating: SLOW (${total_time}ms)"
+            color_echo red "🐌Overall Rating: SLOW (${total_time}ms)"
         fi
     fi
 
-    printf "\033[37m🏆 Top 5 Slowest Operations:\033[0m \033[90mestimated 20%% debug overhead\033[0m\n"
+    printf "\033[37m🏆 Top 5 Slowest Operations:\033[0m \033[90m(debug adds ~1.5x overhead)\033[0m\n"
     # Show top slow sections with proper field handling - filter valid timestamp lines only
     awk '
     # Only process lines that start with a valid timestamp
@@ -187,19 +187,19 @@ function zsh_debug () {
     ' "$GLOBALS__DEBUGGING_PATH" | \
     sort -k1 -nr | head -5 | \
     while read timing section; do
-        # Scalar-based heuristic: xtrace makes operations ~5x slower (20% of debug time = actual time)
-        local debug_factor=20  # 20% (debug operations are ~5x slower than normal)
+        # Scalar-based heuristic: xtrace makes operations ~1.5x slower (65% of debug time = actual time)
+        local debug_factor=65  # 65% (debug operations are ~1.5x slower than normal)
         local estimated_actual=$(( timing * debug_factor / 100 ))
         local debug_overhead=$(( timing - estimated_actual ))
 
-        if [[ $timing -gt 500 ]]; then
-            printf "   \033[31m🔴 %3dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
+        if [[ $estimated_actual -gt 325 ]]; then  # 500ms debug = ~325ms actual
+            printf "   \033[31m🔴 ~%dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
                 $estimated_actual $(basename $section) $timing
-        elif [[ $timing -gt 50 ]]; then
-            printf "   \033[33m🟡 %3dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
+        elif [[ $estimated_actual -gt 32 ]]; then  # 50ms debug = ~32ms actual
+            printf "   \033[33m🟡 ~%dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
                 $estimated_actual $(basename $section) $timing
         else
-            printf "   \033[32m🟢 %3dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
+            printf "   \033[32m🟢 ~%dms\033[0m : %s \033[90m(%dms debug)\033[0m\n" \
                 $estimated_actual $(basename $section) $timing
         fi
     done
@@ -282,8 +282,8 @@ function zsh_debug_summary() {
     ' "$GLOBALS__DEBUGGING_PATH" | \
     sort -k1 -nr | head -5 | \
     while read timing section; do
-        # Apply scalar heuristic: 20% of debug time = estimated actual time
-        local estimated_actual=$(( timing * 20 / 100 ))
+        # Apply scalar heuristic: 65% of debug time = estimated actual time
+        local estimated_actual=$(( timing * 65 / 100 ))
 
         if [[ $timing -gt 100 ]]; then
             printf "   \033[31m🔴 ~%dms : %s\033[0m \033[90m(%dms debug)\033[0m\n" $estimated_actual $(basename $section) $timing
