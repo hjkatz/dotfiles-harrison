@@ -48,6 +48,9 @@ export GLOBALS__DOTFILES_COMPLETIONS_PATH="$DOTFILES/completions"
 # cache directory for dotfiles
 export DOTFILES_CACHE="$DOTFILES/.cache"
 
+# zsh completion cache directory (used by completion system)
+export ZSH_CACHE_DIR="$DOTFILES_CACHE"
+
 # ensure cache directory exists
 [[ ! -d "$DOTFILES_CACHE" ]] && mkdir -p "$DOTFILES_CACHE"
 

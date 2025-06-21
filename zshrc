@@ -86,29 +86,37 @@ fi
 # tell the world where our completion functions exist
 export fpath
 
-# Truly async completion loading - defer everything to first tab press
-function _load_completions_async() {
-    local cache_dir="$DOTFILES_CACHE"
-    local completion_ready="$cache_dir/completions_ready"
-    local completion_pid="$cache_dir/completion_init_pid"
+# Hybrid completion loading: sync core + async enhancements
+# Phase 1: Essential sync loading for immediate functionality
+autoload -Uz compinit
 
-    # Check if completions are already being loaded
-    if [[ -f "$completion_pid" ]]; then
-        local pid=$(cat "$completion_pid" 2>/dev/null)
+# Fast compinit - skip security checks for speed, we'll do full check async
+compinit -C -d $ZSH_COMPDUMP
+
+# Load essential completion configuration immediately
+source $DOTFILES/zshrc.lib/completions.zsh
+
+# Phase 2: Async enhancements for additional completions
+function _load_completion_enhancements() {
+    local cache_dir="$DOTFILES_CACHE"
+    local enhancement_ready="$cache_dir/completion_enhancements_ready"
+    local enhancement_pid="$cache_dir/completion_enhancement_pid"
+
+    # Check if enhancements are already being loaded
+    if [[ -f "$enhancement_pid" ]]; then
+        local pid=$(cat "$enhancement_pid" 2>/dev/null)
         if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
             return 0  # Already loading
         fi
     fi
 
-    # Start async completion loading
+    # Start async enhancement loading
     {
-        # Perform compinit only once a day
-        autoload -Uz compinit
+        # Perform full security check if needed (once per day)
         if [[ -n $ZSH_COMPDUMP(#qN.mh+24) ]]; then
+            autoload -Uz compinit
             compinit -i -d $ZSH_COMPDUMP
             compdump
-        else
-            compinit -C -d $ZSH_COMPDUMP
         fi
 
         # Load bash completions
@@ -116,74 +124,25 @@ function _load_completions_async() {
         bashcompinit
 
         # Load bash completion files if they exist
-        local bash_comp_cache="$cache_dir/bash_completions_loaded"
-        if [[ ! -f "$bash_comp_cache" && -d "$GLOBALS__DOTFILES_COMPLETIONS_PATH.bash" ]]; then
+        if [[ -d "$GLOBALS__DOTFILES_COMPLETIONS_PATH.bash" ]]; then
             if [[ -n "$(find "$GLOBALS__DOTFILES_COMPLETIONS_PATH.bash" -name "*.bash" -type f 2>/dev/null)" ]]; then
                 for file in "$GLOBALS__DOTFILES_COMPLETIONS_PATH.bash"/*.bash; do
-                    [[ -f "$file" ]] && source "$file"
+                    [[ -f "$file" ]] && source "$file" 2>/dev/null
                 done
-                touch "$bash_comp_cache"
             fi
         fi
 
-        echo "ready" > "$completion_ready"
-        rm -f "$completion_pid"
+        # Mark enhancements as ready
+        echo "ready" > "$enhancement_ready"
+        rm -f "$enhancement_pid"
     } &!
-    echo $! > "$completion_pid"
+    echo $! > "$enhancement_pid"
 }
 
-# Setup minimal completion stub and trigger async loading
-function _completion_stub() {
-    # Remove stub and load real completions
-    unset -f _completion_stub
-    zle -D complete-word
-
-    # Wait for async completions or load them now
-    local completion_ready="$DOTFILES_CACHE/completions_ready"
-    local wait_time=0
-
-    # Wait up to 100ms for async completions
-    while [[ $wait_time -lt 10 && ! -f "$completion_ready" ]]; do
-        sleep 0.01
-        ((wait_time++))
-    done
-
-    # If not ready, load synchronously (fallback)
-    if [[ ! -f "$completion_ready" ]]; then
-        autoload -Uz compinit
-        compinit -C -d $ZSH_COMPDUMP
-    fi
-
-    # Setup real completion widget
-    zle -C complete-word .complete-word _main_complete
-    zle complete-word
-}
-
-# Override tab completion to load completions on first use
-zle -N complete-word _completion_stub
-
-# Start loading completions in background immediately
-_load_completions_async
-
-# Defer completion config until completion system is ready
-function _load_completion_config() {
-    local completion_ready="$DOTFILES_CACHE/completions_ready"
-
-    # Wait for completions to be ready or load them now
-    local wait_time=0
-    while [[ $wait_time -lt 50 && ! -f "$completion_ready" ]]; do
-        sleep 0.01
-        ((wait_time++))
-    done
-
-    # Load completion config once system is ready
-    if [[ -f "$completion_ready" ]] || command -v compdef >/dev/null 2>&1; then
-        source $DOTFILES/zshrc.lib/completions.zsh
-    fi
-}
-
-# Load completion config in background
-{ _load_completion_config } &!
+# Start loading enhancements in background (only for interactive shells)
+if [[ $- == *i* ]]; then
+    _load_completion_enhancements
+fi
 
 # Optimized zshrc.d file loading with combined cache
 ZSHRC_D_COMBINED="$DOTFILES_CACHE/zshrc_d_combined.zsh"
