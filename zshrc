@@ -147,7 +147,7 @@ fi
 # Optimized zshrc.d file loading with combined cache
 ZSHRC_D_COMBINED="$DOTFILES_CACHE/zshrc_d_combined.zsh"
 
-if [[ -f "$ZSHRC_D_COMBINED" && "$ZSHRC_D_COMBINED" -nt "$DOTFILES/zshrc.d" ]]; then
+if [[ -f "$ZSHRC_D_COMBINED" ]] && [[ -z "$(find "$DOTFILES/zshrc.d" -name "*.zsh" -newer "$ZSHRC_D_COMBINED")" ]]; then
     # Ultra-fast: source single combined file
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "🚀 Loading combined zshrc.d cache..."
     source "$ZSHRC_D_COMBINED"
@@ -187,8 +187,8 @@ source $DOTFILES/zshrc.lib/syntax-highlighting-settings.zsh
 # Minimal plugin caching (safe approach)
 PLUGIN_CACHE_FILE="$DOTFILES_CACHE/plugins"
 
-# Simple cache check: if cache exists, is newer than plugins dir, and not empty, use it
-if [[ -f "$PLUGIN_CACHE_FILE" ]] && [[ "$PLUGIN_CACHE_FILE" -nt "$DOTFILES/zshrc.plugins" ]] && [[ -s "$PLUGIN_CACHE_FILE" ]]; then
+# Simple cache check: if cache exists, not empty, and no plugin files are newer, use it
+if [[ -f "$PLUGIN_CACHE_FILE" ]] && [[ -s "$PLUGIN_CACHE_FILE" ]] && [[ -z "$(find "$DOTFILES/zshrc.plugins" -name "*.plugin.zsh" -newer "$PLUGIN_CACHE_FILE")" ]]; then
     # Use cache - load plugins from stored list
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "📦 Using cached plugins..."
     

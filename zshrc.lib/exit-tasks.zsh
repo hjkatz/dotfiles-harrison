@@ -45,20 +45,25 @@ if [[ "$GLOBALS__AUTO_RUN_DEBUG" == true ]]; then
     # Clear the auto-run flag
     unset GLOBALS__AUTO_RUN_DEBUG
 
-    # Also clear debugging flag since this was a debug session
+    # Clean up debug session but preserve ENABLE_DEBUGGING for follow-up commands
     if [[ "$ENABLE_DEBUGGING" == true ]]; then
         unsetopt xtrace
         exec 2>&3 3>&-
-        unset ENABLE_DEBUGGING
-        # Clean up debug timing variables and functions
+        # Keep ENABLE_DEBUGGING=true so user can run additional debug commands
+        # Clean up timing variables and functions
         unset DEBUG_OVERHEAD_START EXTERNAL_DEBUG_TIMING_FUNC
         unset -f _calculate_debug_timing 2>/dev/null
     fi
 elif [[ "$ENABLE_DEBUGGING" == true ]]; then
-    # turn off debugging if it was on (but no auto-analysis requested)
+    # Manual debug session - turn off tracing but preserve ENABLE_DEBUGGING
+    # so user can run zsh_debug_claude later
     unsetopt xtrace
     exec 2>&3 3>&-
-    unset ENABLE_DEBUGGING
+    
+    # Keep ENABLE_DEBUGGING=true for manual debug commands
+    # Clean up timing variables but preserve the debugging flag
+    unset DEBUG_OVERHEAD_START EXTERNAL_DEBUG_TIMING_FUNC
+    unset -f _calculate_debug_timing 2>/dev/null
 fi
 
 # set distro specific completions

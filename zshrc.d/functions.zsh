@@ -88,7 +88,12 @@ function resource_with_debugging () {
         echo $(( (${EPOCHREALTIME} - $total_start) * 1000 ))
     }
 
-    ENABLE_DEBUGGING=true GLOBALS__AUTO_RUN_DEBUG=true GLOBALS__CHECK_FOR_UPDATES=false source $DOTFILES/zshrc
+    # Export debugging variables so they persist after sourcing
+    export ENABLE_DEBUGGING=true
+    export GLOBALS__AUTO_RUN_DEBUG=true
+    export GLOBALS__CHECK_FOR_UPDATES=false
+    
+    source $DOTFILES/zshrc
 }
 
 # Checks to see if the pwd is in a git repo, then calls git fetch

@@ -275,6 +275,7 @@ function zsh_debug () {
     echo "   • zsh_debug_claude  → AI-powered analysis with specific suggestions"
     echo "   • zsh_debug_summary → Quick overview of slowest operations"
     echo "   • zsh_debug [ms]    → Custom detailed analysis (default 10ms)"
+    echo "   • zsh_debug_end     → Clean up debug session variables"
 }
 
 # Quick debug summary without full trace
@@ -352,6 +353,7 @@ function zsh_debug_summary() {
 
     echo
     echo "💡 Run 'zsh_debug' for detailed analysis or 'zsh_debug_claude' for AI insights"
+    echo "   Use 'zsh_debug_end' to clean up when finished"
 }
 
 # AI-powered debugging analysis with specific suggestions
@@ -485,6 +487,7 @@ function zsh_debug_claude() {
     echo "   • zsh_debug_summary       → Quick overview with top slowdowns"
     echo "   • zsh_debug [ms]          → Detailed timing (default 10ms)"
     echo "   • resource_with_debugging → Fresh analysis session"
+    echo "   • zsh_debug_end           → Clean up debug session variables"
     }
 
     # Generate and display the analysis
@@ -514,5 +517,16 @@ My dotfiles are located at: $DOTFILES"
 
         # Launch Claude with the analysis and prompt
         echo "$claude_prompt" | claude
+    fi
+}
+
+# Clean up manual debug session
+function zsh_debug_end() {
+    if [[ "$ENABLE_DEBUGGING" == true ]]; then
+        color_echo green "🧹 Cleaning up debug session..."
+        unset ENABLE_DEBUGGING
+        color_echo green "✅ Debug session ended. Variables cleaned up."
+    else
+        color_echo yellow "ℹ️ No active debug session to clean up."
     fi
 }
