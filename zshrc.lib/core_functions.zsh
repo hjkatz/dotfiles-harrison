@@ -12,14 +12,38 @@ function delay () {
 
 # adds dir to $PATH if it does not already contain it
 function add_to_path () {
-    dir="$1"
-    front="$2"
+    local dir="$1"
+    local front="$2"
 
-    if ! [[ ":$PATH:" == *":$dir:"* ]] ; then
+    # Safety checks
+    if [[ -z "$dir" ]]; then
+        return 1
+    fi
+
+    # Check if directory exists
+    if [[ ! -d "$dir" ]]; then
+        return 1
+    fi
+
+    # Get the real absolute path to avoid duplicates from symlinks/relative paths
+    local real_dir
+    if command -v realpath >/dev/null 2>&1; then
+        real_dir=$(realpath "$dir" 2>/dev/null) || real_dir="$dir"
+    else
+        real_dir="$dir"
+    fi
+
+    # Safety check: ensure real_dir is not empty
+    if [[ -z "$real_dir" ]]; then
+        return 1
+    fi
+
+    # Check if the real path is not already in PATH
+    if ! [[ ":$PATH:" == *":$real_dir:"* ]] ; then
         if [[ "$front" == true ]] ; then
-            PATH="$dir:$PATH"
+            PATH="$real_dir:$PATH"
         else
-            path+=( "$dir" )
+            PATH="$PATH:$real_dir"
         fi
     fi
 }
