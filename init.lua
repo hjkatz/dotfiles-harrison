@@ -317,7 +317,15 @@ keymap('n', 'Q', '<Nop>')
 keymap('n', 'q:', '<Nop>')
 
 -- Jump to definition mappings
-keymap('n', '<C-n>', 'gd')
+keymap('n', '<C-N>', function()
+    -- Use LSP definition if available, otherwise fallback to gd
+    if vim.lsp.get_active_clients({bufnr = 0})[1] then
+        vim.lsp.buf.definition()
+    else
+        local keys = vim.api.nvim_replace_termcodes('gd', true, false, true)
+        vim.api.nvim_feedkeys(keys, 'n', false)
+    end
+end, { noremap = true, silent = true })
 keymap('n', '<C-t>', '<C-o>')
 
 -- ============================================================================
@@ -812,6 +820,9 @@ cmp.setup({
     mapping = {
         ['<C-Space>'] = cmp.mapping.complete(),
         ['<C-e>'] = cmp.mapping.abort(),
+        ['<C-n>'] = cmp.mapping(function(fallback)
+            fallback() -- Always fallback, don't handle C-n in CMP
+        end, { "i", "s" }),
         ['<C-t>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true })
@@ -865,7 +876,7 @@ local lsp_capabilities = vim.tbl_deep_extend('force',
 
 local function lsp_attach(client, bufnr)
     local opts = { buffer = bufnr }
-    -- Navigator calls with error handling
+    -- Navigator calls with error handling (commented out to avoid key conflicts)
     require("navigator.lspclient.mapping").setup({
         client = client,
         bufnr = bufnr,
@@ -1628,3 +1639,4 @@ require("tokyonight").setup({
 })
 
 vim.cmd('colorscheme tokyonight-night')
+
