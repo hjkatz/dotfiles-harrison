@@ -20,30 +20,20 @@ function add_to_path () {
         return 1
     fi
 
-    # Check if directory exists
-    if [[ ! -d "$dir" ]]; then
+    # Check if directory exists (but allow ./bin even if it doesn't exist in current dir)
+    if [[ ! -d "$dir" && "$dir" != "./bin" ]]; then
         return 1
     fi
 
-    # Get the real absolute path to avoid duplicates from symlinks/relative paths
-    local real_dir
-    if command -v realpath >/dev/null 2>&1; then
-        real_dir=$(realpath "$dir" 2>/dev/null) || real_dir="$dir"
-    else
-        real_dir="$dir"
-    fi
+    # Use the directory as-is (accept relative paths)
+    local dir_to_add="$dir"
 
-    # Safety check: ensure real_dir is not empty
-    if [[ -z "$real_dir" ]]; then
-        return 1
-    fi
-
-    # Check if the real path is not already in PATH
-    if ! [[ ":$PATH:" == *":$real_dir:"* ]] ; then
+    # Check if the path is not already in PATH
+    if ! [[ ":$PATH:" == *":$dir_to_add:"* ]] ; then
         if [[ "$front" == true ]] ; then
-            PATH="$real_dir:$PATH"
+            PATH="$dir_to_add:$PATH"
         else
-            PATH="$PATH:$real_dir"
+            PATH="$PATH:$dir_to_add"
         fi
     fi
 }

@@ -34,14 +34,6 @@ echo "────────────────────────�
 color_echo purple "📦 Dotfiles Installation"
 echo "────────────────────────────────────"
 
-# Back up existing zshrc before we overwrite it with our symlink
-if [[ -f ~/.zshrc ]] ; then
-	color_echo yellow "💾 Backing up existing ~/.zshrc"
-    echo "# Saved ~/.zshrc to ~/.zshrc_local during .dotfiles-harrison install" > ~/.zshrc_local
-	cat ~/.zshrc >> ~/.zshrc_local
-    color_echo green "   Backup saved to ~/.zshrc_local"
-fi
-
 echo
 color_echo cyan "🔗 Creating symlinks..."
 # Create symlinks for core dotfiles

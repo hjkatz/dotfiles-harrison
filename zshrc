@@ -147,13 +147,20 @@ fi
 # Optimized zshrc.d file loading with combined cache
 ZSHRC_D_COMBINED="$DOTFILES_CACHE/zshrc_d_combined.zsh"
 
-if [[ -f "$ZSHRC_D_COMBINED" ]] && [[ -z "$(find "$DOTFILES/zshrc.d" -name "*.zsh" -newer "$ZSHRC_D_COMBINED")" ]]; then
+# Prevent recursive cache rebuilds
+if [[ "$_ZSHRC_D_REBUILDING" == "true" ]]; then
+    # Fallback: load files individually to break recursion
+    for file in $DOTFILES/zshrc.d/*.zsh; do
+        [[ -f "$file" ]] && source "$file"
+    done
+elif [[ -f "$ZSHRC_D_COMBINED" ]] && [[ -z "$(find "$DOTFILES/zshrc.d" -name "*.zsh" -newer "$ZSHRC_D_COMBINED" 2>/dev/null)" ]]; then
     # Ultra-fast: source single combined file
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "🚀 Loading combined zshrc.d cache..."
     source "$ZSHRC_D_COMBINED"
 else
-    # Rebuild combined file
+    # Rebuild combined file with guard
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Rebuilding zshrc.d cache..."
+    export _ZSHRC_D_REBUILDING="true"
     mkdir -p "$(dirname "$ZSHRC_D_COMBINED")"
 
     # Create combined file
@@ -173,6 +180,7 @@ else
 
     # Source the combined file
     source "$ZSHRC_D_COMBINED"
+    unset _ZSHRC_D_REBUILDING
 fi
 
 # add omz compatible functions to the fpath
@@ -187,8 +195,15 @@ source $DOTFILES/zshrc.lib/syntax-highlighting-settings.zsh
 # Minimal plugin caching (safe approach)
 PLUGIN_CACHE_FILE="$DOTFILES_CACHE/plugins"
 
-# Simple cache check: if cache exists, not empty, and no plugin files are newer, use it
-if [[ -f "$PLUGIN_CACHE_FILE" ]] && [[ -s "$PLUGIN_CACHE_FILE" ]] && [[ -z "$(find "$DOTFILES/zshrc.plugins" -name "*.plugin.zsh" -newer "$PLUGIN_CACHE_FILE")" ]]; then
+# Prevent recursive plugin loading
+if [[ "$_PLUGINS_REBUILDING" == "true" ]]; then
+    # Fallback: load plugins directly to break recursion
+    for plugin_dir in $DOTFILES/zshrc.plugins/*(/); do
+        plugin=${plugin_dir:t}
+        plugin_file="$plugin_dir/$plugin.plugin.zsh"
+        [[ -f "$plugin_file" ]] && source "$plugin_file"
+    done
+elif [[ -f "$PLUGIN_CACHE_FILE" ]] && [[ -s "$PLUGIN_CACHE_FILE" ]] && [[ -z "$(find "$DOTFILES/zshrc.plugins" -name "*.plugin.zsh" -newer "$PLUGIN_CACHE_FILE" 2>/dev/null)" ]]; then
     # Use cache - load plugins from stored list
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "📦 Using cached plugins..."
     
@@ -203,6 +218,7 @@ if [[ -f "$PLUGIN_CACHE_FILE" ]] && [[ -s "$PLUGIN_CACHE_FILE" ]] && [[ -z "$(fi
 else
     # No cache or outdated - scan and rebuild
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Scanning plugins..."
+    export _PLUGINS_REBUILDING="true"
     
     # Create cache directory
     mkdir -p "$(dirname "$PLUGIN_CACHE_FILE")"
@@ -221,6 +237,7 @@ else
     
     # Write cache file (use printf to avoid potential issues)
     printf '%s\n' "${plugin_files[@]}" > "$PLUGIN_CACHE_FILE"
+    unset _PLUGINS_REBUILDING
 fi
 
 # Optimized prompt loading

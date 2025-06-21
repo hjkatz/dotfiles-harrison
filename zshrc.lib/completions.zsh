@@ -128,7 +128,7 @@ zstyle ':completion:*:manuals.(^1*)' insert-sections   true
 
 # Cache - enable for better performance
 zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
+zstyle ':completion:*' cache-path "$ZSH_CACHE_DIR"
 
 # Enhanced fuzzy matching and modern completion features
 zstyle ':completion:*' completer _complete _match _approximate _expand_alias
