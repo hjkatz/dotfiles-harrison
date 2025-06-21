@@ -10,6 +10,7 @@ type $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION >/dev/null 2>&1 && {
 }
 
 add_to_path "./bin" true
+add_to_path "/usr/local/bin" true
 export PATH
 
 # Echo updated message after sourcing files

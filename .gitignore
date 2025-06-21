@@ -4,3 +4,4 @@
 .plugin_list
 .last_updated_at
 compiled/
+.cache/*

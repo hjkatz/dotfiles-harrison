@@ -38,3 +38,6 @@ export REPORTTIME=10
 # Default: *?_-.[]~=/&;!#$%^(){}<>
 # Removed: / =
 export WORDCHARS='*.?_-[]~&;!#$%^(){}<>'
+
+# Ensure node.js (and other) programs utilize the system's thread pool size
+export UV_THREADPOOL_SIZE=$(nproc)

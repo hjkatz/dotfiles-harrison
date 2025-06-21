@@ -1,5 +1,0 @@
-# Cache directory for dotfiles - ignore all ephemeral files
-*
-
-# But track this .gitignore file
-!.gitignore
