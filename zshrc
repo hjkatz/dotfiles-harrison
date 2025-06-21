@@ -225,76 +225,43 @@ export fpath
 # source zsh syntax highlighting settings (must be loaded before the plugin)
 source $DOTFILES/zshrc.lib/syntax-highlighting-settings.zsh
 
-# Optimized plugin loading with pre-compiled cache
+# Minimal plugin caching (safe approach)
 PLUGIN_CACHE_FILE="$DOTFILES_CACHE/plugins"
-PLUGIN_COMBINED_FILE="$DOTFILES_CACHE/plugins_combined.zsh"
 
-# Check if we can use the super-fast combined plugin file
-# Note: Combined file disabled due to dependency issues with functions like command_exists
-if false && [[ -f "$PLUGIN_COMBINED_FILE" && "$PLUGIN_COMBINED_FILE" -nt "$DOTFILES/zshrc.plugins" ]]; then
-    # Ultra-fast: source single combined file (disabled)
-    [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "🚀 Loading combined plugin cache..."
-    source "$PLUGIN_COMBINED_FILE"
-elif [[ -f "$PLUGIN_CACHE_FILE" && "$PLUGIN_CACHE_FILE" -nt "$DOTFILES/zshrc.plugins" ]]; then
-    # Fast: use cached plugin list but create combined file for next time
-    [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "📦 Loading plugins from cache..."
-
-    # Create combined file in background for next startup
-    if [[ ! -f "$PLUGIN_COMBINED_FILE" ]]; then
-        {
-            echo "# Combined plugin file - auto-generated $(date)" > "$PLUGIN_COMBINED_FILE"
-            echo "# Do not edit manually - will be regenerated" >> "$PLUGIN_COMBINED_FILE"
-            echo "" >> "$PLUGIN_COMBINED_FILE"
-
-            while IFS= read -r plugin_file; do
-                if [[ -f "$plugin_file" ]]; then
-                    plugin=$(basename "$(dirname "$plugin_file")")
-                    plugin_dir=$(dirname "$plugin_file")
-                    echo "# --- Plugin: $plugin ---" >> "$PLUGIN_COMBINED_FILE"
-
-                    # Fix relative paths in plugin content
-                    sed -e "s|dir=\$(dirname \$0)|dir=\"$plugin_dir\"|g" \
-                        -e "s|\${0:A:h}|$plugin_dir|g" \
-                        -e "/^0=\${(%):-%N}/d" \
-                        "$plugin_file" >> "$PLUGIN_COMBINED_FILE"
-                    echo "" >> "$PLUGIN_COMBINED_FILE"
-                fi
-            done < "$PLUGIN_CACHE_FILE"
-        } &!
-    fi
-
-    # Load plugins normally for this startup
-    while IFS= read -r plugin_file; do
-        [[ -f "$plugin_file" ]] && source "$plugin_file"
-    done < "$PLUGIN_CACHE_FILE"
+# Simple cache check: if cache exists, is newer than plugins dir, and not empty, use it
+if [[ -f "$PLUGIN_CACHE_FILE" ]] && [[ "$PLUGIN_CACHE_FILE" -nt "$DOTFILES/zshrc.plugins" ]] && [[ -s "$PLUGIN_CACHE_FILE" ]]; then
+    # Use cache - load plugins from stored list
+    [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "📦 Using cached plugins..."
+    
+    # Use array instead of while loop to avoid potential hang
+    local plugin_list=("${(@f)$(< "$PLUGIN_CACHE_FILE")}")
+    for plugin_file in "${plugin_list[@]}"; do
+        if [[ -n "$plugin_file" && -f "$plugin_file" ]]; then
+            [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "  Loading: $(basename "$(dirname "$plugin_file")")"
+            source "$plugin_file"
+        fi
+    done
 else
-    # Slow: rebuild cache and create combined file
+    # No cache or outdated - scan and rebuild
+    [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Scanning plugins..."
+    
+    # Create cache directory
     mkdir -p "$(dirname "$PLUGIN_CACHE_FILE")"
-    [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Rebuilding plugin cache..."
-
-    > "$PLUGIN_CACHE_FILE"  # Clear cache file
-    > "$PLUGIN_COMBINED_FILE"  # Clear combined file
-
-    # Add header to combined file
-    echo "# Combined plugin file - auto-generated $(date)" >> "$PLUGIN_COMBINED_FILE"
-    echo "# Do not edit manually - will be regenerated" >> "$PLUGIN_COMBINED_FILE"
-    echo "" >> "$PLUGIN_COMBINED_FILE"
-
+    
+    # Build plugin list and cache it
+    local plugin_files=()
     for plugin_dir in $DOTFILES/zshrc.plugins/*(/); do
         plugin=${plugin_dir:t}
         plugin_file="$plugin_dir/$plugin.plugin.zsh"
         if [[ -f "$plugin_file" ]]; then
-            echo "$plugin_file" >> "$PLUGIN_CACHE_FILE"
-            # Add to combined file with path fixes
-            echo "# --- Plugin: $plugin ---" >> "$PLUGIN_COMBINED_FILE"
-            sed -e "s|dir=\$(dirname \$0)|dir=\"$plugin_dir\"|g" \
-                -e "s|\${0:A:h}|$plugin_dir|g" \
-                -e "/^0=\${(%):-%N}/d" \
-                "$plugin_file" >> "$PLUGIN_COMBINED_FILE"
-            echo "" >> "$PLUGIN_COMBINED_FILE"
+            plugin_files+=("$plugin_file")
+            [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "  Loading: $plugin"
             source "$plugin_file"
         fi
     done
+    
+    # Write cache file (use printf to avoid potential issues)
+    printf '%s\n' "${plugin_files[@]}" > "$PLUGIN_CACHE_FILE"
 fi
 
 # Optimized prompt loading

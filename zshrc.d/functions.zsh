@@ -14,6 +14,7 @@ function resource () {
     # Clear caches to ensure we get the latest versions of everything
     rm -f "$DOTFILES_CACHE/zshrc_d_combined.zsh" 2>/dev/null
     rm -f "$DOTFILES_CACHE/plugins_combined.zsh" 2>/dev/null
+    rm -f "$DOTFILES_CACHE/plugins" 2>/dev/null
 
     local start_time=$(date +%s%3N)
 
