@@ -1388,6 +1388,20 @@ vim.api.nvim_create_autocmd("CursorHold", {
     command = "silent! checktime"
 })
 
+-- Fix treesitter folding on file open
+vim.api.nvim_create_augroup("TreesitterFolding", { clear = true })
+vim.api.nvim_create_autocmd({"BufRead", "BufWinEnter"}, {
+    group = "TreesitterFolding",
+    pattern = "*",
+    callback = function()
+        vim.schedule(function()
+            if vim.wo.foldmethod == 'expr' and vim.wo.foldexpr:match('treesitter') then
+                vim.cmd('normal! zxzvzz')  -- Recalculate folds, open around cursor, and center
+            end
+        end)
+    end
+})
+
 -- ============================================================================
 -- Folding
 -- ============================================================================
