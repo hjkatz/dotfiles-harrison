@@ -16,11 +16,11 @@ function resource () {
     rm -f "$DOTFILES_CACHE/plugins_combined.zsh" 2>/dev/null
     rm -f "$DOTFILES_CACHE/plugins" 2>/dev/null
 
-    local start_time=$(date +%s%3N)
+    local start_time=$(date +%s)
 
     source $DOTFILES/zshrc
 
-    local end_time=$(date +%s%3N)
+    local end_time=$(date +%s)
     local measured_time=$((end_time - start_time))
 
     # Apply same calculation as debug analysis for consistency
@@ -92,7 +92,7 @@ function resource_with_debugging () {
     export ENABLE_DEBUGGING=true
     export GLOBALS__AUTO_RUN_DEBUG=true
     export GLOBALS__CHECK_FOR_UPDATES=false
-    
+
     source $DOTFILES/zshrc
 }
 

@@ -61,7 +61,7 @@ if [ -f $HOME/.zshrc_local ] ; then
     fi
 fi
 
-# Conditional templater loading (non-interactive shells rarely need templates)
+# Conditional templater loading non-interactive shells rarely need templates
 if [[ $- == *i* ]] || [[ -n "$FORCE_TEMPLATE_LOAD" ]]; then
     source $DOTFILES/zshrc.lib/templater.zsh
 else
@@ -90,7 +90,7 @@ export fpath
 # Phase 1: Essential sync loading for immediate functionality
 autoload -Uz compinit
 
-# Fast compinit - skip security checks for speed, we'll do full check async
+# Fast compinit - skip security checks for speed, well do full check async
 compinit -C -d $ZSH_COMPDUMP
 
 # Load essential completion configuration immediately
@@ -206,7 +206,7 @@ if [[ "$_PLUGINS_REBUILDING" == "true" ]]; then
 elif [[ -f "$PLUGIN_CACHE_FILE" ]] && [[ -s "$PLUGIN_CACHE_FILE" ]] && [[ -z "$(find "$DOTFILES/zshrc.plugins" -name "*.plugin.zsh" -newer "$PLUGIN_CACHE_FILE" 2>/dev/null)" ]]; then
     # Use cache - load plugins from stored list
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo green "📦 Using cached plugins..."
-    
+
     # Use array instead of while loop to avoid potential hang
     local plugin_list=("${(@f)$(< "$PLUGIN_CACHE_FILE")}")
     for plugin_file in "${plugin_list[@]}"; do
@@ -219,10 +219,10 @@ else
     # No cache or outdated - scan and rebuild
     [[ "$ENABLE_DEBUGGING" == "true" ]] && color_echo yellow "🔄 Scanning plugins..."
     export _PLUGINS_REBUILDING="true"
-    
+
     # Create cache directory
     mkdir -p "$(dirname "$PLUGIN_CACHE_FILE")"
-    
+
     # Build plugin list and cache it
     local plugin_files=()
     for plugin_dir in $DOTFILES/zshrc.plugins/*(/); do
@@ -234,7 +234,7 @@ else
             source "$plugin_file"
         fi
     done
-    
+
     # Write cache file (use printf to avoid potential issues)
     printf '%s\n' "${plugin_files[@]}" > "$PLUGIN_CACHE_FILE"
     unset _PLUGINS_REBUILDING
@@ -252,7 +252,7 @@ fi
 # Calculate and display startup timing (before exit tasks)
 local show_timing="false"
 local total_time=0
-local core_time=0 
+local core_time=0
 local local_time=0
 
 if [[ -n "$DOTFILES_STARTUP_START" ]]; then
@@ -317,7 +317,7 @@ if command_exists terraform; then
 fi
 
 # Check for tf in common locations and create lazy wrapper if found
-tf_locations=("$HOME/.local/bin/tf" "/usr/local/bin/tf")
+tf_locations=("$HOME/.local/bin/terraform" "/usr/local/bin/terraform")
 for tf_path in "${tf_locations[@]}"; do
     if [[ -x "$tf_path" ]]; then
         tf() { _load_terraform_completion && tf "$@"; }

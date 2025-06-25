@@ -49,14 +49,12 @@ function _async_test_connectivity() {
     local temp_dir=$(mktemp -d)
 
     # Start parallel tests
-    for i in "${!test_sites[@]}"; do
-        site="${test_sites[$i]}"
+    for site in $test_sites; do
         (
-            if ping -q -w $timeout -c 1 "$site" &>/dev/null || \
-               ping -q -t $timeout -c 1 "$site" &>/dev/null; then
-                echo "success" > "$temp_dir/$i"
+            if ping -q -t $timeout -c 1 "$site" &>/dev/null; then
+                echo "success" > "$temp_dir/$site"
             else
-                echo "failed" > "$temp_dir/$i"
+                echo "failed" > "$temp_dir/$site"
             fi
         ) &
         pids+=($!)
@@ -86,8 +84,8 @@ function _async_test_connectivity() {
     done
 
     # Check results - if any test succeeded, we have internet
-    for i in "${!test_sites[@]}"; do
-        if [[ -f "$temp_dir/$i" && "$(cat "$temp_dir/$i")" == "success" ]]; then
+    for site in $test_sites; do
+        if [[ -f "$temp_dir/$site" && "$(cat "$temp_dir/$site")" == "success" ]]; then
             echo "connected" > "$result_file"
             rm -rf "$temp_dir"
             return 0
@@ -443,39 +441,87 @@ echo_run () {
 #
 #   # start and set the agent as the primary agent (exported envars)
 #   $ start_ssh_agent <name> true
-function start_ssh_agent () {
-    agent_name="$1"
-    primary_agent="${2:-false}"
+function start_ssh_agent() {
+    local agent_name="$1"
+    local primary_agent="${2:-false}"
 
-    [[ -z $agent_name ]] && {
+    # Validate required parameter
+    if [[ -z "$agent_name" ]]; then
         color_echo red "Missing required agent_name"
         return 1
-    }
-
-    ssh_auth_sock="$HOME/.ssh/$agent_name.agent"
-    ssh_agent_pid_path="$HOME/.ssh/$agent_name.pid"
-
-    # is ssh-agent already running?
-    ssh_agent_pid=`ps aux | grep "ssh-agent -a $ssh_auth_sock" | grep -v grep | awk '{print $2}'`
-    if [[ -z $ssh_agent_pid ]] ; then
-        color_echo yellow "🔑 Starting ssh-agent: $agent_name"
-
-        # ssh-agent not running, start it
-        ssh-agent -a "$ssh_auth_sock" 2>&1 >/dev/null
-
-        # grab the now running pid
-        ssh_agent_pid=`ps aux | grep "ssh-agent -a $ssh_auth_sock" | grep -v grep | awk '{print $2}'`
-    else
-        color_echo green "🔗 Connected to ssh-agent: $agent_name"
     fi
 
-    # put the pid into the file
-    echo "$ssh_agent_pid" > $ssh_agent_pid_path
+    local ssh_auth_sock="$HOME/.ssh/$agent_name.agent"
+    local ssh_agent_pid_path="$HOME/.ssh/$agent_name.pid"
 
-    if [[ "$primary_agent" == true ]] ; then
+    # Check if agent is already running using PID file
+    local ssh_agent_pid=""
+    if [[ -f "$ssh_agent_pid_path" ]]; then
+        ssh_agent_pid=$(cat "$ssh_agent_pid_path" 2>/dev/null)
+
+        # Verify the PID actually corresponds to our ssh-agent
+        if [[ -n "$ssh_agent_pid" ]] && kill -0 "$ssh_agent_pid" 2>/dev/null; then
+            # Double-check it's actually our ssh-agent by checking the socket
+            if [[ -S "$ssh_auth_sock" ]]; then
+                color_echo green "🔗 Connected to existing ssh-agent: $agent_name (PID: $ssh_agent_pid)"
+            else
+                # PID exists but socket doesn't - clean up and restart
+                color_echo yellow "🧹 Cleaning up stale ssh-agent PID file"
+                rm -f "$ssh_agent_pid_path"
+                ssh_agent_pid=""
+            fi
+        else
+            # Stale PID file
+            color_echo yellow "🧹 Removing stale PID file"
+            rm -f "$ssh_agent_pid_path" "$ssh_auth_sock"
+            ssh_agent_pid=""
+        fi
+    fi
+
+    # Start new agent if needed
+    if [[ -z "$ssh_agent_pid" ]]; then
+        color_echo yellow "🔑 Starting new ssh-agent: $agent_name"
+
+        # Remove any existing socket file
+        [[ -S "$ssh_auth_sock" ]] && rm -f "$ssh_auth_sock"
+
+        # Start ssh-agent and capture its output
+        local agent_output
+        if ! agent_output=$(ssh-agent -a "$ssh_auth_sock" 2>&1); then
+            color_echo red "Failed to start ssh-agent"
+            return 1
+        fi
+
+        # Extract PID from ssh-agent output (more reliable than ps parsing)
+        ssh_agent_pid=$(echo "$agent_output" | grep -o 'SSH_AGENT_PID=[0-9]*' | cut -d= -f2)
+
+        if [[ -z "$ssh_agent_pid" ]]; then
+            color_echo red "Failed to determine ssh-agent PID"
+            return 1
+        fi
+
+        # Verify the agent actually started
+        if ! kill -0 "$ssh_agent_pid" 2>/dev/null; then
+            color_echo red "ssh-agent failed to start properly"
+            return 1
+        fi
+
+        # Save PID to file
+        if ! echo "$ssh_agent_pid" > "$ssh_agent_pid_path"; then
+            color_echo red "Failed to write PID file"
+            return 1
+        fi
+
+        color_echo green "✅ Started ssh-agent: $agent_name (PID: $ssh_agent_pid)"
+    fi
+
+    # Set as primary agent if requested
+    if [[ "$primary_agent" == "true" ]]; then
         export SSH_AUTH_SOCK="$ssh_auth_sock"
         export SSH_AGENT_PID="$ssh_agent_pid"
     fi
+
+    return 0
 }
 
 # Add an ssh-keygen identity to an agent
