@@ -4,13 +4,15 @@
 #   - checks the global GLOBALS__SHOULD_RUN_CHPWD, if false exits
 #   - calls alias `cl` which clears and lists the files in pwd
 #   - checks to update the git repo if in one
-function chpwd () {
+function custom_chpwd () {
     [ $GLOBALS__SHOULD_RUN_CHPWD = false ] && return
 
     cl
 
     check_and_update_git_repo
 }
+autoload -Uz add-zsh-hook
+add-zsh-hook -Uz chpwd custom_chpwd
 
 # override cd to support bare `cd` with no args behaviour:
 #   - if in git, cd to git root
@@ -66,7 +68,7 @@ function precmd () {
     if [[ -z "$_CACHED_PROMPTSIZE" ]]; then
         _CACHED_PROMPTSIZE=${#${(%):-- %n@%M [00:00:00]}}
     fi
-    
+
     # Only calculate pwd size (this changes with directory)
     local pwdsize=${#${(%):-%~}}
 

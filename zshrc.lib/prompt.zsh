@@ -102,6 +102,8 @@ ZSH_THEME_HG_PROMPT_CLEAN=" %{$fg_bold[green]%}✓%{$reset_color%}"
 
 ZSH_THEME_VIRTUALENV_PREFIX="%{$fg_bold[green]%}[%{$FX[no-bold]%}"
 ZSH_THEME_VIRTUALENV_SUFFIX="%{$fg[green]%}%{$FX[bold]%}]%{$reset_color%} "
+ZSH_THEME_VIRTUALENV_NAME=""
+ZSH_THEME_VIRTUALENV_SEP=""
 
 ZSH_THEME_PYENV_PREFIX="%{$fg_bold[green]%}[%{$FX[no-bold]%}"
 ZSH_THEME_PYENV_SUFFIX="%{$fg[green]%}%{$FX[bold]%}]%{$reset_color%} "
@@ -141,12 +143,21 @@ function build_prompt () {
     PROMPT+="$@"
 }
 
+# Function to calculate fill length dynamically
+# ty claude
+_fill_spaces() {
+   local left_len=${#${(%):-%n@%m %~}}
+   local fill_len=$((COLUMNS - left_len - 12))
+   local fill_char="${(e)PR_FILLCHAR:- }"  # Use PR_FILLCHAR or default to space
+   printf "%*s" $fill_len "" | tr ' ' "$fill_char"
+}
+
 # jen prompt
 PROMPT="" # reset prompt before building
 build_prompt $'\n' # start with a newline
 build_prompt '${ret_status} ' # show the return code status from the last command
 build_prompt '$(_uname)$(_hname)' # user@host
-build_prompt '%{$fg_bold[cyan]%} %$PR_PWDLEN<...<%~%<<%{$reset_color%}${(e)PR_FILLCHAR}[%D{%I:%M:%S}]' # don't ask
+build_prompt '%{$fg_bold[cyan]%} %~%{$reset_color%}$(_fill_spaces)[%D{%I:%M:%S}]'
 build_prompt $'\n' # second line!
 build_prompt '%{$fg_bold[yellow]%}%# ' # the prompt separator/privilege indicator
 build_prompt '%{$reset_color%}'
