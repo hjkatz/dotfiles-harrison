@@ -1014,6 +1014,12 @@ local lsp_config_override = {
                             'W504',
                         },
                     },
+                    jedi_completion = {
+                        enabled = true,
+                    },
+                    jedi = {
+                      environment = vim.env.VIRTUAL_ENV or ".venv/",
+                   },
                 },
             },
         },
@@ -1604,7 +1610,7 @@ vim.api.nvim_create_autocmd("FileType", {
     pattern = "python",
     callback = function()
         local opts = { buffer = true }
-        keymap({'n', 'v'}, '<Space>', 'zA', opts)
+        -- keymap({'n', 'v'}, '<Space>', 'zA', opts)
         vim.opt_local.define = '^\\s*\\(def\\|class\\)'
     end
 })

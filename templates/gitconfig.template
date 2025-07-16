@@ -8,20 +8,8 @@
     #commented out for now, not needed for ssh-key signing
     #signingkey = {{GIT_GPG_SIGNINGKEY}}
 
-[url "git@github.com:gemini"]
-    insteadOf = https://github.com/gemini
-
-[url "git@github.com:ngrok-private"]
-    insteadOf = https://github.com/ngrok-private
-
-[url "git@github.com:ngrok-oss"]
-    insteadOf = https://github.com/ngrok-oss
-
-[url "git@github.com:ngrok"]
-    insteadOf = https://github.com/ngrok
-
-[url "git@github.com:ramp"]
-    insteadOf = https://github.com/ramp
+[url "git@github.com:duolingo"]
+    insteadOf = https://github.com/duolingo
 
 [gpg]
     format = ssh
@@ -30,11 +18,14 @@
     defaultKeyCommand = {{DOTFILES}}/bin/git-ssh-key.sh
     allowedSignersFile = {{DOTFILES}}/.git_allowed_signers
 
-[includeIf "gitdir/i:~/Code/ramp-github.com/**"]
-    path = ~/.ramp.gitconfig
+[includeIf "gitdir/i:~/Code/github.com/duolingo/**"]
+    path = ~/.duo.gitconfig
 
 [init]
     defaultBranch = main
+
+    # enable pre-commit by default
+    templateDir = ~/.git-template
 
 [core]
     # fixes some filesystems that distinguish case, but don't ignore it
@@ -222,8 +213,9 @@
     l = log --oneline
     lg = log --oneline --decorate --graph
     ds = diff --staged
-    amend = commit --amend
-    ammend = amend
+    amend = commit --amend --no-edit
+    ammend = amend --no-edit
+    amend-all = commit -a --amend --no-edit
 
 	# default branch for the remote
 	default-branch = !git symbolic-ref refs/remotes/origin/HEAD | sed 's|^refs/remotes/origin/||'
