@@ -21,7 +21,7 @@ function add_to_path () {
     fi
 
     # Check if directory exists (but allow ./bin even if it doesn't exist in current dir)
-    if [[ ! -d "$dir" && "$dir" != "./bin" ]]; then
+    if [[ ! -d "$dir" && "$dir" != './bin' ]]; then
         return 1
     fi
 

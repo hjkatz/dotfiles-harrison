@@ -12,9 +12,7 @@ function resource () {
     unset DOTFILES_STARTUP_START DOTFILES_ZSHRC_LOCAL_START DOTFILES_ZSHRC_LOCAL_TIME
 
     # Clear caches to ensure we get the latest versions of everything
-    rm -f "$DOTFILES_CACHE/zshrc_d_combined.zsh" 2>/dev/null
-    rm -f "$DOTFILES_CACHE/plugins_combined.zsh" 2>/dev/null
-    rm -f "$DOTFILES_CACHE/plugins" 2>/dev/null
+    rm -rf "$DOTFILES_CACHE" 2>/dev/null
 
     local start_time=$(date +%s)
 

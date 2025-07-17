@@ -1,11 +1,5 @@
 # ENV exports
 
-# build the PATH
-add_to_path "/usr/local/git/bin"
-add_to_path "$DOTFILES/bin"
-add_to_path "$HOME/.local/bin"
-export PATH
-
 # Set default editor
 export EDITOR='nvim'
 

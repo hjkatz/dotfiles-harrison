@@ -9,8 +9,16 @@ type $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION >/dev/null 2>&1 && {
     unset -f $GLOBALS__DOTFILES_EXIT_HOOK_FUNCTION
 }
 
-add_to_path "./bin" true
+# ensure bin dirs exist
+mkdir -p "$HOME/.local/bin" 2>/dev/null || true
+
+# add some default paths, least to most specific (with true)
+
+add_to_path "/usr/local/git/bin"
 add_to_path "/usr/local/bin" true
+add_to_path "$DOTFILES/bin" true
+add_to_path "$HOME/.local/bin" true
+add_to_path "./bin" true
 
 # Clean up PATH: remove empty components, duplicates, and normalize
 if [[ -n "$PATH" ]]; then
