@@ -283,10 +283,10 @@ source $DOTFILES/zshrc.lib/exit-tasks.zsh
 if [[ "$show_timing" == "true" ]]; then
     echo
     if [[ $local_time -gt 0 ]]; then
-        printf "⚡Startup: \033[32m%dms\033[0m total (\033[36m%dms\033[0m dotfiles + \033[33m%dms\033[0m local)\n" \
+        printf "⚡ Startup: \033[32m%dms\033[0m total (\033[36m%dms\033[0m dotfiles + \033[33m%dms\033[0m local)\n" \
             "$total_time" "$core_time" "$local_time"
     else
-        printf "⚡Startup: \033[32m%dms\033[0m dotfiles\n" "$core_time"
+        printf "⚡ Startup: \033[32m%dms\033[0m dotfiles\n" "$core_time"
     fi
 fi
 
