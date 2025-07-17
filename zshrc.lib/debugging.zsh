@@ -152,24 +152,24 @@ function zsh_debug () {
         if [[ $cache_benefit -gt 0 ]]; then
             # Include cache benefit in the display - show the breakdown clearly
             if [[ $rating_base -lt 100 ]]; then
-                printf "   Rating:     ⚡\033[32mAMAZING!\033[0m \033[32m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     ⚡ \033[32mAMAZING!\033[0m \033[32m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             elif [[ $rating_base -lt 200 ]]; then
-                printf "   Rating:     ✅\033[32mGOOD\033[0m \033[32m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     ✅ \033[32mGOOD\033[0m \033[32m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             elif [[ $rating_base -lt 500 ]]; then
-                printf "   Rating:     ⚠️\033[33mOK\033[0m \033[33m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     ⚠️ \033[33mOK\033[0m \033[33m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             else
-                printf "   Rating:     🐌\033[31mSLOW\033[0m \033[31m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
+                printf "   Rating:     🐌 \033[31mSLOW\033[0m \033[31m~%dms\033[0m (\033[33m%dms\033[0m debug × 0.$debug_factor overhead - \033[36m~%dms\033[0m cache, \033[90m%d\033[0m ops)\n" "$rating_base" "$external_total" "$cache_benefit" "$line_count"
             fi
         else
             # No cache benefit, use original format
             if [[ $actual_time -lt 100 ]]; then
-                printf "   Rating:     ⚡\033[32mAMAZING!\033[0m (\033[32m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+                printf "   Rating:     ⚡ \033[32mAMAZING!\033[0m (\033[32m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
             elif [[ $actual_time -lt 200 ]]; then
-                printf "   Rating:     ✅\033[32mGOOD\033[0m (\033[32m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+                printf "   Rating:     ✅ \033[32mGOOD\033[0m (\033[32m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
             elif [[ $actual_time -lt 500 ]]; then
-                printf "   Rating:     ⚠️\033[33mOK\033[0m (\033[33m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+                printf "   Rating:     ⚠️ \033[33mOK\033[0m (\033[33m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
             else
-                printf "   Rating:     🐌\033[31mSLOW\033[0m (\033[31m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
+                printf "   Rating:     🐌 \033[31mSLOW\033[0m (\033[31m~%dms\033[0m est, \033[33m%dms\033[0m debug, \033[90m%d\033[0m ops)\n" "$actual_time" "$external_total" "$line_count"
             fi
         fi
 
@@ -184,13 +184,13 @@ function zsh_debug () {
     else
         # Fallback to old behavior
         if [[ $total_time -lt 300 ]]; then
-            color_echo green "⚡Overall Rating: AMAZING! (${total_time}ms)"
+            color_echo green "⚡ Overall Rating: AMAZING! (${total_time}ms)"
         elif [[ $total_time -lt 500 ]]; then
-            color_echo green "✅Overall Rating: GOOD (${total_time}ms)"
+            color_echo green "✅ Overall Rating: GOOD (${total_time}ms)"
         elif [[ $total_time -lt 1000 ]]; then
-            color_echo yellow "⚠️Overall Rating: OK (${total_time}ms)"
+            color_echo yellow "⚠️ Overall Rating: OK (${total_time}ms)"
         else
-            color_echo red "🐌Overall Rating: SLOW (${total_time}ms)"
+            color_echo red "🐌 Overall Rating: SLOW (${total_time}ms)"
         fi
     fi
 
