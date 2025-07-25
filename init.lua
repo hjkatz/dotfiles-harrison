@@ -409,7 +409,6 @@ vim.api.nvim_create_autocmd("WinNew", {
     pattern = "*",
     callback = function()
         if is_win_guihua_floating() then
-            local buf = vim.api.nvim_win_get_buf(0)
             local timer = vim.loop.new_timer()
             timer:start(50, 0, vim.schedule_wrap(hijack_guihua_mappings))
         end
@@ -467,18 +466,19 @@ require("trouble").setup({
 -- Trouble key mappings and functions
 local function toggle_trouble()
     local trouble = require("trouble")
+    trouble.toggle("loclist")
 
-    if vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0 then
-        vim.defer_fn(function()
-            vim.cmd.lclose()
-            trouble.toggle("loclist")
-        end, 0)
-    else
-        vim.defer_fn(function()
-            vim.cmd.cclose()
-            trouble.toggle("qflist")
-        end, 0)
-    end
+    -- if vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0 then
+    --     vim.defer_fn(function()
+    --         vim.cmd.lclose()
+    --         trouble.toggle("loclist")
+    --     end, 0)
+    -- else
+    --     vim.defer_fn(function()
+    --         vim.cmd.lclose()
+    --         trouble.toggle("loclist")
+    --     end, 0)
+    -- end
 end
 
 local function trouble_next_item()
@@ -502,7 +502,7 @@ keymap('n', '<Home>', trouble_prev_item)
 keymap('n', '<End>', trouble_next_item)
 
 -- Hijack quickfix and location lists
-local function hijack_qflist()
+local function hijack_trouble_loclist()
     local trouble = require("trouble")
 
     if vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0 then
@@ -510,11 +510,11 @@ local function hijack_qflist()
             vim.cmd.lclose()
             trouble.open("loclist")
         end, 0)
-    else
-        vim.defer_fn(function()
-            vim.cmd.cclose()
-            trouble.open("qflist")
-        end, 0)
+    -- else
+    --     vim.defer_fn(function()
+    --         vim.cmd.lclose()
+    --         trouble.open("loclist")
+    --     end, 0)
     end
 end
 
@@ -522,7 +522,7 @@ local group = vim.api.nvim_create_augroup("HijackQuickfixWithTrouble", {})
 vim.api.nvim_create_autocmd("BufWinEnter", {
     pattern = "quickfix",
     group = group,
-    callback = hijack_qflist,
+    callback = hijack_trouble_loclist,
 })
 
 -- telescope-all-recent setup
@@ -651,8 +651,9 @@ vim.api.nvim_create_user_command("VSp", telescope_find_files_vertical, {})
 vim.api.nvim_create_user_command("VSP", telescope_find_files_vertical, {})
 
 -- Mason setup
+local mason_install_path = vim.g.dotfiles_vim_dir .. "mason"
 require("mason").setup({
-    install_root_dir = vim.g.dotfiles_vim_dir .. "mason",
+    install_root_dir = mason_install_path,
     ui = {
         icons = {
             package_installed = "✓",
@@ -690,9 +691,35 @@ require("mason-lspconfig").setup({
     },
 })
 
+local function mason_package_path(package)
+  local path = vim.fn.resolve(mason_install_path .. "/packages/" .. package)
+  return path
+end
+
+-- using vim.fn.expand inside the callback gives the following error:
+--   vimL function must not be called in a lua loop callback
+local pylsp_path = mason_package_path("python-lsp-server")
+local pylsp = require("mason-registry").get_package("python-lsp-server")
+local pip_path = vim.fn.expand(pylsp_path .. "/venv/bin/pip")
+
+-- install pylsp-mypy
+local function install_pylsp_mypy()
+    if not pylsp:is_installed() then
+        vim.notify("python-lsp-server is not installed", vim.log.levels.WARN, { title = "mason.nvim" })
+        return
+    end
+
+    vim.fn.system({ pip_path, "install", "pylsp-mypy" })
+    vim.notify("pylsp-mypy installed", vim.log.levels.INFO, { title = "mason.nvim" })
+end
+
+pylsp:on("install:success", function()
+    vim.schedule_wrap(install_pylsp_mypy)()
+end)
+
 -- LSP and completion setup
 local function has_words_before()
-    local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+    local line, col = table.unpack(vim.api.nvim_win_get_cursor(0))
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
@@ -713,7 +740,7 @@ require("navigator").setup({
     prompt_mode = 'normal',
     keymaps = {},  -- Disable default keymaps
     lsp = {
-        enable = false,
+	    enable = false,
         disable_lsp = "all",
         code_action = {
             enable = false,
@@ -724,6 +751,16 @@ require("navigator").setup({
         diagnostic_scrollbar_sign = false,
         diagnostic_virtual_text = '',
         display_diagnostic_qf = false,
+        diagnostic = {
+            enable = false, -- somehow this actually _enables_ diagnostics to work
+            float = false,
+            -- float = {
+            --     border = 'rounded',
+            -- },
+            virtual_lines = {
+                current_line = false,
+            }
+        },
         tsserver = {
             single_file_support = true,
         },
@@ -874,6 +911,22 @@ local lsp_capabilities = vim.tbl_deep_extend('force',
     require('lspconfig').util.default_config.capabilities,
     require('cmp_nvim_lsp').default_capabilities())
 
+local function toggle_diagnostics()
+  local trouble = require("trouble")
+
+  if trouble.is_open() then
+        trouble.close()
+    else
+      vim.diagnostic.setloclist()
+  end
+end
+
+local function lsp_hover()
+    return vim.lsp.buf.hover({
+      border = "rounded",
+    })
+end
+
 local function lsp_attach(client, bufnr)
     local opts = { buffer = bufnr }
     -- Navigator calls with error handling (commented out to avoid key conflicts)
@@ -898,8 +951,8 @@ local function lsp_attach(client, bufnr)
         { mode = 'n', key = '<leader>/', func = vim.lsp.buf.workspace_symbol },
         { mode = 'n', key = '<C-S-F>', func = vim.lsp.buf.workspace_symbol },
         { mode = 'n', key = 'g0', func = vim.lsp.buf.document_symbol },
-        { mode = 'n', key = '<leader>d', func = vim.lsp.buf.hover },
-        { mode = 'n', key = 'K', func = vim.lsp.buf.hover },
+        { mode = 'n', key = '<leader>d', func = lsp_hover },
+        { mode = 'n', key = 'K', func = lsp_hover },
         { mode = 'n', key = 'gi', func = vim.lsp.buf.implementation },
         { mode = 'n', key = '<Leader>gi', func = vim.lsp.buf.incoming_calls },
         { mode = 'n', key = '<Leader>go', func = vim.lsp.buf.outgoing_calls },
@@ -913,10 +966,13 @@ local function lsp_attach(client, bufnr)
         { mode = 'v', key = '<leader>ca', func = vim.lsp.buf.code_action },
         { mode = 'n', key = '<C-S-C>', func = vim.lsp.buf.code_action },
         { mode = 'v', key = '<C-S-C>', func = vim.lsp.buf.code_action },
-        { mode = 'n', key = 'gG', func = vim.diagnostic.setqflist },
-        { mode = 'n', key = '<leader>G', func = vim.diagnostic.setqflist },
-        { mode = 'n', key = 'gL', func = vim.diagnostic.setloclist },
-        { mode = 'n', key = '<leader>L', func = vim.diagnostic.setloclist },
+        -- { mode = 'n', key = 'gG', func = vim.diagnostic.setqflist },
+        -- { mode = 'n', key = '<leader>G', func = vim.diagnostic.setqflist },
+        { mode = 'n', key = 'gL', func = toggle_diagnostics },
+        { mode = 'n', key = '<leader>L', func = toggle_diagnostics },
+        { mode = 'n', key = 'gE', func = toggle_diagnostics },
+        { mode = 'n', key = 'ge', func = toggle_diagnostics },
+        { mode = 'n', key = '<leader>ee', func = toggle_diagnostics },
         { mode = 'n', key = '<leader>cf', func = vim.lsp.buf.format },
         { mode = 'v', key = '<leader>cf', func = vim.lsp.buf.format },
         { mode = 'n', key = '<leader>fc', func = vim.lsp.buf.format },
@@ -940,6 +996,9 @@ end
 -- Define lspconfig early to avoid nil errors in configuration
 local lspconfig = require('lspconfig')
 
+-- allow pylsp_mypy to run in virtual environments
+vim.env.PYLSP_MYPY_ALLOW_DANGEROUS_CODE_EXECUTION = 1
+
 -- LSP server configurations
 local lsp_config_override = {
     yamlls = {
@@ -959,7 +1018,7 @@ local lsp_config_override = {
                 'charts',
                 '.git',
             }
-            return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
+            return lspconfig.util.root_pattern(table.unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
         end,
         settings = {
             ['helm-ls'] = {
@@ -983,7 +1042,7 @@ local lsp_config_override = {
                 'go.work',
                 '.git',
             }
-            return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
+            return lspconfig.util.root_pattern(table.unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
         end,
     },
 
@@ -996,7 +1055,7 @@ local lsp_config_override = {
                 '.terraform',
                 '.git',
             }
-            return lspconfig.util.root_pattern(unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
+            return lspconfig.util.root_pattern(table.unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
         end,
     },
 
@@ -1019,7 +1078,21 @@ local lsp_config_override = {
                     },
                     jedi = {
                       environment = vim.env.VIRTUAL_ENV or ".venv/",
-                   },
+                    },
+
+                    pylsp_mypy = {
+                        enabled = true,
+                        live_mode = false, -- only on save
+                        strict = true,
+                        ignore_missing_imports = true,
+                        ["follow-imports"] = "silent",
+                         mypy_command = {
+                            "mypy",
+                            "--strict",
+                            "--follow-imports=silent",
+                            "--ignore-missing-imports",
+                         },
+                    },
                 },
             },
         },
@@ -1305,8 +1378,8 @@ keymap('n', '<leader>bl', require('gitsigns').blame_line)
 
 -- copilot - disabled due to persistent serialization errors
 vim.defer_fn(function()
-    local ok, copilot = pcall(require, "copilot")
-    if ok then
+    local okydoky, copilot = pcall(require, "copilot")
+    if okydoky then
         copilot.setup({
             suggestion = {
                 enabled = true,
@@ -1357,7 +1430,7 @@ vim.api.nvim_create_autocmd("InsertEnter", {
     group = "NoInsertFolding",
     pattern = "*",
     callback = function()
-        vim.w.oldfdm = vim.opt_local.foldmethod:get()
+        vim.w.oldfdm = vim.opt_local.foldmethod[0]
         vim.opt_local.foldmethod = 'manual'
     end
 })
@@ -1609,7 +1682,7 @@ vim.api.nvim_create_autocmd("FileType", {
     group = "ft_python",
     pattern = "python",
     callback = function()
-        local opts = { buffer = true }
+        -- local opts = { buffer = true }
         -- keymap({'n', 'v'}, '<Space>', 'zA', opts)
         vim.opt_local.define = '^\\s*\\(def\\|class\\)'
     end
