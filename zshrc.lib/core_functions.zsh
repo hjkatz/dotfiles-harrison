@@ -44,6 +44,11 @@ function _async_test_connectivity() {
     local test_sites=('8.8.8.8' 'google.com' '1.1.1.1')
     local timeout=2
 
+    local wait_flag="-w" # linux
+    if [[ "$(uname)" == "Darwin" ]]; then
+        wait_flag="-t" # macOS
+    fi
+
     # Try multiple test sites in parallel
     local pids=()
     local temp_dir=$(mktemp -d)
@@ -51,7 +56,7 @@ function _async_test_connectivity() {
     # Start parallel tests
     for site in $test_sites; do
         (
-            if ping -q -t $timeout -c 1 "$site" &>/dev/null; then
+            if ping -q $wait_flag $timeout -c 1 "$site" &>/dev/null; then
                 echo "success" > "$temp_dir/$site"
             else
                 echo "failed" > "$temp_dir/$site"
@@ -140,8 +145,13 @@ function has_internet () {
         2) ;;           # Cache miss, continue to test
     esac
 
+    local wait_flag="-w" # linux
+    if [[ "$(uname)" == "Darwin" ]]; then
+        wait_flag="-t" # macOS
+    fi
+
     # Fast synchronous test first (single ping)
-    if ping -q -w 1 -c 1 8.8.8.8 &>/dev/null; then
+    if ping -q $wait_flag 1 -c 1 8.8.8.8 &>/dev/null; then
         echo "connected" > "$DOTFILES_CACHE/connectivity"
         return 0
     fi
