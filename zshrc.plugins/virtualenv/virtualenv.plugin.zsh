@@ -49,19 +49,58 @@ function reactivate () {
 
 function uv_activate () {
     reactivate
+    show_prompt virtualenv
 }
 
 function uv_deactivate () {
     deactivate
+    hide_prompt virtualenv
 }
 
 function uv_create_venv () {
-    uv venv "$@"
+    local name="$1"
+
+    local prompt_flag=""
+    if [[ -z $name ]]; then
+        prompt_flag="--prompt '$name'"
+    fi
+    uv venv $prompt_flag
+}
+
+function uv_get_in_out_files () {
+    name_or_file="$1"
+    default_file="requirements.in"
+    default_suffix="-requirements.in"
+
+    found_file="$name_or_file"
+    if [[ -z $name_or_file ]]; then
+        found_file="$default_file"
+    else
+        if [[ -f $name_or_file ]]; then
+            found_file="$name_or_file"
+        elif [[ -f "$name_or_file.in" ]]; then
+            found_file="$name_or_file.in"
+        elif [[ -f "$name_or_file$default_suffix" ]]; then
+            found_file="$name_or_file$default_suffix"
+        fi
+    fi
+
+    file_no_extension="${found_file%.in}"
+    in_file="$file_no_extension.in"
+    out_file="$file_no_extension.txt"
+
+    echo "$in_file" "$out_file"
 }
 
 function uv_compile () {
+    uv_files=($(uv_get_in_out_files "$@"))
+    in_file="${uv_files[1]}" # 1-indexed :(
+    out_file="${uv_files[2]}"
+
+    echo "Compiling $in_file -> $out_file"
+
     if [[ -n $VIRTUAL_ENV ]]; then
-        uv pip compile -o requirements.txt requirements.in --emit-index-url
+        uv pip compile $in_file -o $out_file --emit-index-url
     else
         echo "No active venv found (run reactivate?)"
         return 1
@@ -69,6 +108,11 @@ function uv_compile () {
 }
 
 function uv_install () {
+    uv_files=($(uv_get_in_out_files "$@"))
+    in_file="${uv_files[1]}" # 1-indexed :(
+    out_file="${uv_files[2]}"
+
+    echo "Installing $out_file"
     if [[ -n $VIRTUAL_ENV ]]; then
         uv pip install -r requirements.txt
     else
