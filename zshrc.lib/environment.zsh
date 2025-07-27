@@ -34,4 +34,4 @@ export REPORTTIME=10
 export WORDCHARS='*.?_-[]~&;!#$%^(){}<>'
 
 # Ensure node.js (and other) programs utilize the system's thread pool size
-export UV_THREADPOOL_SIZE=$(sysctl -n hw.ncpu)
+export UV_THREADPOOL_SIZE=$(nproc || sysctl -n hw.ncpu || 8)
