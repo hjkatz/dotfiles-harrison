@@ -61,8 +61,8 @@ function uv_create_venv () {
     local name="$1"
 
     local prompt_flag=""
-    if [[ -z $name ]]; then
-        prompt_flag="--prompt '$name'"
+    if [[ -n $name ]]; then
+        prompt_flag="--prompt=$name"
     fi
     uv venv $prompt_flag
 }

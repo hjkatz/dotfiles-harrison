@@ -817,3 +817,11 @@ function ghealthcheck() {
         color_echo yellow "⚠️  $issues potential issues found"
     fi
 }
+
+# rg -l | vim-pipe
+function vim-pipe () {
+    local files
+    files=($(cat | tr '\n' ' '))
+
+    vim -- ${files[@]}
+}

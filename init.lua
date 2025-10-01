@@ -17,6 +17,9 @@ vim.g.dotfiles_vim_dir = vim.env.HOME .. '/.dotfiles-harrison/.vim/'
 -- Plugin Installation
 -- ============================================================================
 
+-- lua config
+table.unpack = table.unpack or unpack  -- for compatibility with older versions of Lua
+
 -- Load vim-plug for plugin management
 vim.cmd('source ~/.dotfiles-harrison/plug.vim')
 
@@ -50,7 +53,7 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
     Plug 'ray-x/lsp_signature.nvim'
     Plug 'FelipeLema/cmp-async-path'
-
+    " Plug 'nvim-java/nvim-java'
     " Github Copilot
     Plug 'zbirenbaum/copilot.lua'
     Plug 'zbirenbaum/copilot-cmp'
@@ -430,6 +433,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- trouble setup
 require("trouble").setup({
+    mode = "quickfix",
     keys = {
         ["?"] = "help",
         ["q"] = "close",
@@ -465,8 +469,7 @@ require("trouble").setup({
 
 -- Trouble key mappings and functions
 local function toggle_trouble()
-    local trouble = require("trouble")
-    trouble.toggle("loclist")
+    require('trouble').toggle("qflist")
 
     -- if vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0 then
     --     vim.defer_fn(function()
@@ -481,15 +484,63 @@ local function toggle_trouble()
     -- end
 end
 
+-- local function trouble_next_item()
+--     local trouble = require('trouble')
+--     local current_idx = vim.fn.getqflist({idx = 0}).idx
+--     local items = trouble.get_items()
+
+--     -- If we're at the last item, cycle to first
+--     if current_idx >= #items then
+--         trouble.first({
+--             skip_groups = true,
+--             jump = true,
+--         })
+--     else
+--         trouble.next({
+--             skip_groups = true,
+--             jump = true,
+--         })
+--     end
+-- end
+
+-- local function trouble_prev_item()
+--     local trouble = require('trouble')
+--     -- local current_idx = vim.fn.getqflist({idx = 0}).idx
+
+--     -- Get the current view to check position
+--     local view = trouble._find_last()
+--     if not view then return end
+
+--     local items = view.items or {}
+--     if #items == 0 then return end
+
+--     -- Get current position
+--     local current_idx = view.pos or 1
+
+--     -- If we're at the first item, cycle to last
+--     if current_idx <= 1 then
+--         trouble.last({
+--             skip_groups = true,
+--             jump = true,
+--         })
+--     else
+--         trouble.prev({
+--             skip_groups = true,
+--             jump = true,
+--         })
+--     end
+-- end
+
 local function trouble_next_item()
-    require("trouble").next({
+    require('trouble').next({
         skip_groups = true,
         jump = true,
     })
+
 end
 
 local function trouble_prev_item()
-    require("trouble").prev({
+    require('trouble').prev({
         skip_groups = true,
         jump = true,
     })
@@ -503,12 +554,10 @@ keymap('n', '<End>', trouble_next_item)
 
 -- Hijack quickfix and location lists
 local function hijack_trouble_loclist()
-    local trouble = require("trouble")
-
     if vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0 then
         vim.defer_fn(function()
             vim.cmd.lclose()
-            trouble.open("loclist")
+            require('trouble').open("qflist")
         end, 0)
     -- else
     --     vim.defer_fn(function()
@@ -670,6 +719,8 @@ if not vim.lsp.enable then
         return true
     end
 end
+
+-- require('java').setup()
 
 require("mason-lspconfig").setup({
     automatic_enable = false,  -- Disable automatic enable feature to avoid vim.lsp.enable error
@@ -913,11 +964,10 @@ local lsp_capabilities = vim.tbl_deep_extend('force',
 
 local function toggle_diagnostics()
   local trouble = require("trouble")
-
   if trouble.is_open() then
         trouble.close()
     else
-      vim.diagnostic.setloclist()
+        vim.diagnostic.setqflist()
   end
 end
 
@@ -925,6 +975,18 @@ local function lsp_hover()
     return vim.lsp.buf.hover({
       border = "rounded",
     })
+end
+
+local function qflist_references()
+	local win = vim.api.nvim_get_current_win()
+	vim.lsp.buf.references(nil, {
+		on_list = function(items, title, context)
+			vim.fn.setqflist({}, " ", items)
+            require('trouble').open("qflist")
+			-- vim.cmd.copen()
+			vim.api.nvim_set_current_win(win)
+		end,
+	})
 end
 
 local function lsp_attach(client, bufnr)
@@ -944,7 +1006,7 @@ local function lsp_attach(client, bufnr)
 
     -- LSP keymaps (using standard LSP functions)
     local keymaps = {
-        { mode = 'n', key = 'gr', func = vim.lsp.buf.references },
+        { mode = 'n', key = 'gr', func = qflist_references },
         { mode = 'n', key = '<c-]>', func = vim.lsp.buf.definition },
         { mode = 'n', key = 'gd', func = vim.lsp.buf.definition },
         { mode = 'n', key = 'gD', func = vim.lsp.buf.declaration },
