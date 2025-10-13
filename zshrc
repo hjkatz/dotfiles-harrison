@@ -341,7 +341,7 @@ _load_nvm() {
 # Create lazy loading wrapper functions
 if [ -s "$NVM_DIR/nvm.sh" ]; then
     # Only set up lazy loading if NVM exists
-    claude() { _load_nvm && claude "$@"; } # claude is nodejs
+    claude() { _load_nvm && $HOME/.claude/local/claude "$@"; } # claude is nodejs
     nvm() { _load_nvm && nvm "$@"; }
     node() { _load_nvm && node "$@"; }
     npm() { _load_nvm && npm "$@"; }

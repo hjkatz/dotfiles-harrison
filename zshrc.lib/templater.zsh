@@ -265,6 +265,7 @@ function dotfiles_template_recompile() {
 
 # compile critical templates synchronously on startup
 compile_file gitconfig true
+compile_file CLAUDE.md true
 
 # compile other templates asynchronously for next time
 # (add other templates here as needed)

@@ -50,5 +50,11 @@ mkdir -p ~/.config/nvim
 ln -s -f -v $DEFAULT_DOTFILES_HOME/init.lua ~/.config/nvim/init.lua
 
 echo
+color_echo cyan "🤖 Setting up Claude config..."
+# Create Claude config directory and symlink our CLAUDE.md
+mkdir -p ~/.claude
+ln -s -f -v $DEFAULT_DOTFILES_HOME/compiled/CLAUDE.md ~/.claude/CLAUDE.md
+
+echo
 color_echo green "✅ Installation complete!"
 color_echo white "   Run 'source ~/.dotfiles-harrison/zshrc' to activate your dotfiles"

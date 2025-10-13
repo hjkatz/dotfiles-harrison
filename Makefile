@@ -79,7 +79,7 @@ uninstall: ## Remove dotfiles symlinks (restore backup if available)
 	@read -p "Are you sure? (y/N): " confirm; \
 	if [[ $$confirm == [yY] || $$confirm == [yY][eE][sS] ]]; then \
 		rm -f $(HOME)/.zshrc $(HOME)/.vimrc $(HOME)/.gitconfig $(HOME)/.psqlrc; \
-		rm -f $(HOME)/.vim $(HOME)/.config/nvim/init.lua; \
+		rm -f $(HOME)/.vim $(HOME)/.config/nvim/init.lua $(HOME)/.claude/CLAUDE.md; \
 		if [[ -f $(HOME)/.zshrc_local ]]; then \
 			echo "Restoring backup from ~/.zshrc_local"; \
 			tail -n +2 $(HOME)/.zshrc_local > $(HOME)/.zshrc; \
@@ -107,6 +107,11 @@ status: ## Show dotfiles status and diagnostics
 			echo -e "  $(RED)❌ $$file (missing)$(RESET)"; \
 		fi; \
 	done
+	@if [[ -L $(HOME)/.claude/CLAUDE.md ]]; then \
+		echo -e "  $(GREEN)✅ .claude/CLAUDE.md → $$(readlink $(HOME)/.claude/CLAUDE.md)$(RESET)"; \
+	else \
+		echo -e "  $(RED)❌ .claude/CLAUDE.md (missing)$(RESET)"; \
+	fi
 	@echo
 	@if command -v zsh >/dev/null 2>&1; then \
 		echo "Async Jobs:"; \
@@ -226,6 +231,10 @@ backup: ## Create a backup of current dotfiles
 			cp -r $(HOME)/$$file "$$backup_dir/"; \
 		fi; \
 	done; \
+	if [[ -e $(HOME)/.claude/CLAUDE.md ]]; then \
+		mkdir -p "$$backup_dir/.claude"; \
+		cp $(HOME)/.claude/CLAUDE.md "$$backup_dir/.claude/"; \
+	fi; \
 	echo -e "$(GREEN)✅ Backup created at $$backup_dir$(RESET)"
 
 # Development helpers
