@@ -1,0 +1,312 @@
+// See: https://dreampuf.github.io/GraphvizOnline
+// Title: Meta-Processes for Maintaining and Extending Process Documentation
+digraph CLAUDE_PROCESS_LIFECYCLE {
+    graph [bgcolor="#f8f9fa", pad=0.5, rankdir=TB];
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // Complete lifecycle: recognize → create → test → debug → update
+
+    // META: How to use this guide
+    subgraph cluster_meta {
+        label="HOW TO USE THIS PROCESS GUIDE";
+        style=filled;
+        fillcolor="#fff9c4";
+        color="#f57f17";
+        penwidth=3;
+
+        "START: Using this guide" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "What's your situation?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+
+        "Go to STEP 1: Recognize pattern" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Go to STEP 2: Create process" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Go to STEP 3: Test process" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Go to STEP 4: Debug issues" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Go to STEP 5: Update existing" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Check REFERENCE: Template" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Follow normal flow" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "END: Follow that section" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Using this guide" -> "What's your situation?" [penwidth=2];
+        "What's your situation?" -> "Go to STEP 1: Recognize pattern" [label="new pattern", penwidth=2, color="#1565c0"];
+        "What's your situation?" -> "Go to STEP 2: Create process" [label="ready to document", penwidth=2, color="#1565c0"];
+        "What's your situation?" -> "Go to STEP 3: Test process" [label="need to test", penwidth=2, color="#1565c0"];
+        "What's your situation?" -> "Go to STEP 4: Debug issues" [label="process broken", penwidth=2, color="#1565c0"];
+        "What's your situation?" -> "Go to STEP 5: Update existing" [label="update needed", penwidth=2, color="#1565c0"];
+        "What's your situation?" -> "Check REFERENCE: Template" [label="need template", penwidth=2, color="#1565c0"];
+        "What's your situation?" -> "Follow normal flow" [label="start from beginning", penwidth=2, color="#1565c0"];
+
+        "Go to STEP 1: Recognize pattern" -> "END: Follow that section" [penwidth=2];
+        "Go to STEP 2: Create process" -> "END: Follow that section" [penwidth=2];
+        "Go to STEP 3: Test process" -> "END: Follow that section" [penwidth=2];
+        "Go to STEP 4: Debug issues" -> "END: Follow that section" [penwidth=2];
+        "Go to STEP 5: Update existing" -> "END: Follow that section" [penwidth=2];
+        "Check REFERENCE: Template" -> "END: Follow that section" [penwidth=2];
+        "Follow normal flow" -> "START: Same situation third time" [penwidth=2, style=dotted];
+    }
+
+    // Normal flow path through all steps
+    subgraph cluster_flow {
+        label="NORMAL FLOW: COMPLETE LIFECYCLE";
+        style=filled;
+        fillcolor="#e8eaf6";
+        color="#3f51b5";
+        penwidth=2;
+
+        "START: New pattern discovered" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "STEP 1: Recognize" [shape=box, style=filled, fillcolor="#e3f2fd", fontcolor="#1976d2", penwidth=1.5];
+        "STEP 2: Create" [shape=box, style=filled, fillcolor="#f3e5f5", fontcolor="#7b1fa2", penwidth=1.5];
+        "STEP 3: Test" [shape=box, style=filled, fillcolor="#fff3e0", fontcolor="#e65100", penwidth=1.5];
+        "STEP 4: Debug if needed" [shape=box, style=filled, fillcolor="#ffebee", fontcolor="#c62828", penwidth=1.5];
+        "STEP 5: Update later" [shape=box, style=filled, fillcolor="#e0f2f1", fontcolor="#00796b", penwidth=1.5];
+        "END: Process maintained" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: New pattern discovered" -> "STEP 1: Recognize" [penwidth=3, color="#3f51b5"];
+        "STEP 1: Recognize" -> "STEP 2: Create" [penwidth=3, color="#3f51b5"];
+        "STEP 2: Create" -> "STEP 3: Test" [penwidth=3, color="#3f51b5"];
+        "STEP 3: Test" -> "STEP 4: Debug if needed" [penwidth=3, color="#3f51b5"];
+        "STEP 4: Debug if needed" -> "END: Process maintained" [penwidth=3, color="#3f51b5"];
+        "STEP 5: Update later" -> "STEP 1: Recognize" [label="loops back", penwidth=2, color="#00796b", style=dashed];
+
+        // Connect to actual steps
+        "STEP 1: Recognize" -> "START: Same situation third time" [style=dotted, penwidth=2, color="#1976d2"];
+        "STEP 2: Create" -> "START: Ready to document" [style=dotted, penwidth=2, color="#7b1fa2"];
+        "STEP 3: Test" -> "START: Process documented" [style=dotted, penwidth=2, color="#e65100"];
+        "STEP 4: Debug if needed" -> "START: Process isn't helping" [style=dotted, penwidth=2, color="#c62828"];
+        "STEP 5: Update later" -> "START: Need to update rule" [style=dotted, penwidth=2, color="#00796b"];
+    }
+
+    // STEP 1: Recognizing a pattern
+    subgraph cluster_recognize {
+        label="STEP 1: RECOGNIZING A PATTERN";
+        style=filled;
+        fillcolor="#e3f2fd";
+        color="#1976d2";
+        penwidth=2;
+
+        "START: Same situation third time" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Write down what I just did" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Is this generalizable?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Too specific to one case" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+        "Extract common elements" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Remove specific names/paths" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Can others use this?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Not worth documenting" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+        "Has pattern occurred 3+ times?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Wait for more occurrences" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+
+        "START: Same situation third time" -> "Write down what I just did" [penwidth=2];
+        "Write down what I just did" -> "Is this generalizable?" [penwidth=2];
+        "Is this generalizable?" -> "Too specific to one case" [label="no", penwidth=2, color="#d84315"];
+        "Is this generalizable?" -> "Extract common elements" [label="yes", penwidth=2, color="#2e7d32"];
+        "Extract common elements" -> "Remove specific names/paths" [penwidth=2];
+        "Remove specific names/paths" -> "Can others use this?" [penwidth=2];
+        "Can others use this?" -> "Not worth documenting" [label="no", penwidth=2, color="#d84315"];
+        "Can others use this?" -> "Has pattern occurred 3+ times?" [label="yes", penwidth=2, color="#2e7d32"];
+        "Has pattern occurred 3+ times?" -> "Wait for more occurrences" [label="no", penwidth=2, color="#d84315"];
+        "Has pattern occurred 3+ times?" -> "START: Ready to document" [label="yes", penwidth=2, color="#2e7d32", style=dotted];
+    }
+
+    // STEP 2: Creating/documenting the process
+    subgraph cluster_create {
+        label="STEP 2: CREATING THE PROCESS";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#7b1fa2";
+        penwidth=2;
+
+        "START: Ready to document" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Name trigger: WHEN does this happen?" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "List steps I took" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Extract key decisions" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Remove one-off details" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Generalize to pattern" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        // Structure phase
+        "Create subgraph cluster_name" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "First node is entry state (rarrow)" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Each action gets a node" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Decisions become diamonds" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Add edge labels for conditions" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Add exit state (doublecircle)" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        // Integration phase
+        "Where does this fit?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Create new cluster" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Add to existing cluster" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Can this replace existing?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Merge with existing" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Keep both processes" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Add dotted cross-process edges" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "START: Ready to document" -> "Name trigger: WHEN does this happen?" [penwidth=2];
+        "Name trigger: WHEN does this happen?" -> "List steps I took" [penwidth=2];
+        "List steps I took" -> "Extract key decisions" [penwidth=2];
+        "Extract key decisions" -> "Remove one-off details" [penwidth=2];
+        "Remove one-off details" -> "Generalize to pattern" [penwidth=2];
+
+        "Generalize to pattern" -> "Create subgraph cluster_name" [penwidth=2];
+        "Create subgraph cluster_name" -> "First node is entry state (rarrow)" [penwidth=2];
+        "First node is entry state (rarrow)" -> "Each action gets a node" [penwidth=2];
+        "Each action gets a node" -> "Decisions become diamonds" [penwidth=2];
+        "Decisions become diamonds" -> "Add edge labels for conditions" [penwidth=2];
+        "Add edge labels for conditions" -> "Add exit state (doublecircle)" [penwidth=2];
+
+        "Add exit state (doublecircle)" -> "Where does this fit?" [penwidth=2];
+        "Where does this fit?" -> "Create new cluster" [label="new trigger", penwidth=2, color="#1565c0"];
+        "Where does this fit?" -> "Add to existing cluster" [label="refines existing", penwidth=2, color="#1565c0"];
+        "Where does this fit?" -> "Can this replace existing?" [label="similar existing", penwidth=2, color="#1565c0"];
+        "Can this replace existing?" -> "Merge with existing" [label="yes", penwidth=2, color="#2e7d32"];
+        "Can this replace existing?" -> "Keep both processes" [label="no", penwidth=2, color="#d84315"];
+        "Create new cluster" -> "Add dotted cross-process edges" [penwidth=2];
+        "Add to existing cluster" -> "Add dotted cross-process edges" [penwidth=2];
+        "Merge with existing" -> "Add dotted cross-process edges" [penwidth=2];
+        "Keep both processes" -> "Add dotted cross-process edges" [penwidth=2];
+
+        "Add dotted cross-process edges" -> "START: Process documented" [penwidth=2, style=dotted];
+    }
+
+    // STEP 3: Testing the process
+    subgraph cluster_test {
+        label="STEP 3: TESTING THE PROCESS";
+        style=filled;
+        fillcolor="#fff3e0";
+        color="#e65100";
+        penwidth=2;
+
+        "START: Process documented" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Dry run: follow mechanically" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Hit unclear step?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Clarify that node text" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Missing branch?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Add decision diamond" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Can't find when to use?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Improve trigger name" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Test: can I follow this?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "END: Process validated" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Process documented" -> "Dry run: follow mechanically" [penwidth=2];
+        "Dry run: follow mechanically" -> "Hit unclear step?" [penwidth=2];
+        "Hit unclear step?" -> "Clarify that node text" [label="yes", penwidth=2, color="#2e7d32"];
+        "Hit unclear step?" -> "Missing branch?" [label="no", penwidth=2, color="#d84315"];
+        "Clarify that node text" -> "Dry run: follow mechanically" [penwidth=2];
+
+        "Missing branch?" -> "Add decision diamond" [label="yes", penwidth=2, color="#2e7d32"];
+        "Missing branch?" -> "Can't find when to use?" [label="no", penwidth=2, color="#d84315"];
+        "Add decision diamond" -> "Dry run: follow mechanically" [penwidth=2];
+
+        "Can't find when to use?" -> "Improve trigger name" [label="yes", penwidth=2, color="#2e7d32"];
+        "Can't find when to use?" -> "Test: can I follow this?" [label="no", penwidth=2, color="#d84315"];
+        "Improve trigger name" -> "Dry run: follow mechanically" [penwidth=2];
+
+        "Test: can I follow this?" -> "Dry run: follow mechanically" [label="no", penwidth=2, color="#d84315"];
+        "Test: can I follow this?" -> "END: Process validated" [label="yes", penwidth=2, color="#2e7d32"];
+    }
+
+    // STEP 4: Debugging when it doesn't work (in practice)
+    subgraph cluster_debug {
+        label="STEP 4: DEBUGGING PROCESS ISSUES";
+        style=filled;
+        fillcolor="#ffebee";
+        color="#c62828";
+        penwidth=2;
+
+        "START: Process isn't helping" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Where did I get stuck?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Missing decision point" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Unclear next step" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Wrong trigger condition" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+
+        // Fixes
+        "Add missing diamond" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Clarify node text" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Fix trigger name" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Add edge label" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Too many steps?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Combine related actions" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Extract to subprocess" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Document what changed" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "END: Process fixed" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Process isn't helping" -> "Where did I get stuck?" [penwidth=2];
+        "Where did I get stuck?" -> "Missing decision point" [label="branch", penwidth=2, color="#1565c0"];
+        "Where did I get stuck?" -> "Unclear next step" [label="lost", penwidth=2, color="#1565c0"];
+        "Where did I get stuck?" -> "Wrong trigger condition" [label="entry", penwidth=2, color="#1565c0"];
+
+        "Missing decision point" -> "Add missing diamond" [penwidth=2];
+        "Unclear next step" -> "Clarify node text" [penwidth=2];
+        "Wrong trigger condition" -> "Fix trigger name" [penwidth=2];
+        "Clarify node text" -> "Add edge label" [penwidth=2];
+
+        "Add edge label" -> "Too many steps?" [penwidth=2];
+        "Add missing diamond" -> "Too many steps?" [penwidth=2];
+        "Fix trigger name" -> "Too many steps?" [penwidth=2];
+        "Too many steps?" -> "Combine related actions" [label="yes", penwidth=2, color="#2e7d32"];
+        "Too many steps?" -> "Extract to subprocess" [label="way too many", penwidth=2, color="#d84315"];
+        "Too many steps?" -> "Document what changed" [label="no", penwidth=2, color="#2e7d32"];
+        "Combine related actions" -> "Document what changed" [penwidth=2];
+        "Extract to subprocess" -> "Document what changed" [penwidth=2];
+        "Document what changed" -> "END: Process fixed" [penwidth=2];
+    }
+
+    // STEP 5: Updating existing processes
+    subgraph cluster_update {
+        label="STEP 5: UPDATING EXISTING PROCESSES";
+        style=filled;
+        fillcolor="#e0f2f1";
+        color="#00796b";
+        penwidth=2;
+
+        "START: Need to update rule" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Is this a new pattern?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Find existing similar rule" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Can modify existing?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+
+        // Update path
+        "Locate rule in cluster" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Add branch or step" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Preserve existing connections" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Document what changed" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "END: Rule updated" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Need to update rule" -> "Is this a new pattern?" [penwidth=2];
+        "Is this a new pattern?" -> "Find existing similar rule" [label="no", penwidth=2, color="#d84315"];
+        "Is this a new pattern?" -> "START: Same situation third time" [label="yes", penwidth=2, color="#2e7d32", style=dotted];
+
+        "Find existing similar rule" -> "Can modify existing?" [penwidth=2];
+        "Can modify existing?" -> "Locate rule in cluster" [label="yes", penwidth=2, color="#2e7d32"];
+        "Can modify existing?" -> "START: Same situation third time" [label="no", penwidth=2, color="#d84315", style=dotted];
+
+        "Locate rule in cluster" -> "Add branch or step" [penwidth=2];
+        "Add branch or step" -> "Preserve existing connections" [penwidth=2];
+        "Preserve existing connections" -> "Document what changed" [penwidth=2];
+        "Document what changed" -> "END: Rule updated" [penwidth=2];
+    }
+
+    // REFERENCE: Pattern template
+    subgraph cluster_template {
+        label="REFERENCE: PATTERN TEMPLATE";
+        style=filled;
+        fillcolor="#f1f8e9";
+        color="#558b2f";
+        penwidth=2;
+
+        "START: <trigger condition>" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "<entry state or question>" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "<action verb + object>" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "<decision point>?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "$ <command>" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "END: <resolution state>" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: <trigger condition>" -> "<entry state or question>" [penwidth=2];
+        "<entry state or question>" -> "<action verb + object>" [label="condition", penwidth=2, color="#1565c0"];
+        "<action verb + object>" -> "<decision point>?" [penwidth=2];
+        "<decision point>?" -> "$ <command>" [label="yes", penwidth=2, color="#2e7d32"];
+        "<decision point>?" -> "END: <resolution state>" [label="no", penwidth=2, color="#d84315"];
+        "$ <command>" -> "END: <resolution state>" [penwidth=2];
+    }
+}

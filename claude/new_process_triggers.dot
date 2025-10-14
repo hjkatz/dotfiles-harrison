@@ -1,0 +1,161 @@
+// See: https://dreampuf.github.io/GraphvizOnline/?engine=dot
+// This graph teaches Claude the triggers for adding new processes to its workflow
+digraph PROCESS_TRIGGERS {
+    graph [bgcolor="#f8f9fa", pad=0.5];
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // The real triggers for adding processes
+
+    // TRIGGER 1: Your human partner teaches you something
+    subgraph cluster_taught {
+        label="TRIGGER 1: YOUR HUMAN PARTNER TEACHES YOU";
+        style=filled;
+        fillcolor="#e3f2fd";
+        color="#1976d2";
+        penwidth=2;
+
+        "START: My human partner shows me how to do X" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Understand the pattern?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Ask: Can you show me again?" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "See the general principle?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Ask: Would this apply to Y?" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        // Document immediately
+        "Write down the steps" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Mark decision points" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Note trigger conditions" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Create process cluster" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Test: could I follow this?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "END: Process captured" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: My human partner shows me how to do X" -> "Understand the pattern?" [penwidth=2];
+        "Understand the pattern?" -> "Ask: Can you show me again?" [label="no", penwidth=2, color="#d84315"];
+        "Understand the pattern?" -> "See the general principle?" [label="yes", penwidth=2, color="#2e7d32"];
+        "Ask: Can you show me again?" -> "Understand the pattern?" [penwidth=2];
+        "See the general principle?" -> "Ask: Would this apply to Y?" [label="unsure", penwidth=2, color="#1565c0"];
+        "See the general principle?" -> "Write down the steps" [label="yes", penwidth=2, color="#2e7d32"];
+        "Ask: Would this apply to Y?" -> "Write down the steps" [penwidth=2];
+
+        "Write down the steps" -> "Mark decision points" [penwidth=2];
+        "Mark decision points" -> "Note trigger conditions" [penwidth=2];
+        "Note trigger conditions" -> "Create process cluster" [penwidth=2];
+        "Create process cluster" -> "Test: could I follow this?" [penwidth=2];
+        "Test: could I follow this?" -> "END: Process captured" [label="yes", penwidth=2, color="#2e7d32"];
+        "Test: could I follow this?" -> "Write down the steps" [label="no, refine", penwidth=2, color="#d84315"];
+    }
+
+    // TRIGGER 2: You solve a problem and realize it's reusable
+    subgraph cluster_discovered {
+        label="TRIGGER 2: YOU DISCOVER A REUSABLE SOLUTION";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#7b1fa2";
+        penwidth=2;
+
+        "START: Solved a tricky problem" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Would I hit this again?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "One-off situation" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+        "Others might hit this?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Keep in journal only" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+
+        // Extract the pattern
+        "Write what I just did" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Remove specific details" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Extract key decisions" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Generalize to pattern" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        // Test generalization
+        "Would this have helped me?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Too specific still" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Create process cluster" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Process discovered" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Solved a tricky problem" -> "Would I hit this again?" [penwidth=2];
+        "Would I hit this again?" -> "One-off situation" [label="no", penwidth=2, color="#d84315"];
+        "Would I hit this again?" -> "Others might hit this?" [label="yes", penwidth=2, color="#2e7d32"];
+        "Others might hit this?" -> "Keep in journal only" [label="no", penwidth=2, color="#d84315"];
+        "Others might hit this?" -> "Write what I just did" [label="yes", penwidth=2, color="#2e7d32"];
+
+        "Write what I just did" -> "Remove specific details" [penwidth=2];
+        "Remove specific details" -> "Extract key decisions" [penwidth=2];
+        "Extract key decisions" -> "Generalize to pattern" [penwidth=2];
+        "Generalize to pattern" -> "Would this have helped me?" [penwidth=2];
+        "Would this have helped me?" -> "Too specific still" [label="no", penwidth=2, color="#d84315"];
+        "Would this have helped me?" -> "Create process cluster" [label="yes", penwidth=2, color="#2e7d32"];
+        "Too specific still" -> "Generalize to pattern" [penwidth=2];
+        "Create process cluster" -> "END: Process discovered" [penwidth=2];
+    }
+
+    // TRIGGER 3: Gap in existing process
+    subgraph cluster_gap {
+        label="TRIGGER 3: GAP IN EXISTING PROCESS";
+        style=filled;
+        fillcolor="#fff3e0";
+        color="#e65100";
+        penwidth=2;
+
+        "START: Hit situation not covered" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Existing process close?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Add branch to existing" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Need entirely new process" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Gap filled" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Hit situation not covered" -> "Existing process close?" [penwidth=2];
+        "Existing process close?" -> "Add branch to existing" [label="yes", penwidth=2, color="#2e7d32"];
+        "Existing process close?" -> "Need entirely new process" [label="no", penwidth=2, color="#d84315"];
+        "Add branch to existing" -> "END: Gap filled" [penwidth=2];
+        "Need entirely new process" -> "Write what I just did" [penwidth=2, style=dotted];
+    }
+
+    // When NOT to add a process
+    subgraph cluster_not_needed {
+        label="WHEN NOT TO ADD A PROCESS";
+        style=filled;
+        fillcolor="#ffebee";
+        color="#c62828";
+        penwidth=2;
+
+        "STOP: Don't add process if:" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+        "Already covered by existing" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1.5];
+        "Too vague to be actionable" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1.5];
+        "Only applies to one codebase" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1.5];
+        "Can't extract general pattern" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1.5];
+        "Would make things more complex" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1.5];
+        "Your Human partner tells you not to" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1.5];
+
+        "STOP: Don't add process if:" -> "Already covered by existing" [penwidth=1.5, color="#c62828"];
+        "STOP: Don't add process if:" -> "Too vague to be actionable" [penwidth=1.5, color="#c62828"];
+        "STOP: Don't add process if:" -> "Only applies to one codebase" [penwidth=1.5, color="#c62828"];
+        "STOP: Don't add process if:" -> "Can't extract general pattern" [penwidth=1.5, color="#c62828"];
+        "STOP: Don't add process if:" -> "Would make things more complex" [penwidth=1.5, color="#c62828"];
+        "STOP: Don't add process if:" -> "Your Human partner tells you not to" [penwidth=1.5, color="#c62828"];
+    }
+
+    // Examples of each trigger
+    subgraph cluster_examples {
+        label="REAL EXAMPLES";
+        style=filled;
+        fillcolor="#e0f2f1";
+        color="#00796b";
+        penwidth=2;
+
+        "EXAMPLE TRIGGERS" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "Your human partner: 'Never use git add -A'" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "→ Created git discipline process" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "I got stuck 3 times same way" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "→ Created 'when stuck' process" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Your human partner: 'Check package.json first'" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "→ Added to 'before coding' checks" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "EXAMPLE TRIGGERS" -> "Your human partner: 'Never use git add -A'" [penwidth=1.5];
+        "EXAMPLE TRIGGERS" -> "I got stuck 3 times same way" [penwidth=1.5];
+        "EXAMPLE TRIGGERS" -> "Your human partner: 'Check package.json first'" [penwidth=1.5];
+        "Your human partner: 'Never use git add -A'" -> "→ Created git discipline process" [penwidth=2];
+        "I got stuck 3 times same way" -> "→ Created 'when stuck' process" [penwidth=2];
+        "Your human partner: 'Check package.json first'" -> "→ Added to 'before coding' checks" [penwidth=2];
+    }
+}

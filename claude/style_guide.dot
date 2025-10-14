@@ -1,0 +1,284 @@
+// See: https://dreampuf.github.io/GraphvizOnline/?engine=dot
+// A style guide for creating clear and consistent flowcharts using Graphviz DOT language
+digraph STYLE_GUIDE {
+    graph [bgcolor="#f8f9fa", pad=0.5];
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // Node type examples with their shapes
+    subgraph cluster_node_types {
+        label="NODE TYPES AND SHAPES";
+        style=filled;
+        fillcolor="#e3f2fd";
+        color="#1976d2";
+        penwidth=2;
+
+        "Process starts" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Process complete" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Is this a question?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Take an action" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ git commit -m 'msg'" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Current state" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "STOP: Critical warning" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+        "Is test passing?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Write test first" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ npm test" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "I am stuck" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "NEVER use git add -A" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+        "Files modified" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Review changes" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ git add -p" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Use bullets" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Ask before coding" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "No sycophancy" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+    }
+
+    // Edge naming conventions
+    subgraph cluster_edge_types {
+        label="EDGE LABELS";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#7b1fa2";
+        penwidth=2;
+
+        "Binary decision?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Yes path" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "No path" [shape=box, style=filled, fillcolor="#ffccbc", fontcolor="#d84315", penwidth=1.5];
+        "Binary decision?" -> "Yes path" [label="yes", color="#2e7d32", penwidth=2];
+        "Binary decision?" -> "No path" [label="no", color="#d84315", penwidth=2];
+
+        "Multiple choice?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Option A" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Option B" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Option C" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Multiple choice?" -> "Option A" [label="condition A", color="#1565c0", penwidth=1.5];
+        "Multiple choice?" -> "Option B" [label="condition B", color="#1565c0", penwidth=1.5];
+        "Multiple choice?" -> "Option C" [label="otherwise", color="#1565c0", penwidth=1.5];
+
+        "Process A done" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Process B starts" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Process A done" -> "Process B starts" [label="triggers", style=dotted, penwidth=2, color="#7b1fa2"];
+
+        "Has errors?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Continue" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Stop" [shape=box, style=filled, fillcolor="#ffccbc", fontcolor="#d84315", penwidth=1.5];
+        "Has errors?" -> "Continue" [label="no", color="#2e7d32", penwidth=2];
+        "Has errors?" -> "Stop" [label="yes", color="#d84315", penwidth=2];
+    }
+
+    // Naming patterns
+    subgraph cluster_naming_patterns {
+        label="NAMING PATTERNS";
+        style=filled;
+        fillcolor="#fce4ec";
+        color="#c2185b";
+        penwidth=2;
+
+        // Questions (orange)
+        "Should I do X?" [shape=box, style=filled, fillcolor="#ffe0b2", fontcolor="#e65100", fontsize=9, penwidth=1.5];
+        "Can this be Y?" [shape=box, style=filled, fillcolor="#ffe0b2", fontcolor="#e65100", fontsize=9, penwidth=1.5];
+        "Is Z true?" [shape=box, style=filled, fillcolor="#ffe0b2", fontcolor="#e65100", fontsize=9, penwidth=1.5];
+        "Have I done W?" [shape=box, style=filled, fillcolor="#ffe0b2", fontcolor="#e65100", fontsize=9, penwidth=1.5];
+        "Does test pass?" [shape=box, style=filled, fillcolor="#ffe0b2", fontcolor="#e65100", fontsize=9, penwidth=1.5];
+        "Are changes staged?" [shape=box, style=filled, fillcolor="#ffe0b2", fontcolor="#e65100", fontsize=9, penwidth=1.5];
+
+        // Actions/decisions (black on white)
+        "Write the test" [shape=box, style=filled, fillcolor="white", fontcolor="black", fontsize=9, penwidth=1.5];
+        "Search for patterns" [shape=box, style=filled, fillcolor="white", fontcolor="black", fontsize=9, penwidth=1.5];
+        "Commit changes" [shape=box, style=filled, fillcolor="white", fontcolor="black", fontsize=9, penwidth=1.5];
+        "Ask for help" [shape=box, style=filled, fillcolor="white", fontcolor="black", fontsize=9, penwidth=1.5];
+        "Review code" [shape=box, style=filled, fillcolor="white", fontcolor="black", fontsize=9, penwidth=1.5];
+        "Debug issue" [shape=box, style=filled, fillcolor="white", fontcolor="black", fontsize=9, penwidth=1.5];
+        "Refactor function" [shape=box, style=filled, fillcolor="white", fontcolor="black", fontsize=9, penwidth=1.5];
+
+        // Shell commands (green/monospace)
+        "$ rg -i 'pattern' ." [shape=box, style=filled, fillcolor="#c8e6c9", fontname="monospace", fontcolor="#2e7d32", fontsize=8, penwidth=1.5];
+        "$ git status" [shape=box, style=filled, fillcolor="#c8e6c9", fontname="monospace", fontcolor="#2e7d32", fontsize=8, penwidth=1.5];
+        "$ make build" [shape=box, style=filled, fillcolor="#c8e6c9", fontname="monospace", fontcolor="#2e7d32", fontsize=8, penwidth=1.5];
+        "$ git log --oneline" [shape=box, style=filled, fillcolor="#c8e6c9", fontname="monospace", fontcolor="#2e7d32", fontsize=8, penwidth=1.5];
+        "$ ./run.sh test" [shape=box, style=filled, fillcolor="#c8e6c9", fontname="monospace", fontcolor="#2e7d32", fontsize=8, penwidth=1.5];
+        "$ git diff HEAD" [shape=box, style=filled, fillcolor="#c8e6c9", fontname="monospace", fontcolor="#2e7d32", fontsize=8, penwidth=1.5];
+
+        // States (blue)
+        "Test is failing" [shape=box, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", fontsize=9, penwidth=1.5];
+        "Build complete" [shape=box, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", fontsize=9, penwidth=1.5];
+        "Stuck on error" [shape=box, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", fontsize=9, penwidth=1.5];
+        "Waiting for review" [shape=box, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", fontsize=9, penwidth=1.5];
+        "CI running" [shape=box, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", fontsize=9, penwidth=1.5];
+
+        // Human partner preferences (light purple)
+        "Use bullets for lists" [shape=box, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", fontsize=9, penwidth=1.5];
+        "Ask before coding" [shape=box, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", fontsize=9, penwidth=1.5];
+        "Include sources" [shape=box, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", fontsize=9, penwidth=1.5];
+
+        // Claude preferences (light green)
+        "Plan before executing" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", fontsize=9, penwidth=1.5];
+        "Wait for approval" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", fontsize=9, penwidth=1.5];
+        "Never guess URLs" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", fontsize=9, penwidth=1.5];
+    }
+
+    // Process structure template
+    subgraph cluster_structure {
+        label="PROCESS STRUCTURE TEMPLATE";
+        style=filled;
+        fillcolor="#e0f2f1";
+        color="#00796b";
+        penwidth=2;
+
+        "START: Something happens" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Initial check?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Main action" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ git status" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32", fontsize=9];
+        "Another check?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Alternative action" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "STOP: Don't do this" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+        "END: Process complete" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Something happens" -> "Initial check?" [penwidth=2, color="#00695c"];
+        "Initial check?" -> "Main action" [label="yes", penwidth=2, color="#2e7d32"];
+        "Initial check?" -> "Alternative action" [label="no", penwidth=2, color="#d84315"];
+        "Main action" -> "$ git status" [penwidth=2, color="#00695c"];
+        "$ git status" -> "Another check?" [penwidth=2, color="#00695c"];
+        "Another check?" -> "END: Process complete" [label="ok", penwidth=2, color="#2e7d32"];
+        "Another check?" -> "STOP: Don't do this" [label="problem", penwidth=2.5, color="#d32f2f"];
+        "Alternative action" -> "END: Process complete" [penwidth=2, color="#00695c"];
+    }
+
+    // When to use which shape
+    subgraph cluster_shape_rules {
+        label="WHEN TO USE EACH SHAPE";
+        style=filled;
+        fillcolor="#f1f8e9";
+        color="#558b2f";
+        penwidth=2;
+
+        "START: Choosing a shape" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "Is it a start?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use rarrow" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd"];
+
+        "Is it an end?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use doublecircle" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd"];
+
+        "Is it a decision?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use diamond" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17"];
+
+        "Is it a command?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use plaintext" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "Is it a warning?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use octagon" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white"];
+
+        "Is it a state?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use ellipse" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd"];
+
+        "Is it a preference?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use note" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a"];
+
+        "Default: use box" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black"];
+
+        "START: Choosing a shape" -> "Is it a start?" [penwidth=1.5, color="#558b2f"];
+        "Is it a start?" -> "Use rarrow" [label="yes", penwidth=1.5, color="#2e7d32"];
+        "Is it a start?" -> "Is it an end?" [label="no", penwidth=1.5, color="#d84315"];
+        "Is it an end?" -> "Use doublecircle" [label="yes", penwidth=1.5, color="#2e7d32"];
+        "Is it an end?" -> "Is it a decision?" [label="no", penwidth=1.5, color="#d84315"];
+        "Is it a decision?" -> "Use diamond" [label="yes", penwidth=1.5, color="#2e7d32"];
+        "Is it a decision?" -> "Is it a command?" [label="no", penwidth=1.5, color="#d84315"];
+        "Is it a command?" -> "Use plaintext" [label="yes", penwidth=1.5, color="#2e7d32"];
+        "Is it a command?" -> "Is it a warning?" [label="no", penwidth=1.5, color="#d84315"];
+        "Is it a warning?" -> "Use octagon" [label="yes", penwidth=1.5, color="#2e7d32"];
+        "Is it a warning?" -> "Is it a state?" [label="no", penwidth=1.5, color="#d84315"];
+        "Is it a state?" -> "Use ellipse" [label="yes", penwidth=1.5, color="#2e7d32"];
+        "Is it a state?" -> "Is it a preference?" [label="no", penwidth=1.5, color="#d84315"];
+        "Is it a preference?" -> "Use note" [label="yes", penwidth=1.5, color="#2e7d32"];
+        "Is it a preference?" -> "Default: use box" [label="no", penwidth=1.5, color="#d84315"];
+    }
+
+    // Good vs bad examples
+    subgraph cluster_examples {
+        label="GOOD VS BAD EXAMPLES";
+        style=filled;
+        fillcolor="#fff3e0";
+        color="#e65100";
+        penwidth=2;
+
+        // Good examples
+        "START: Test failed" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Read error message" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Can reproduce?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "$ git diff HEAD~1" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Check related files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Found the bug?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Fix the issue" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ npm test" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "END: Bug fixed" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "NEVER ignore errors" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+
+        "START: Test failed" -> "Read error message" [penwidth=2, color="#0277bd"];
+        "Read error message" -> "Can reproduce?" [penwidth=2, color="#0277bd"];
+        "Can reproduce?" -> "$ git diff HEAD~1" [label="yes", penwidth=2, color="#2e7d32"];
+        "$ git diff HEAD~1" -> "Check related files" [penwidth=2, color="#0277bd"];
+        "Check related files" -> "Found the bug?" [penwidth=2, color="#0277bd"];
+        "Found the bug?" -> "Fix the issue" [label="yes", penwidth=2, color="#2e7d32"];
+        "Fix the issue" -> "$ npm test" [penwidth=2, color="#0277bd"];
+        "$ npm test" -> "END: Bug fixed" [penwidth=2, color="#0277bd"];
+        "Can reproduce?" -> "NEVER ignore errors" [label="no", penwidth=2, color="#d84315"];
+
+        // Bad examples
+        "Something wrong" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1];
+        "Fix it" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1];
+        "Check" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1];
+        "Run command" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1];
+        "Do something" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1];
+        "Maybe works" [shape=box, style=filled, fillcolor="#ffcdd2", fontcolor="#c62828", penwidth=1];
+
+        "Something wrong" -> "Fix it" [penwidth=1, color="#c62828", style=dashed];
+        "Fix it" -> "Check" [penwidth=1, color="#c62828", style=dashed];
+        "Check" -> "Run command" [penwidth=1, color="#c62828", style=dashed];
+        "Run command" -> "Do something" [penwidth=1, color="#c62828", style=dashed];
+        "Do something" -> "Maybe works" [penwidth=1, color="#c62828", style=dashed];
+    }
+
+    // Complete workflow example
+    subgraph cluster_complete_workflow {
+        label="COMPLETE WORKFLOW EXAMPLE";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#6a1b9a";
+        penwidth=2;
+
+        "START: Need new feature" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Create feature branch" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ git checkout -b feature/new" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Write failing test" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ npm test" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Test fails?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Implement feature" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ npm test again" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "All tests pass?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Stage changes" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ git add -p" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Commit" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ git commit -m 'feat: ...'" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Write descriptive commit messages" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "END: Feature complete" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "STOP: Fix test first" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+
+        "START: Need new feature" -> "Create feature branch" [penwidth=2];
+        "Create feature branch" -> "$ git checkout -b feature/new" [penwidth=2];
+        "$ git checkout -b feature/new" -> "Write failing test" [penwidth=2];
+        "Write failing test" -> "$ npm test" [penwidth=2];
+        "$ npm test" -> "Test fails?" [penwidth=2];
+        "Test fails?" -> "Implement feature" [label="yes", penwidth=2, color="#2e7d32"];
+        "Test fails?" -> "STOP: Fix test first" [label="no", penwidth=2, color="#d84315"];
+        "Implement feature" -> "$ npm test again" [penwidth=2];
+        "$ npm test again" -> "All tests pass?" [penwidth=2];
+        "All tests pass?" -> "Stage changes" [label="yes", penwidth=2, color="#2e7d32"];
+        "All tests pass?" -> "Implement feature" [label="no", penwidth=2, color="#d84315"];
+        "Stage changes" -> "$ git add -p" [penwidth=2];
+        "$ git add -p" -> "Commit" [penwidth=2];
+        "Commit" -> "$ git commit -m 'feat: ...'" [penwidth=2];
+        "$ git commit -m 'feat: ...'" -> "Write descriptive commit messages" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Write descriptive commit messages" -> "END: Feature complete" [penwidth=1, style=dashed, color="#6a1b9a"];
+    }
+}
