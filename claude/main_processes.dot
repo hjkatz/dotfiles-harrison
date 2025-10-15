@@ -401,6 +401,10 @@ digraph CLAUDE_MAIN_PROCESS {
         "EXECUTION: ALWAYS get approval before _ANY_ code execution" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
         "EXECUTION: NEVER plan -> execute; ALWAYS plan -> approval -> execute" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
 
+        "SUBAGENTS: Consider Task tool for parallel/independent work" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "SUBAGENTS: Consider Task tool for specialized tasks (debug/research/review)" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "SUBAGENTS: Use when task is self-contained with clear scope" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+
         "URLs: Only for programming help" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
         "URLs: Never generate or guess" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
         "URLs: Use only from user messages/files" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
