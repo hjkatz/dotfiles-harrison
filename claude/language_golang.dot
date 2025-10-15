@@ -1,0 +1,139 @@
+// See: https://dreampuf.github.io/GraphvizOnline/?engine=dot
+// Go (Golang) specific patterns and commands
+digraph LANGUAGE_GOLANG {
+    graph [bgcolor="#f8f9fa", pad=0.5];
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // Language identification markers
+    subgraph cluster_identification {
+        label="GOLANG IDENTIFICATION";
+        style=filled;
+        fillcolor="#e3f2fd";
+        color="#1976d2";
+        penwidth=2;
+
+        "go.mod present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "go.sum present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "*.go files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "main.go present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+    }
+
+    // Command mappings
+    subgraph cluster_commands {
+        label="GOLANG COMMAND MAPPINGS";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#7b1fa2";
+        penwidth=2;
+
+        "<test_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ go test ./..." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ go test -v ./..." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ go test -race ./..." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ go test -cover ./..." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<lint_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ golangci-lint run" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ go vet ./..." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ staticcheck ./..." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<format_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ gofmt -w ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ goimports -w ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<build_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ go build ./..." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ go build -o <binary> ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<install_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ go mod download" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ go mod tidy" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<test_command> mappings:" -> "$ go test ./..." [penwidth=1.5];
+        "<test_command> mappings:" -> "$ go test -v ./..." [penwidth=1.5];
+        "<test_command> mappings:" -> "$ go test -race ./..." [penwidth=1.5];
+        "<test_command> mappings:" -> "$ go test -cover ./..." [penwidth=1.5];
+
+        "<lint_command> mappings:" -> "$ golangci-lint run" [penwidth=1.5];
+        "<lint_command> mappings:" -> "$ go vet ./..." [penwidth=1.5];
+        "<lint_command> mappings:" -> "$ staticcheck ./..." [penwidth=1.5];
+
+        "<format_command> mappings:" -> "$ gofmt -w ." [penwidth=1.5];
+        "<format_command> mappings:" -> "$ goimports -w ." [penwidth=1.5];
+
+        "<build_command> mappings:" -> "$ go build ./..." [penwidth=1.5];
+        "<build_command> mappings:" -> "$ go build -o <binary> ." [penwidth=1.5];
+
+        "<install_command> mappings:" -> "$ go mod download" [penwidth=1.5];
+        "<install_command> mappings:" -> "$ go mod tidy" [penwidth=1.5];
+    }
+
+    // Debug pattern mappings
+    subgraph cluster_debug_patterns {
+        label="GOLANG DEBUG PATTERNS";
+        style=filled;
+        fillcolor="#fff3e0";
+        color="#e65100";
+        penwidth=2;
+
+        "<debug_patterns> to search for:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "fmt.Println(" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "fmt.Printf(" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "log.Println(" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "spew.Dump(" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "$ rg 'fmt\\.Println\\(' ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ rg 'fmt\\.Printf\\(' ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ rg 'log\\.Println\\(' ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ rg 'spew\\.Dump\\(' ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "Note: log.Info() and log.Error() are OK" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+
+        "<debug_patterns> to search for:" -> "fmt.Println(" [penwidth=1.5];
+        "<debug_patterns> to search for:" -> "fmt.Printf(" [penwidth=1.5];
+        "<debug_patterns> to search for:" -> "log.Println(" [penwidth=1.5];
+        "<debug_patterns> to search for:" -> "spew.Dump(" [penwidth=1.5];
+
+        "fmt.Println(" -> "$ rg 'fmt\\.Println\\(' ." [penwidth=1.5];
+        "fmt.Printf(" -> "$ rg 'fmt\\.Printf\\(' ." [penwidth=1.5];
+        "log.Println(" -> "$ rg 'log\\.Println\\(' ." [penwidth=1.5];
+        "spew.Dump(" -> "$ rg 'spew\\.Dump\\(' ." [penwidth=1.5];
+    }
+
+    // Common directories to check
+    subgraph cluster_directories {
+        label="GOLANG PROJECT DIRECTORIES";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#6a1b9a";
+        penwidth=2;
+
+        "Common source directories:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "cmd/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "internal/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "pkg/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Common test patterns:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "*_test.go files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Common source directories:" -> "cmd/" [penwidth=1.5];
+        "Common source directories:" -> "internal/" [penwidth=1.5];
+        "Common source directories:" -> "pkg/" [penwidth=1.5];
+
+        "Common test patterns:" -> "*_test.go files" [penwidth=1.5];
+    }
+
+    // Go-specific best practices
+    subgraph cluster_practices {
+        label="GO-SPECIFIC PRACTICES";
+        style=filled;
+        fillcolor="#e8f5e9";
+        color="#2e7d32";
+        penwidth=2;
+
+        "Always run go mod tidy after changes" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "Use gofmt/goimports before commits" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "Test with -race flag for concurrency" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+    }
+}

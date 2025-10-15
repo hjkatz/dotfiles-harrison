@@ -1,0 +1,209 @@
+// See: https://dreampuf.github.io/GraphvizOnline/?engine=dot
+// Shell/Bash/Make/Docker specific patterns and commands
+digraph LANGUAGE_SHELL {
+    graph [bgcolor="#f8f9fa", pad=0.5];
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // Language identification markers
+    subgraph cluster_identification {
+        label="SHELL/MAKE/DOCKER IDENTIFICATION";
+        style=filled;
+        fillcolor="#e3f2fd";
+        color="#1976d2";
+        penwidth=2;
+
+        "Makefile present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Dockerfile present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "docker-compose.yml present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "scripts/ directory" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "bin/ directory" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "*.sh files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+    }
+
+    // Make command mappings
+    subgraph cluster_make_commands {
+        label="MAKEFILE COMMAND MAPPINGS";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#7b1fa2";
+        penwidth=2;
+
+        "<test_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ make test" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ make check" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<lint_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ make lint" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ shellcheck scripts/*.sh" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<build_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ make build" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ make all" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<clean_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ make clean" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<install_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ make install" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ make setup" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<test_command> mappings:" -> "$ make test" [penwidth=1.5];
+        "<test_command> mappings:" -> "$ make check" [penwidth=1.5];
+
+        "<lint_command> mappings:" -> "$ make lint" [penwidth=1.5];
+        "<lint_command> mappings:" -> "$ shellcheck scripts/*.sh" [penwidth=1.5];
+
+        "<build_command> mappings:" -> "$ make build" [penwidth=1.5];
+        "<build_command> mappings:" -> "$ make all" [penwidth=1.5];
+
+        "<clean_command> mappings:" -> "$ make clean" [penwidth=1.5];
+
+        "<install_command> mappings:" -> "$ make install" [penwidth=1.5];
+        "<install_command> mappings:" -> "$ make setup" [penwidth=1.5];
+    }
+
+    // Docker command mappings
+    subgraph cluster_docker_commands {
+        label="DOCKER COMMAND MAPPINGS";
+        style=filled;
+        fillcolor="#fff3e0";
+        color="#e65100";
+        penwidth=2;
+
+        "<build_command> for Docker:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ docker build -t <image> ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ docker-compose build" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<run_command> for Docker:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ docker run <image>" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ docker-compose up" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ docker-compose up -d" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<stop_command> for Docker:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ docker-compose down" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ docker stop <container>" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<test_command> in Docker:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ docker-compose run test" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ docker exec <container> make test" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<build_command> for Docker:" -> "$ docker build -t <image> ." [penwidth=1.5];
+        "<build_command> for Docker:" -> "$ docker-compose build" [penwidth=1.5];
+
+        "<run_command> for Docker:" -> "$ docker run <image>" [penwidth=1.5];
+        "<run_command> for Docker:" -> "$ docker-compose up" [penwidth=1.5];
+        "<run_command> for Docker:" -> "$ docker-compose up -d" [penwidth=1.5];
+
+        "<stop_command> for Docker:" -> "$ docker-compose down" [penwidth=1.5];
+        "<stop_command> for Docker:" -> "$ docker stop <container>" [penwidth=1.5];
+
+        "<test_command> in Docker:" -> "$ docker-compose run test" [penwidth=1.5];
+        "<test_command> in Docker:" -> "$ docker exec <container> make test" [penwidth=1.5];
+    }
+
+    // Debug pattern mappings
+    subgraph cluster_debug_patterns {
+        label="SHELL DEBUG PATTERNS";
+        style=filled;
+        fillcolor="#ffebee";
+        color="#c62828";
+        penwidth=2;
+
+        "<debug_patterns> to search for:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "echo (debug statements)" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "set -x (trace mode)" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "$ rg 'echo.*DEBUG' scripts/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ rg 'set -x' scripts/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "Note: Regular echo for info/error OK" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+
+        "<debug_patterns> to search for:" -> "echo (debug statements)" [penwidth=1.5];
+        "<debug_patterns> to search for:" -> "set -x (trace mode)" [penwidth=1.5];
+
+        "echo (debug statements)" -> "$ rg 'echo.*DEBUG' scripts/" [penwidth=1.5];
+        "set -x (trace mode)" -> "$ rg 'set -x' scripts/" [penwidth=1.5];
+    }
+
+    // Common directories and patterns
+    subgraph cluster_directories {
+        label="SHELL PROJECT DIRECTORIES";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#6a1b9a";
+        penwidth=2;
+
+        "Common script directories:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "scripts/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "bin/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "tools/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Common config files:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Makefile" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Dockerfile" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "docker-compose.yml" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        ".env files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Common script directories:" -> "scripts/" [penwidth=1.5];
+        "Common script directories:" -> "bin/" [penwidth=1.5];
+        "Common script directories:" -> "tools/" [penwidth=1.5];
+
+        "Common config files:" -> "Makefile" [penwidth=1.5];
+        "Common config files:" -> "Dockerfile" [penwidth=1.5];
+        "Common config files:" -> "docker-compose.yml" [penwidth=1.5];
+        "Common config files:" -> ".env files" [penwidth=1.5];
+    }
+
+    // Best practices
+    subgraph cluster_practices {
+        label="SHELL/MAKE/DOCKER BEST PRACTICES";
+        style=filled;
+        fillcolor="#e8f5e9";
+        color="#2e7d32";
+        penwidth=2;
+
+        "Check Makefile for available targets" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "Run 'make help' if available" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "Use shellcheck for shell scripts" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "Check docker-compose.yml for services" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "Look in scripts/ and bin/ for utilities" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+    }
+
+    // Detection workflow
+    subgraph cluster_detection {
+        label="SHELL TOOLING DETECTION";
+        style=filled;
+        fillcolor="#e0f2f1";
+        color="#00796b";
+        penwidth=2;
+
+        "START: Detect shell tooling" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Check for Makefile" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Makefile present?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use Make as primary" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Check for Docker files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Docker present?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use Docker commands" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Check scripts/ and bin/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Scripts present?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use custom scripts" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Ask user for commands" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Tooling set" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Detect shell tooling" -> "Check for Makefile" [penwidth=2];
+        "Check for Makefile" -> "Makefile present?" [penwidth=2];
+        "Makefile present?" -> "Use Make as primary" [label="yes", penwidth=2, color="#2e7d32"];
+        "Makefile present?" -> "Check for Docker files" [label="no", penwidth=2, color="#d84315"];
+        "Use Make as primary" -> "Check for Docker files" [penwidth=2];
+        "Check for Docker files" -> "Docker present?" [penwidth=2];
+        "Docker present?" -> "Use Docker commands" [label="yes", penwidth=2, color="#2e7d32"];
+        "Docker present?" -> "Check scripts/ and bin/" [label="no", penwidth=2, color="#d84315"];
+        "Use Docker commands" -> "Check scripts/ and bin/" [penwidth=2];
+        "Check scripts/ and bin/" -> "Scripts present?" [penwidth=2];
+        "Scripts present?" -> "Use custom scripts" [label="yes", penwidth=2, color="#2e7d32"];
+        "Scripts present?" -> "Ask user for commands" [label="no", penwidth=2, color="#d84315"];
+        "Use custom scripts" -> "END: Tooling set" [penwidth=2];
+        "Ask user for commands" -> "END: Tooling set" [penwidth=2];
+    }
+}

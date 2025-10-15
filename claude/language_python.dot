@@ -1,0 +1,152 @@
+// See: https://dreampuf.github.io/GraphvizOnline/?engine=dot
+// Python specific patterns and commands
+digraph LANGUAGE_PYTHON {
+    graph [bgcolor="#f8f9fa", pad=0.5];
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // Language identification markers
+    subgraph cluster_identification {
+        label="PYTHON IDENTIFICATION";
+        style=filled;
+        fillcolor="#e3f2fd";
+        color="#1976d2";
+        penwidth=2;
+
+        "pyproject.toml present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "setup.py present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "requirements.txt present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "*.py files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        ".venv/ directory" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        ".python-version present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+    }
+
+    // Command mappings
+    subgraph cluster_commands {
+        label="PYTHON COMMAND MAPPINGS";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#7b1fa2";
+        penwidth=2;
+
+        "<test_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ pytest" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ python -m pytest" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ uv run pytest" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<lint_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ mypy ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ black --check ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<format_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ black ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<install_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ uv pip install -r requirements.txt" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ pip install -r requirements.txt" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ uv pip-compile requirements.in" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<test_command> mappings:" -> "$ pytest" [penwidth=1.5];
+        "<test_command> mappings:" -> "$ python -m pytest" [penwidth=1.5];
+        "<test_command> mappings:" -> "$ uv run pytest" [penwidth=1.5];
+
+        "<lint_command> mappings:" -> "$ mypy ." [penwidth=1.5];
+        "<lint_command> mappings:" -> "$ black --check ." [penwidth=1.5];
+
+        "<format_command> mappings:" -> "$ black ." [penwidth=1.5];
+
+        "<install_command> mappings:" -> "$ uv pip install -r requirements.txt" [penwidth=1.5];
+        "<install_command> mappings:" -> "$ pip install -r requirements.txt" [penwidth=1.5];
+        "<install_command> mappings:" -> "$ uv pip-compile requirements.in" [penwidth=1.5];
+    }
+
+    // Debug pattern mappings
+    subgraph cluster_debug_patterns {
+        label="PYTHON DEBUG PATTERNS";
+        style=filled;
+        fillcolor="#fff3e0";
+        color="#e65100";
+        penwidth=2;
+
+        "<debug_patterns> to search for:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "print(" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "LOG.debug(" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "breakpoint()" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "import pdb" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "$ rg 'print\\(' application/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ rg 'LOG\\.debug\\(' application/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ rg 'breakpoint\\(\\)' application/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ rg 'import pdb' application/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "Note: LOG.info() and LOG.error() are OK" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+
+        "<debug_patterns> to search for:" -> "print(" [penwidth=1.5];
+        "<debug_patterns> to search for:" -> "LOG.debug(" [penwidth=1.5];
+        "<debug_patterns> to search for:" -> "breakpoint()" [penwidth=1.5];
+        "<debug_patterns> to search for:" -> "import pdb" [penwidth=1.5];
+
+        "print(" -> "$ rg 'print\\(' application/" [penwidth=1.5];
+        "LOG.debug(" -> "$ rg 'LOG\\.debug\\(' application/" [penwidth=1.5];
+        "breakpoint()" -> "$ rg 'breakpoint\\(\\)' application/" [penwidth=1.5];
+        "import pdb" -> "$ rg 'import pdb' application/" [penwidth=1.5];
+    }
+
+    // Package/environment manager detection
+    subgraph cluster_package_manager {
+        label="PYTHON ENVIRONMENT DETECTION";
+        style=filled;
+        fillcolor="#e0f2f1";
+        color="#00796b";
+        penwidth=2;
+
+        "START: Detect environment" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Check for environment files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "uv.lock present?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use uv" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        ".venv/ present?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use pip with .venv" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Default to pip" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Environment set" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Detect environment" -> "Check for environment files" [penwidth=2];
+        "Check for environment files" -> "uv.lock present?" [penwidth=2];
+        "uv.lock present?" -> "Use uv" [label="yes", penwidth=2, color="#2e7d32"];
+        "uv.lock present?" -> ".venv/ present?" [label="no", penwidth=2, color="#d84315"];
+        ".venv/ present?" -> "Use pip with .venv" [label="yes", penwidth=2, color="#2e7d32"];
+        ".venv/ present?" -> "Default to pip" [label="no", penwidth=2, color="#d84315"];
+        "Use uv" -> "END: Environment set" [penwidth=2];
+        "Use pip with .venv" -> "END: Environment set" [penwidth=2];
+        "Default to pip" -> "END: Environment set" [penwidth=2];
+    }
+
+    // Common directories to check
+    subgraph cluster_directories {
+        label="PYTHON PROJECT DIRECTORIES";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#6a1b9a";
+        penwidth=2;
+
+        "Common source directories:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "application/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "src/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "<package_name>/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Common test directories:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "tests/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "test/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Common config directories:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "config/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Common source directories:" -> "application/" [penwidth=1.5];
+        "Common source directories:" -> "src/" [penwidth=1.5];
+        "Common source directories:" -> "<package_name>/" [penwidth=1.5];
+
+        "Common test directories:" -> "tests/" [penwidth=1.5];
+        "Common test directories:" -> "test/" [penwidth=1.5];
+
+        "Common config directories:" -> "config/" [penwidth=1.5];
+    }
+}

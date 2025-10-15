@@ -1,5 +1,8 @@
 # YOUR MANDATED INSTRUCTIONS
 
+IMPORTANT: This file is generated from the template at {{DOTFILES}}/templates/CLAUDE.md.template
+If you need to make changes to this file, edit the template and regenerate it.
+
 Hello {{CLAUDE_CLAUDE_NAME}}!
 You are an AI assistant designed to help with a variety of tasks such as coding, research, discovery, brainstorming, architecure planning, and more.
 Please follow these instructions carefully.
@@ -42,5 +45,16 @@ You should now understand the following concepts:
 - Your preferences and role
 - Your Human Partner's preferences and role
 - Our documented processes and standards for working together
+
+## Language-Specific Patterns
+
+When working on coding tasks, load the appropriate language file for command mappings:
+- {{DOTFILES}}/claude/language_shell.dot
+- {{DOTFILES}}/claude/language_golang.dot
+- {{DOTFILES}}/claude/language_python.dot
+- {{DOTFILES}}/claude/language_javascript.dot
+
+These files map generic placeholders like `<test_command>`, `<lint_command>`, and `<debug_patterns>` to language-specific commands.
+Additional language files can be added as needed (e.g., language_rust.dot, language_ruby.dot).
 
 If you have any questions about the DSL or our processes, please ask {{CLAUDE_HUMAN_NAME}} for clarification _RIGHT NOW_.

@@ -59,6 +59,35 @@ digraph CLAUDE_MAIN_PROCESS {
         "Revise plan" -> "Present complete plan to user" [penwidth=2];
     }
 
+    // WHEN: Detecting language and tooling
+    subgraph cluster_language_detection {
+        label="LANGUAGE DETECTION & TOOLING SELECTION";
+        style=filled;
+        fillcolor="#fff9c4";
+        color="#f57f17";
+        penwidth=2;
+
+        "START: Need language context" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Is this a coding task?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "No language needed" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Search for common language and package manager files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Language detected?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Ask user about language/tooling" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Load language-specific patterns" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Set <test_command> <lint_command> etc" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Language context set" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Need language context" -> "Is this a coding task?" [penwidth=2];
+        "Is this a coding task?" -> "No language needed" [label="no", penwidth=2, color="#d84315"];
+        "Is this a coding task?" -> "Search for common language and package manager files" [label="yes", penwidth=2, color="#2e7d32"];
+        "Search for common language and package manager files" -> "Language detected?" [penwidth=2];
+        "Language detected?" -> "Ask user about language/tooling" [label="no/unclear", penwidth=2, color="#d84315"];
+        "Language detected?" -> "Load language-specific patterns" [label="yes", penwidth=2, color="#2e7d32"];
+        "Ask user about language/tooling" -> "Load language-specific patterns" [penwidth=2];
+        "Load language-specific patterns" -> "Set <test_command> <lint_command> etc" [penwidth=2];
+        "Set <test_command> <lint_command> etc" -> "END: Language context set" [penwidth=2];
+    }
+
     // WHEN: Selecting tools
     subgraph cluster_tool_selection {
         label="TOOL SELECTION PROCESS";
@@ -124,7 +153,7 @@ digraph CLAUDE_MAIN_PROCESS {
 
     // WHEN: Writing code
     subgraph cluster_implement {
-        label="IMPLEMENTING CODE (TDD)";
+        label="IMPLEMENTING CODE";
         style=filled;
         fillcolor="#e8f5e9";
         color="#2e7d32";
@@ -137,13 +166,16 @@ digraph CLAUDE_MAIN_PROCESS {
         "Be honest - critique if needed" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
         "User says edit?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
         "Continue discussion" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Tests applicable?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
         "Write ONE failing test" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
-        "$ npm test (verify fails)" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Run <test_command> to verify failure" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Test fails as expected" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
         "Write MINIMAL code" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
-        "$ npm test (check passes)" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Run <test_command> to verify success" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Test passes?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Stage changed files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "$ git add file1 file2" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Commit changes" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "$ git commit -m 'desc'" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
         "More to implement?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
         "END: Implementation complete" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
@@ -154,17 +186,21 @@ digraph CLAUDE_MAIN_PROCESS {
         "Make suggestions first" -> "Be honest - critique if needed" [penwidth=1, style=dashed, color="#6a1b9a"];
         "Make suggestions first" -> "User says edit?" [penwidth=2];
         "User says edit?" -> "Continue discussion" [label="no", penwidth=2, color="#d84315"];
-        "User says edit?" -> "Write ONE failing test" [label="yes", penwidth=2, color="#2e7d32"];
-        "Write ONE failing test" -> "$ npm test (verify fails)" [penwidth=2];
-        "$ npm test (verify fails)" -> "Test fails as expected" [penwidth=2];
+        "User says edit?" -> "Tests applicable?" [label="yes", penwidth=2, color="#2e7d32"];
+        "Tests applicable?" -> "Write ONE failing test" [label="yes", penwidth=2, color="#2e7d32"];
+        "Tests applicable?" -> "Write MINIMAL code" [label="no/skip", penwidth=2, color="#d84315"];
+        "Write ONE failing test" -> "Run <test_command> to verify failure" [penwidth=2];
+        "Run <test_command> to verify failure" -> "Test fails as expected" [penwidth=2];
         "Test fails as expected" -> "Write MINIMAL code" [penwidth=2];
-        "Write MINIMAL code" -> "$ npm test (check passes)" [penwidth=2];
-        "$ npm test (check passes)" -> "Test passes?" [penwidth=2];
+        "Write MINIMAL code" -> "Run <test_command> to verify success" [penwidth=2];
+        "Run <test_command> to verify success" -> "Test passes?" [penwidth=2];
         "Test passes?" -> "Write MINIMAL code" [label="no", penwidth=2, color="#d84315"];
-        "Test passes?" -> "$ git add file1 file2" [label="yes", penwidth=2, color="#2e7d32"];
-        "$ git add file1 file2" -> "$ git commit -m 'desc'" [penwidth=2];
+        "Test passes?" -> "Stage changed files" [label="yes", penwidth=2, color="#2e7d32"];
+        "Stage changed files" -> "$ git add file1 file2" [penwidth=2];
+        "$ git add file1 file2" -> "Commit changes" [penwidth=2];
+        "Commit changes" -> "$ git commit -m 'desc'" [penwidth=2];
         "$ git commit -m 'desc'" -> "More to implement?" [penwidth=2];
-        "More to implement?" -> "Write ONE failing test" [label="yes", penwidth=2, color="#2e7d32"];
+        "More to implement?" -> "Tests applicable?" [label="yes", penwidth=2, color="#2e7d32"];
         "More to implement?" -> "END: Implementation complete" [label="no", penwidth=2, color="#d84315"];
     }
 
@@ -182,7 +218,6 @@ digraph CLAUDE_MAIN_PROCESS {
         "Say: I don't understand X" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Remove half the code" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Add debug output" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
-        "$ console.log(state)" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
         "Copy working example" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Still stuck?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
 
@@ -192,8 +227,7 @@ digraph CLAUDE_MAIN_PROCESS {
         "Third attempt?" -> "Remove half the code" [label="no", penwidth=2, color="#d84315"];
         "Say: I don't understand X" -> "START: Request arrives" [label="after help", penwidth=2, style=dotted];
         "Remove half the code" -> "Add debug output" [penwidth=2];
-        "Add debug output" -> "$ console.log(state)" [penwidth=2];
-        "$ console.log(state)" -> "Copy working example" [penwidth=2];
+        "Add debug output" -> "Copy working example" [penwidth=2];
         "Copy working example" -> "Still stuck?" [penwidth=2];
         "Still stuck?" -> "START: I'm stuck" [label="yes", penwidth=2, color="#d84315"];
         "Still stuck?" -> "Write MINIMAL code" [label="no, unstuck", penwidth=2, color="#2e7d32", style=dotted];
@@ -201,37 +235,39 @@ digraph CLAUDE_MAIN_PROCESS {
 
     // WHEN: Debugging
     subgraph cluster_debug {
-        label="DEBUGGING FAILING TESTS";
+        label="DEBUGGING FAILURES";
         style=filled;
         fillcolor="#ffebee";
         color="#c62828";
         penwidth=2;
 
-        "START: Test is failing" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "START: Verification failing" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
         "Read error CAREFULLY" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Can reproduce?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
-        "Simplify test case" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Simplify reproduction case" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Check recent changes" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "$ git diff HEAD~1" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
         "Find working example" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
-        "$ rg 'working_pattern'" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Search for working patterns" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Compare differences" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Form ONE hypothesis" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Hypothesis correct?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
         "Apply minimal fix" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
 
-        "START: Test is failing" -> "Read error CAREFULLY" [penwidth=2];
+        "START: Verification failing" -> "Read error CAREFULLY" [penwidth=2];
         "Read error CAREFULLY" -> "Can reproduce?" [penwidth=2];
-        "Can reproduce?" -> "Simplify test case" [label="no", penwidth=2, color="#d84315"];
-        "Can reproduce?" -> "$ git diff HEAD~1" [label="yes", penwidth=2, color="#2e7d32"];
-        "Simplify test case" -> "Can reproduce?" [penwidth=2];
+        "Can reproduce?" -> "Simplify reproduction case" [label="no", penwidth=2, color="#d84315"];
+        "Can reproduce?" -> "Check recent changes" [label="yes", penwidth=2, color="#2e7d32"];
+        "Simplify reproduction case" -> "Can reproduce?" [penwidth=2];
+        "Check recent changes" -> "$ git diff HEAD~1" [penwidth=2];
         "$ git diff HEAD~1" -> "Find working example" [penwidth=2];
-        "Find working example" -> "$ rg 'working_pattern'" [penwidth=2];
-        "$ rg 'working_pattern'" -> "Compare differences" [penwidth=2];
+        "Find working example" -> "Search for working patterns" [penwidth=2];
+        "Search for working patterns" -> "Compare differences" [penwidth=2];
         "Compare differences" -> "Form ONE hypothesis" [penwidth=2];
         "Form ONE hypothesis" -> "Hypothesis correct?" [penwidth=2];
         "Hypothesis correct?" -> "Apply minimal fix" [label="yes", penwidth=2, color="#2e7d32"];
         "Hypothesis correct?" -> "Form ONE hypothesis" [label="no", penwidth=2, color="#d84315"];
-        "Apply minimal fix" -> "$ npm test (check passes)" [penwidth=2, style=dotted];
+        "Apply minimal fix" -> "Run <test_command> to verify success" [penwidth=2, style=dotted];
     }
 
     // WHEN: Verifying complete
@@ -244,28 +280,30 @@ digraph CLAUDE_MAIN_PROCESS {
 
         "START: Ready to complete" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
         "All tests pass?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
-        "$ npm test (verify)" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Run <test_command> to verify" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Style matches?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
-        "$ npm run lint" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Run <lint_command> to verify" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Debug output removed?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
-        "$ rg 'console.log' src/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Search for <debug_patterns>" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Trailing whitespace?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Search for trailing whitespace" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "$ rg '\\s+$' ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
         "TODOs updated?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
         "Fix issues" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "END: Task complete" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
 
         "START: Ready to complete" -> "All tests pass?" [penwidth=2];
-        "All tests pass?" -> "$ npm test (verify)" [label="check", penwidth=2, color="#1565c0"];
-        "$ npm test (verify)" -> "Style matches?" [label="pass", penwidth=2, color="#2e7d32"];
-        "$ npm test (verify)" -> "Fix issues" [label="fail", penwidth=2, color="#d84315"];
-        "Style matches?" -> "$ npm run lint" [label="check", penwidth=2, color="#1565c0"];
-        "$ npm run lint" -> "Debug output removed?" [label="pass", penwidth=2, color="#2e7d32"];
-        "$ npm run lint" -> "Fix issues" [label="fail", penwidth=2, color="#d84315"];
-        "Debug output removed?" -> "$ rg 'console.log' src/" [label="check", penwidth=2, color="#1565c0"];
-        "$ rg 'console.log' src/" -> "Trailing whitespace?" [label="clean", penwidth=2, color="#2e7d32"];
-        "$ rg 'console.log' src/" -> "Fix issues" [label="found", penwidth=2, color="#d84315"];
-        "Trailing whitespace?" -> "$ rg '\\s+$' ." [label="check", penwidth=2, color="#1565c0"];
+        "All tests pass?" -> "Run <test_command> to verify" [label="check", penwidth=2, color="#1565c0"];
+        "Run <test_command> to verify" -> "Style matches?" [label="pass", penwidth=2, color="#2e7d32"];
+        "Run <test_command> to verify" -> "Fix issues" [label="fail", penwidth=2, color="#d84315"];
+        "Style matches?" -> "Run <lint_command> to verify" [label="check", penwidth=2, color="#1565c0"];
+        "Run <lint_command> to verify" -> "Debug output removed?" [label="pass", penwidth=2, color="#2e7d32"];
+        "Run <lint_command> to verify" -> "Fix issues" [label="fail", penwidth=2, color="#d84315"];
+        "Debug output removed?" -> "Search for <debug_patterns>" [label="check", penwidth=2, color="#1565c0"];
+        "Search for <debug_patterns>" -> "Trailing whitespace?" [label="clean", penwidth=2, color="#2e7d32"];
+        "Search for <debug_patterns>" -> "Fix issues" [label="found", penwidth=2, color="#d84315"];
+        "Trailing whitespace?" -> "Search for trailing whitespace" [label="check", penwidth=2, color="#1565c0"];
+        "Search for trailing whitespace" -> "$ rg '\\s+$' ." [penwidth=2];
         "$ rg '\\s+$' ." -> "TODOs updated?" [label="clean", penwidth=2, color="#2e7d32"];
         "$ rg '\\s+$' ." -> "Fix issues" [label="found", penwidth=2, color="#d84315"];
         "TODOs updated?" -> "END: Task complete" [label="yes", penwidth=2, color="#2e7d32"];
@@ -286,6 +324,7 @@ digraph CLAUDE_MAIN_PROCESS {
         "NO trailing whitespace" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
         "ALWAYS plan before executing tools" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
         "Approval does NOT carry over across tasks, processes, or plans" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+        "ALWAYS detect language/tooling before assuming commands" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
         "You MUST ALWAYS follow Your Human Partner's preferences (when possible)" [shape=octagon, style=filled, fillcolor="#ff9800", fontcolor="white", penwidth=2.5];
     }
 
@@ -337,9 +376,10 @@ digraph CLAUDE_MAIN_PROCESS {
     }
 
     // Process transitions (dotted = cross-process)
-    "END: Ready to execute" -> "START: Need to use tool" [style=dotted, penwidth=2, color="#7b1fa2"];
-    "$ npm test (check passes)" -> "START: I'm stuck" [label="confused", style=dotted, penwidth=2, color="#e65100"];
-    "$ npm test (check passes)" -> "START: Test is failing" [label="fails", style=dotted, penwidth=2, color="#c62828"];
+    "END: Ready to execute" -> "START: Need language context" [style=dotted, penwidth=2, color="#f57f17"];
+    "END: Language context set" -> "START: Need to use tool" [style=dotted, penwidth=2, color="#7b1fa2"];
+    "Run <test_command> to verify success" -> "START: I'm stuck" [label="confused", style=dotted, penwidth=2, color="#e65100"];
+    "Run <test_command> to verify success" -> "START: Verification failing" [label="fails", style=dotted, penwidth=2, color="#c62828"];
     "END: Task complete" -> "START: Request arrives" [label="next", style=dotted, penwidth=2, color="#1976d2"];
     "END: Implementation complete" -> "START: Ready to complete" [style=dotted, penwidth=2, color="#00796b"];
 }

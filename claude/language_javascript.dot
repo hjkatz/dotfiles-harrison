@@ -1,0 +1,153 @@
+// See: https://dreampuf.github.io/GraphvizOnline/?engine=dot
+// JavaScript/TypeScript/Node.js specific patterns and commands
+digraph LANGUAGE_JAVASCRIPT {
+    graph [bgcolor="#f8f9fa", pad=0.5];
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // Language identification markers
+    subgraph cluster_identification {
+        label="JAVASCRIPT/TYPESCRIPT IDENTIFICATION";
+        style=filled;
+        fillcolor="#e3f2fd";
+        color="#1976d2";
+        penwidth=2;
+
+        "package.json present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "tsconfig.json present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "*.js or *.ts files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "node_modules/ directory" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+    }
+
+    // Command mappings
+    subgraph cluster_commands {
+        label="JAVASCRIPT COMMAND MAPPINGS";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#7b1fa2";
+        penwidth=2;
+
+        "<test_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ npm test" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ npm run test" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ yarn test" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ pnpm test" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ jest" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ vitest" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<lint_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ npm run lint" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ eslint ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ biome check ." [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<build_command> mappings:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "$ npm run build" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ tsc" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ vite build" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<test_command> mappings:" -> "$ npm test" [penwidth=1.5];
+        "<test_command> mappings:" -> "$ npm run test" [penwidth=1.5];
+        "<test_command> mappings:" -> "$ yarn test" [penwidth=1.5];
+        "<test_command> mappings:" -> "$ pnpm test" [penwidth=1.5];
+        "<test_command> mappings:" -> "$ jest" [penwidth=1.5];
+        "<test_command> mappings:" -> "$ vitest" [penwidth=1.5];
+
+        "<lint_command> mappings:" -> "$ npm run lint" [penwidth=1.5];
+        "<lint_command> mappings:" -> "$ eslint ." [penwidth=1.5];
+        "<lint_command> mappings:" -> "$ biome check ." [penwidth=1.5];
+
+        "<build_command> mappings:" -> "$ npm run build" [penwidth=1.5];
+        "<build_command> mappings:" -> "$ tsc" [penwidth=1.5];
+        "<build_command> mappings:" -> "$ vite build" [penwidth=1.5];
+    }
+
+    // Debug pattern mappings
+    subgraph cluster_debug_patterns {
+        label="JAVASCRIPT DEBUG PATTERNS";
+        style=filled;
+        fillcolor="#fff3e0";
+        color="#e65100";
+        penwidth=2;
+
+        "<debug_patterns> to search for:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "console.log" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "console.debug" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "console.dir" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "debugger;" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "$ rg 'console\\.log' src/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ rg 'console\\.debug' src/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ rg 'console\\.dir' src/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "$ rg 'debugger;' src/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+
+        "<debug_patterns> to search for:" -> "console.log" [penwidth=1.5];
+        "<debug_patterns> to search for:" -> "console.debug" [penwidth=1.5];
+        "<debug_patterns> to search for:" -> "console.dir" [penwidth=1.5];
+        "<debug_patterns> to search for:" -> "debugger;" [penwidth=1.5];
+
+        "console.log" -> "$ rg 'console\\.log' src/" [penwidth=1.5];
+        "console.debug" -> "$ rg 'console\\.debug' src/" [penwidth=1.5];
+        "console.dir" -> "$ rg 'console\\.dir' src/" [penwidth=1.5];
+        "debugger;" -> "$ rg 'debugger;' src/" [penwidth=1.5];
+    }
+
+    // Package manager detection
+    subgraph cluster_package_manager {
+        label="PACKAGE MANAGER DETECTION";
+        style=filled;
+        fillcolor="#e0f2f1";
+        color="#00796b";
+        penwidth=2;
+
+        "START: Detect package manager" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Check for lock files" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "package-lock.json?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use npm" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "yarn.lock?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use yarn" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "pnpm-lock.yaml?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use pnpm" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Default to npm" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Package manager set" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Detect package manager" -> "Check for lock files" [penwidth=2];
+        "Check for lock files" -> "package-lock.json?" [penwidth=2];
+        "package-lock.json?" -> "Use npm" [label="yes", penwidth=2, color="#2e7d32"];
+        "package-lock.json?" -> "yarn.lock?" [label="no", penwidth=2, color="#d84315"];
+        "yarn.lock?" -> "Use yarn" [label="yes", penwidth=2, color="#2e7d32"];
+        "yarn.lock?" -> "pnpm-lock.yaml?" [label="no", penwidth=2, color="#d84315"];
+        "pnpm-lock.yaml?" -> "Use pnpm" [label="yes", penwidth=2, color="#2e7d32"];
+        "pnpm-lock.yaml?" -> "Default to npm" [label="no", penwidth=2, color="#d84315"];
+        "Use npm" -> "END: Package manager set" [penwidth=2];
+        "Use yarn" -> "END: Package manager set" [penwidth=2];
+        "Use pnpm" -> "END: Package manager set" [penwidth=2];
+        "Default to npm" -> "END: Package manager set" [penwidth=2];
+    }
+
+    // Common directories to check
+    subgraph cluster_directories {
+        label="JAVASCRIPT PROJECT DIRECTORIES";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#6a1b9a";
+        penwidth=2;
+
+        "Common source directories:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "src/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "lib/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "app/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Common test directories:" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "test/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "tests/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "__tests__/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+
+        "Common source directories:" -> "src/" [penwidth=1.5];
+        "Common source directories:" -> "lib/" [penwidth=1.5];
+        "Common source directories:" -> "app/" [penwidth=1.5];
+
+        "Common test directories:" -> "test/" [penwidth=1.5];
+        "Common test directories:" -> "tests/" [penwidth=1.5];
+        "Common test directories:" -> "__tests__/" [penwidth=1.5];
+    }
+}
