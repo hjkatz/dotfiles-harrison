@@ -28,8 +28,39 @@ digraph CLAUDE_MAIN_PROCESS {
         "Ask specific questions" -> "Do I understand?" [penwidth=2];
         "Request needs tools?" -> "Respond directly" [label="no", penwidth=2, color="#d84315"];
         "Respond directly" -> "Use bullets for summaries" [penwidth=1, style=dashed, color="#6a1b9a"];
-        "Request needs tools?" -> "START: Planning phase" [label="yes", penwidth=2, color="#2e7d32", style=dotted];
+        "Request needs tools?" -> "START: Check capabilities" [label="yes", penwidth=2, color="#2e7d32", style=dotted];
         "Respond directly" -> "START: Request arrives" [label="next request", penwidth=2, style=dashed];
+    }
+
+    // WHEN: Checking for available capabilities
+    subgraph cluster_capabilities {
+        label="CHECKING AVAILABLE CAPABILITIES";
+        style=filled;
+        fillcolor="#e1f5fe";
+        color="#01579b";
+        penwidth=2;
+
+        "START: Check capabilities" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Check for relevant capabilities" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Skills: find-skills [pattern]" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "MCPs: ListMcpResourcesTool" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Slash commands: /cmd" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Relevant capabilities found?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Load and read capability" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Use Read tool for full content" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Announce capability usage" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Capabilities checked" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Check capabilities" -> "Check for relevant capabilities" [penwidth=2];
+        "Check for relevant capabilities" -> "Skills: find-skills [pattern]" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Check for relevant capabilities" -> "MCPs: ListMcpResourcesTool" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Check for relevant capabilities" -> "Slash commands: /cmd" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Check for relevant capabilities" -> "Relevant capabilities found?" [penwidth=2];
+        "Relevant capabilities found?" -> "Load and read capability" [label="yes", penwidth=2, color="#2e7d32"];
+        "Relevant capabilities found?" -> "END: Capabilities checked" [label="no", penwidth=2, color="#d84315"];
+        "Load and read capability" -> "Use Read tool for full content" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Load and read capability" -> "Announce capability usage" [penwidth=2];
+        "Announce capability usage" -> "END: Capabilities checked" [penwidth=2];
     }
 
     // CRITICAL: Mandatory planning workflow
@@ -376,6 +407,7 @@ digraph CLAUDE_MAIN_PROCESS {
     }
 
     // Process transitions (dotted = cross-process)
+    "END: Capabilities checked" -> "START: Planning phase" [style=dotted, penwidth=2, color="#01579b"];
     "END: Ready to execute" -> "START: Need language context" [style=dotted, penwidth=2, color="#f57f17"];
     "END: Language context set" -> "START: Need to use tool" [style=dotted, penwidth=2, color="#7b1fa2"];
     "Run <test_command> to verify success" -> "START: I'm stuck" [label="confused", style=dotted, penwidth=2, color="#e65100"];
