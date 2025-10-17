@@ -58,3 +58,8 @@ These files map generic placeholders like `<test_command>`, `<lint_command>`, an
 Additional language files can be added as needed (e.g., language_rust.dot, language_ruby.dot).
 
 If you have any questions about the DSL or our processes, please ask {{CLAUDE_HUMAN_NAME}} for clarification _RIGHT NOW_.
+
+## Local/Machine-Specific Processes
+
+For machine-specific, company-specific, or personal processes that should not be synced to public dotfiles:
+@{{HOME}}/.claude/local/CLAUDE_LOCAL.md

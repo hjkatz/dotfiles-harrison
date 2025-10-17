@@ -191,6 +191,10 @@ digraph CLAUDE_MAIN_PROCESS {
         penwidth=2;
 
         "START: Begin implementation" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "On default branch?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "$ git default-branch" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Create feature branch" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ git checkout -b hkatz/<branch-name>" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
         "User wants code changes?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
         "Make suggestions first" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "Include sources/references" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
@@ -211,7 +215,12 @@ digraph CLAUDE_MAIN_PROCESS {
         "More to implement?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
         "END: Implementation complete" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
 
-        "START: Begin implementation" -> "User wants code changes?" [penwidth=2];
+        "START: Begin implementation" -> "On default branch?" [penwidth=2];
+        "On default branch?" -> "$ git default-branch" [label="check", penwidth=2, color="#1565c0"];
+        "$ git default-branch" -> "Create feature branch" [label="yes (on main/master)", penwidth=2, color="#2e7d32"];
+        "$ git default-branch" -> "User wants code changes?" [label="no (already on branch)", penwidth=2, color="#d84315"];
+        "Create feature branch" -> "$ git checkout -b hkatz/<branch-name>" [penwidth=2];
+        "$ git checkout -b hkatz/<branch-name>" -> "User wants code changes?" [penwidth=2];
         "User wants code changes?" -> "Make suggestions first" [label="yes", penwidth=2, color="#2e7d32"];
         "Make suggestions first" -> "Include sources/references" [penwidth=1, style=dashed, color="#6a1b9a"];
         "Make suggestions first" -> "Be honest - critique if needed" [penwidth=1, style=dashed, color="#6a1b9a"];
@@ -408,6 +417,9 @@ digraph CLAUDE_MAIN_PROCESS {
         "URLs: Only for programming help" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
         "URLs: Never generate or guess" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
         "URLs: Use only from user messages/files" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+
+        "GIT BRANCHES: Use git checkout -b hkatz/<branch-name>" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "GIT BRANCHES: Never use worktrees" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
     }
 
     // Process transitions (dotted = cross-process)
