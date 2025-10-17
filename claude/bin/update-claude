@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Purpose: Update Claude Code to the latest version and resume the current session
+# Usage: update-claude
+# Args: None
+# Output: Update status and resumes Claude session
+
+set -euo pipefail
+
+# Colors for output
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+CYAN='\033[1;36m'
+RESET='\033[0m'
+
+echo -e "${BLUE}🔄 Updating Claude Code...${RESET}"
+echo
+
+# Get current version
+CURRENT_VERSION=$(npx -y @anthropic-ai/claude-code --version 2>/dev/null || echo "unknown")
+echo -e "${CYAN}Current version: ${CURRENT_VERSION}${RESET}"
+
+# Update Claude Code
+echo -e "${CYAN}Running npm update...${RESET}"
+if npm update -g @anthropic-ai/claude-code 2>&1; then
+    echo -e "${GREEN}✅ Update complete!${RESET}"
+else
+    echo -e "${YELLOW}⚠️  Global update failed, trying npx cache clear...${RESET}"
+    # Clear npx cache and try again
+    rm -rf ~/.npm/_npx 2>/dev/null || true
+    echo -e "${GREEN}✅ NPX cache cleared${RESET}"
+fi
+
+# Get new version
+NEW_VERSION=$(npx -y @anthropic-ai/claude-code --version 2>/dev/null || echo "unknown")
+echo -e "${CYAN}New version: ${NEW_VERSION}${RESET}"
+
+if [[ "$CURRENT_VERSION" == "$NEW_VERSION" && "$NEW_VERSION" != "unknown" ]]; then
+    echo -e "${YELLOW}Already on the latest version!${RESET}"
+else
+    echo -e "${GREEN}✅ Updated from ${CURRENT_VERSION} to ${NEW_VERSION}${RESET}"
+fi
+
+echo "Please restart claude to apply the updates."

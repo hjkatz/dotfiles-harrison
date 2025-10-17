@@ -15,7 +15,7 @@ These tools help Claude:
 <!-- Keep this list sorted alphabetically -->
 <!-- Format: - `tool-name` - Brief description -->
 
-*No tools yet. Tools will be added as they're created.*
+- `update-claude` - Update Claude Code to the latest version and resume the current session
 
 ## Tool Header Template
 
