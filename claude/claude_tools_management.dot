@@ -1,0 +1,366 @@
+// See: https://dreampuf.github.io/GraphvizOnline/?engine=dot
+// Title: Claude's Personal Tools & Scripts Management
+// Purpose: How Claude discovers, uses, creates, and manages personal tools in $DOTFILES/claude/bin/
+digraph CLAUDE_TOOLS_MANAGEMENT {
+    graph [bgcolor="#f8f9fa", pad=0.5];
+    node [fontname="Helvetica", fontsize=10];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // WHEN: Need to perform an operation (EARLY CHECK)
+    subgraph cluster_check_tools_first {
+        label="CHECK FOR CLAUDE TOOLS FIRST";
+        style=filled;
+        fillcolor="#fff3e0";
+        color="#e65100";
+        penwidth=3;
+
+        "START: Need to perform operation" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "MCP tool available?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use MCP tool" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Claude tool might exist?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Search for claude tool" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ ls $DOTFILES/claude/bin/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Relevant tool found?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Load tool into context" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Read tool to understand usage" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Tool matches need?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use claude tool" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Continue to standard tools" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "END: Tool selected" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Need to perform operation" -> "MCP tool available?" [penwidth=2];
+        "MCP tool available?" -> "Use MCP tool" [label="yes (highest priority)", penwidth=2, color="#2e7d32"];
+        "MCP tool available?" -> "Claude tool might exist?" [label="no", penwidth=2, color="#d84315"];
+        "Use MCP tool" -> "END: Tool selected" [penwidth=2];
+
+        "Claude tool might exist?" -> "Search for claude tool" [label="yes", penwidth=2, color="#2e7d32"];
+        "Claude tool might exist?" -> "Continue to standard tools" [label="no/unsure", penwidth=2, color="#d84315"];
+        "Search for claude tool" -> "$ ls $DOTFILES/claude/bin/" [penwidth=2];
+        "$ ls $DOTFILES/claude/bin/" -> "Relevant tool found?" [penwidth=2];
+        "Relevant tool found?" -> "Continue to standard tools" [label="no", penwidth=2, color="#d84315"];
+        "Relevant tool found?" -> "Load tool into context" [label="yes", penwidth=2, color="#2e7d32"];
+        "Load tool into context" -> "Read tool to understand usage" [penwidth=2];
+        "Read tool to understand usage" -> "Tool matches need?" [penwidth=2];
+        "Tool matches need?" -> "Search for claude tool" [label="no, keep looking", penwidth=2, color="#d84315"];
+        "Tool matches need?" -> "Use claude tool" [label="yes", penwidth=2, color="#2e7d32"];
+        "Use claude tool" -> "END: Tool selected" [penwidth=2];
+        "Continue to standard tools" -> "END: Tool selected" [penwidth=2];
+    }
+
+    // WHEN: Discovering existing tools
+    subgraph cluster_discover {
+        label="DISCOVERING EXISTING CLAUDE TOOLS";
+        style=filled;
+        fillcolor="#e3f2fd";
+        color="#1976d2";
+        penwidth=2;
+
+        "START: Explore available tools" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "List all tools" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ ls -lh $DOTFILES/claude/bin/" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Check README for index" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Read $DOTFILES/claude/bin/README.md" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Scan tool headers" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Each tool has purpose comment" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Build mental inventory" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Tools cataloged" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Explore available tools" -> "List all tools" [penwidth=2];
+        "List all tools" -> "$ ls -lh $DOTFILES/claude/bin/" [penwidth=2];
+        "$ ls -lh $DOTFILES/claude/bin/" -> "Check README for index" [penwidth=2];
+        "Check README for index" -> "Read $DOTFILES/claude/bin/README.md" [penwidth=2];
+        "Read $DOTFILES/claude/bin/README.md" -> "Scan tool headers" [penwidth=2];
+        "Scan tool headers" -> "Each tool has purpose comment" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Scan tool headers" -> "Build mental inventory" [penwidth=2];
+        "Build mental inventory" -> "END: Tools cataloged" [penwidth=2];
+    }
+
+    // WHEN: Loading a tool for use
+    subgraph cluster_load {
+        label="LOADING A TOOL INTO CONTEXT";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#7b1fa2";
+        penwidth=2;
+
+        "START: Need to load tool" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Read full tool content" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Use Read tool on script" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Parse header comments" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Look for: Purpose, Usage, Args, Output" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Understand tool behavior" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Check if executable" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ test -x $DOTFILES/claude/bin/<tool>" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Is executable?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Make executable" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ chmod +x $DOTFILES/claude/bin/<tool>" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Tool ready to use" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "END: Tool loaded" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Need to load tool" -> "Read full tool content" [penwidth=2];
+        "Read full tool content" -> "Use Read tool on script" [penwidth=2];
+        "Use Read tool on script" -> "Parse header comments" [penwidth=2];
+        "Parse header comments" -> "Look for: Purpose, Usage, Args, Output" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Parse header comments" -> "Understand tool behavior" [penwidth=2];
+        "Understand tool behavior" -> "Check if executable" [penwidth=2];
+        "Check if executable" -> "$ test -x $DOTFILES/claude/bin/<tool>" [penwidth=2];
+        "$ test -x $DOTFILES/claude/bin/<tool>" -> "Is executable?" [penwidth=2];
+        "Is executable?" -> "Tool ready to use" [label="yes", penwidth=2, color="#2e7d32"];
+        "Is executable?" -> "Make executable" [label="no", penwidth=2, color="#d84315"];
+        "Make executable" -> "$ chmod +x $DOTFILES/claude/bin/<tool>" [penwidth=2];
+        "$ chmod +x $DOTFILES/claude/bin/<tool>" -> "Tool ready to use" [penwidth=2];
+        "Tool ready to use" -> "END: Tool loaded" [penwidth=2];
+    }
+
+    // WHEN: Deciding to create a new tool
+    subgraph cluster_when_create {
+        label="WHEN TO CREATE A NEW TOOL";
+        style=filled;
+        fillcolor="#fff9c4";
+        color="#f57f17";
+        penwidth=2;
+
+        "START: Considering new tool" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "What's the trigger?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+
+        "Did same operation 2+ times" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Complex bash needed repeatedly" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Common pattern in workflows" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Your Human Partner suggests it" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "One-off need right now" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Would help future tasks" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+
+        "Is this reusable?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Too specific to one case" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
+        "Can generalize pattern?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Document specific case only" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Worth the overhead?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Just use inline bash" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+
+        "START: Considering new tool" -> "What's the trigger?" [penwidth=2];
+        "What's the trigger?" -> "Did same operation 2+ times" [label="repetition", penwidth=2, color="#1565c0"];
+        "What's the trigger?" -> "Complex bash needed repeatedly" [label="complexity", penwidth=2, color="#1565c0"];
+        "What's the trigger?" -> "Common pattern in workflows" [label="pattern", penwidth=2, color="#1565c0"];
+        "What's the trigger?" -> "Your Human Partner suggests it" [label="suggestion", penwidth=2, color="#1565c0"];
+        "What's the trigger?" -> "One-off need right now" [label="immediate", penwidth=2, color="#1565c0"];
+        "What's the trigger?" -> "Would help future tasks" [label="future", penwidth=2, color="#1565c0"];
+
+        "Did same operation 2+ times" -> "Is this reusable?" [penwidth=2];
+        "Complex bash needed repeatedly" -> "Is this reusable?" [penwidth=2];
+        "Common pattern in workflows" -> "Is this reusable?" [penwidth=2];
+        "Your Human Partner suggests it" -> "START: Propose new tool" [penwidth=2, style=dotted];
+        "One-off need right now" -> "Is this reusable?" [penwidth=2];
+        "Would help future tasks" -> "Is this reusable?" [penwidth=2];
+
+        "Is this reusable?" -> "Too specific to one case" [label="no", penwidth=2, color="#d84315"];
+        "Is this reusable?" -> "Can generalize pattern?" [label="maybe", penwidth=2, color="#1565c0"];
+        "Is this reusable?" -> "Worth the overhead?" [label="yes", penwidth=2, color="#2e7d32"];
+
+        "Can generalize pattern?" -> "Document specific case only" [label="no", penwidth=2, color="#d84315"];
+        "Can generalize pattern?" -> "Worth the overhead?" [label="yes", penwidth=2, color="#2e7d32"];
+
+        "Worth the overhead?" -> "Just use inline bash" [label="no", penwidth=2, color="#d84315"];
+        "Worth the overhead?" -> "START: Propose new tool" [label="yes", penwidth=2, color="#2e7d32", style=dotted];
+    }
+
+    // WHEN: Proposing a new tool to human partner
+    subgraph cluster_propose {
+        label="PROPOSING A NEW TOOL";
+        style=filled;
+        fillcolor="#e1f5fe";
+        color="#01579b";
+        penwidth=2;
+
+        "START: Propose new tool" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Describe the problem" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "What operation is repeated?" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Outline tool purpose" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "What will it do?" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Suggest tool name" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Short, descriptive, verb-based" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Draft usage example" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Show concrete use case" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Ask: Should I create this?" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Wait for approval" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Approved?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Don't create tool" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "END: Proposal handled" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Propose new tool" -> "Describe the problem" [penwidth=2];
+        "Describe the problem" -> "What operation is repeated?" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Describe the problem" -> "Outline tool purpose" [penwidth=2];
+        "Outline tool purpose" -> "What will it do?" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Outline tool purpose" -> "Suggest tool name" [penwidth=2];
+        "Suggest tool name" -> "Short, descriptive, verb-based" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Suggest tool name" -> "Draft usage example" [penwidth=2];
+        "Draft usage example" -> "Show concrete use case" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Draft usage example" -> "Ask: Should I create this?" [penwidth=2];
+        "Ask: Should I create this?" -> "Wait for approval" [penwidth=2];
+        "Wait for approval" -> "Approved?" [penwidth=2];
+        "Approved?" -> "Don't create tool" [label="no", penwidth=2, color="#d84315"];
+        "Approved?" -> "START: Create new tool" [label="yes", penwidth=2, color="#2e7d32", style=dotted];
+        "Don't create tool" -> "END: Proposal handled" [penwidth=2];
+    }
+
+    // WHEN: Creating/writing a new tool
+    subgraph cluster_create {
+        label="CREATING A NEW TOOL";
+        style=filled;
+        fillcolor="#e8f5e9";
+        color="#2e7d32";
+        penwidth=2;
+
+        "START: Create new tool" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Choose tool name" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Use verb-noun or descriptive" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Start with header template" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Add #!/usr/bin/env bash" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Write purpose comment" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Purpose: What does this do?" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Write usage comment" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Usage: How to call it" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Document arguments" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Args: What inputs needed" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Document output" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Output: What it returns" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Write implementation" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Keep it simple and focused" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Add error handling" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "set -euo pipefail recommended" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Save to $DOTFILES/claude/bin/" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Make executable" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ chmod +x $DOTFILES/claude/bin/<name>" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Test tool execution" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "$ $DOTFILES/claude/bin/<name> [args]" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32"];
+        "Tool works?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Debug issues" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Update README index" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Add entry to tool list" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Tool created" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Create new tool" -> "Choose tool name" [penwidth=2];
+        "Choose tool name" -> "Use verb-noun or descriptive" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Choose tool name" -> "Start with header template" [penwidth=2];
+        "Start with header template" -> "Add #!/usr/bin/env bash" [penwidth=2];
+        "Add #!/usr/bin/env bash" -> "Write purpose comment" [penwidth=2];
+        "Write purpose comment" -> "Purpose: What does this do?" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Write purpose comment" -> "Write usage comment" [penwidth=2];
+        "Write usage comment" -> "Usage: How to call it" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Write usage comment" -> "Document arguments" [penwidth=2];
+        "Document arguments" -> "Args: What inputs needed" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Document arguments" -> "Document output" [penwidth=2];
+        "Document output" -> "Output: What it returns" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Document output" -> "Write implementation" [penwidth=2];
+        "Write implementation" -> "Keep it simple and focused" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Write implementation" -> "Add error handling" [penwidth=2];
+        "Add error handling" -> "set -euo pipefail recommended" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Add error handling" -> "Save to $DOTFILES/claude/bin/" [penwidth=2];
+        "Save to $DOTFILES/claude/bin/" -> "Make executable" [penwidth=2];
+        "Make executable" -> "$ chmod +x $DOTFILES/claude/bin/<name>" [penwidth=2];
+        "$ chmod +x $DOTFILES/claude/bin/<name>" -> "Test tool execution" [penwidth=2];
+        "Test tool execution" -> "$ $DOTFILES/claude/bin/<name> [args]" [penwidth=2];
+        "$ $DOTFILES/claude/bin/<name> [args]" -> "Tool works?" [penwidth=2];
+        "Tool works?" -> "Debug issues" [label="no", penwidth=2, color="#d84315"];
+        "Debug issues" -> "Write implementation" [penwidth=2];
+        "Tool works?" -> "Update README index" [label="yes", penwidth=2, color="#2e7d32"];
+        "Update README index" -> "Add entry to tool list" [penwidth=2];
+        "Add entry to tool list" -> "END: Tool created" [penwidth=2];
+    }
+
+    // WHEN: Updating an existing tool
+    subgraph cluster_update {
+        label="UPDATING AN EXISTING TOOL";
+        style=filled;
+        fillcolor="#fce4ec";
+        color="#c2185b";
+        penwidth=2;
+
+        "START: Need to update tool" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "What needs changing?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Fix bug" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Add feature" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Improve documentation" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+        "Refactor code" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=1.5];
+
+        "Load current tool" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Understand existing behavior" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Make changes" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Update header comments if needed" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Test updated tool" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Works correctly?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Fix issues" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Update README if needed" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Tool updated" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "START: Need to update tool" -> "What needs changing?" [penwidth=2];
+        "What needs changing?" -> "Fix bug" [label="bug", penwidth=2, color="#1565c0"];
+        "What needs changing?" -> "Add feature" [label="feature", penwidth=2, color="#1565c0"];
+        "What needs changing?" -> "Improve documentation" [label="docs", penwidth=2, color="#1565c0"];
+        "What needs changing?" -> "Refactor code" [label="refactor", penwidth=2, color="#1565c0"];
+
+        "Fix bug" -> "Load current tool" [penwidth=2];
+        "Add feature" -> "Load current tool" [penwidth=2];
+        "Improve documentation" -> "Load current tool" [penwidth=2];
+        "Refactor code" -> "Load current tool" [penwidth=2];
+
+        "Load current tool" -> "Understand existing behavior" [penwidth=2];
+        "Understand existing behavior" -> "Make changes" [penwidth=2];
+        "Make changes" -> "Update header comments if needed" [penwidth=2];
+        "Update header comments if needed" -> "Test updated tool" [penwidth=2];
+        "Test updated tool" -> "Works correctly?" [penwidth=2];
+        "Works correctly?" -> "Fix issues" [label="no", penwidth=2, color="#d84315"];
+        "Fix issues" -> "Make changes" [penwidth=2];
+        "Works correctly?" -> "Update README if needed" [label="yes", penwidth=2, color="#2e7d32"];
+        "Update README if needed" -> "END: Tool updated" [penwidth=2];
+    }
+
+    // Tool header template reference
+    subgraph cluster_template {
+        label="REFERENCE: TOOL HEADER TEMPLATE";
+        style=filled;
+        fillcolor="#f1f8e9";
+        color="#558b2f";
+        penwidth=2;
+
+        "TEMPLATE START" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "#!/usr/bin/env bash" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32", fontsize=9];
+        "# Purpose: <one-line description>" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32", fontsize=9];
+        "# Usage: <tool-name> [args]" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32", fontsize=9];
+        "# Args: <arg1> - description" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32", fontsize=9];
+        "# Output: <what it prints/returns>" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32", fontsize=9];
+        "set -euo pipefail" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32", fontsize=9];
+        "# <implementation>" [shape=plaintext, fontname="monospace", fontcolor="#2e7d32", fontsize=9];
+        "TEMPLATE END" [shape=ellipse, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        "TEMPLATE START" -> "#!/usr/bin/env bash" [penwidth=1];
+        "#!/usr/bin/env bash" -> "# Purpose: <one-line description>" [penwidth=1];
+        "# Purpose: <one-line description>" -> "# Usage: <tool-name> [args]" [penwidth=1];
+        "# Usage: <tool-name> [args]" -> "# Args: <arg1> - description" [penwidth=1];
+        "# Args: <arg1> - description" -> "# Output: <what it prints/returns>" [penwidth=1];
+        "# Output: <what it prints/returns>" -> "set -euo pipefail" [penwidth=1];
+        "set -euo pipefail" -> "# <implementation>" [penwidth=1];
+        "# <implementation>" -> "TEMPLATE END" [penwidth=1];
+    }
+
+    // Best practices
+    subgraph cluster_practices {
+        label="BEST PRACTICES FOR CLAUDE TOOLS";
+        style=filled;
+        fillcolor="#e0f7fa";
+        color="#006064";
+        penwidth=2;
+
+        "Keep tools focused" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "One tool = one job" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Use descriptive names" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Document thoroughly" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Headers are mandatory" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Test before committing" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Handle errors gracefully" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Use set -euo pipefail" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Make tools composable" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Prefer UNIX philosophy" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Update README when adding" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Keep README current" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+    }
+}

@@ -56,5 +56,21 @@ mkdir -p ~/.claude
 ln -s -f -v $DEFAULT_DOTFILES_HOME/compiled/CLAUDE.md ~/.claude/CLAUDE.md
 
 echo
+color_echo cyan "🤖 Setting up Claude commands..."
+# Create Claude commands directory and symlink all command files
+mkdir -p ~/.claude/commands
+if [[ -d $DEFAULT_DOTFILES_HOME/claude/commands ]]; then
+    for cmd_file in $DEFAULT_DOTFILES_HOME/claude/commands/*.md; do
+        if [[ -f "$cmd_file" ]]; then
+            cmd_name=$(basename "$cmd_file")
+            color_echo cyan "  🔗 Linking command: $cmd_name"
+            ln -s -f -v "$cmd_file" ~/.claude/commands/"$cmd_name"
+        fi
+    done
+else
+    color_echo yellow "  ⚠️  No claude/commands directory found, skipping..."
+fi
+
+echo
 color_echo green "✅ Installation complete!"
 color_echo white "   Run 'source ~/.dotfiles-harrison/zshrc' to activate your dotfiles"

@@ -130,6 +130,8 @@ digraph CLAUDE_MAIN_PROCESS {
         "START: Need to use tool" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
         "MCP available for this?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
         "Use MCP tool" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Claude tool available?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Use Claude tool" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
         "What operation needed?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
 
         "Search files?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
@@ -155,8 +157,10 @@ digraph CLAUDE_MAIN_PROCESS {
         "NEVER use these" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
 
         "START: Need to use tool" -> "MCP available for this?" [penwidth=2];
-        "MCP available for this?" -> "Use MCP tool" [label="yes (preferred)", penwidth=2, color="#2e7d32"];
-        "MCP available for this?" -> "What operation needed?" [label="no", penwidth=2, color="#d84315"];
+        "MCP available for this?" -> "Use MCP tool" [label="yes (highest priority)", penwidth=2, color="#2e7d32"];
+        "MCP available for this?" -> "Claude tool available?" [label="no", penwidth=2, color="#d84315"];
+        "Claude tool available?" -> "Use Claude tool" [label="yes (preferred)", penwidth=2, color="#2e7d32"];
+        "Claude tool available?" -> "What operation needed?" [label="no", penwidth=2, color="#d84315"];
 
         "What operation needed?" -> "Search files?" [label="search", penwidth=2, color="#1565c0"];
         "What operation needed?" -> "Read files?" [label="read", penwidth=2, color="#1565c0"];
@@ -420,6 +424,9 @@ digraph CLAUDE_MAIN_PROCESS {
 
         "GIT BRANCHES: Use git checkout -b hkatz/<branch-name>" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
         "GIT BRANCHES: Never use worktrees" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+
+        "CLAUDE TOOLS: Check $DOTFILES/claude/bin/ before standard tools" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "CLAUDE TOOLS: See claude_tools_management.dot for full process" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
     }
 
     // Process transitions (dotted = cross-process)
