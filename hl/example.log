@@ -1,0 +1,33 @@
+*** Application starting up ***
+Initializing configuration from /etc/app/config.yaml
+Loading plugins...
+{"levelname": "INFO", "funcName": "init_database", "lineno": 42, "message": "Connected to database successfully", "host": "localhost", "port": 5432}
+{"levelname": "INFO", "funcName": "load_config", "lineno": 89, "message": "Configuration loaded", "env": "production", "debug": false}
+{"levelname": "DEBUG", "funcName": "check_dependencies", "lineno": 103, "message": "Checking system dependencies", "count": 15, "required": true}
+{"levelname": "INFO", "funcName": "start_server", "lineno": 156, "message": "HTTP server listening", "port": 8080, "workers": 4}
+Bootstrap complete in 1.234 seconds
+{"levelname": "INFO", "funcName": "process_request", "lineno": 201, "message": "Processing user request", "user_id": 12345, "method": "GET", "path": "/api/users"}
+{"levelname": "DEBUG", "funcName": "validate_token", "lineno": 245, "message": "Token validation successful", "token_age": 3600, "expires_in": 7200}
+{"levelname": "INFO", "funcName": "query_database", "lineno": 289, "message": "Database query executed", "rows": 42, "duration_ms": 15.3, "cached": false}
+{"levelname": "WARNING", "funcName": "check_memory", "lineno": 334, "message": "Memory usage high", "used_mb": 1536, "total_mb": 2048, "threshold": 0.75}
+{"levelname": "WARNING", "funcName": "check_disk", "lineno": 356, "message": "Disk space running low", "free_gb": 5.2, "total_gb": 100, "alert": true}
+Received signal: SIGUSR1
+{"levelname": "INFO", "funcName": "handle_signal", "lineno": 401, "message": "Reloading configuration", "previous_workers": 4, "new_workers": 8}
+{"levelname": "DEBUG", "funcName": "parse_config", "lineno": 445, "message": "Parsing configuration file", "format": "yaml", "size_kb": 12.5}
+{"levelname": "ERROR", "funcName": "connect_cache", "lineno": 489, "message": "Failed to connect to Redis cache", "host": "cache.example.com", "port": 6379, "timeout": 5.0, "retries": 3}
+Connection attempt failed: connection refused
+{"levelname": "ERROR", "funcName": "handle_exception", "lineno": 523, "message": "Uncaught exception in worker", "worker_id": 2, "exception": "ValueError", "traceback": null}
+{"levelname": "CRITICAL", "funcName": "critical_failure", "lineno": 567, "message": "Critical system failure detected", "component": "database", "recovering": false}
+Attempting automatic recovery...
+{"levelname": "WARNING", "funcName": "retry_connection", "lineno": 601, "message": "Retrying failed connection", "attempt": 1, "max_attempts": 5, "backoff_seconds": 2.0}
+{"levelname": "WARNING", "funcName": "retry_connection", "lineno": 601, "message": "Retrying failed connection", "attempt": 2, "max_attempts": 5, "backoff_seconds": 4.0}
+{"levelname": "INFO", "funcName": "connect_cache", "lineno": 489, "message": "Successfully reconnected to Redis cache", "elapsed_seconds": 8.5}
+{"levelname": "INFO", "funcName": "health_check", "lineno": 645, "message": "System health check passed", "status": "healthy", "uptime_hours": 24.5, "requests_served": 156789}
+{"levelname": "DEBUG", "funcName": "cleanup_sessions", "lineno": 689, "message": "Cleaning up expired sessions", "removed": 42, "active": 1234, "expired_before": "2024-01-01T00:00:00Z"}
+{"levelname": "TRACE", "funcName": "trace_request", "lineno": 723, "message": "Detailed request trace", "headers": null, "body_size": 0, "response_time_us": 125}
+{"levelname": "INFO", "funcName": "rotate_logs", "lineno": 767, "message": "Log rotation completed", "old_size_mb": 512, "compressed": true, "new_file": "/var/log/app.log.1.gz"}
+Shutdown signal received
+{"levelname": "INFO", "funcName": "graceful_shutdown", "lineno": 801, "message": "Starting graceful shutdown", "active_connections": 12, "timeout_seconds": 30}
+{"levelname": "INFO", "funcName": "close_connections", "lineno": 845, "message": "Closed all active connections", "closed": 12, "forced": 0}
+{"levelname": "INFO", "funcName": "cleanup", "lineno": 889, "message": "Cleanup completed", "resources_freed": true, "exit_code": 0}
+*** Application shutdown complete ***
