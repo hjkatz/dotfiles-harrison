@@ -78,6 +78,7 @@ digraph CLAUDE_MAIN_PROCESS {
         "User approved plan?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
         "STOP: Do NOT execute tools" [shape=octagon, style=filled, fillcolor="#ef5350", fontcolor="white", penwidth=2.5];
         "Revise plan" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Check execution mode?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
         "END: Ready to execute" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
 
         "START: Planning phase" -> "Use exit_plan_mode tool" [penwidth=2];
@@ -85,9 +86,63 @@ digraph CLAUDE_MAIN_PROCESS {
         "Present complete plan to user" -> "Wait for explicit approval" [penwidth=2];
         "Wait for explicit approval" -> "User approved plan?" [penwidth=2];
         "User approved plan?" -> "STOP: Do NOT execute tools" [label="no", penwidth=2, color="#d84315"];
-        "User approved plan?" -> "END: Ready to execute" [label="yes", penwidth=2, color="#2e7d32"];
+        "User approved plan?" -> "Check execution mode?" [label="yes", penwidth=2, color="#2e7d32"];
+        "Check execution mode?" -> "START: Autonomous mode" [label="autonomous trigger", penwidth=2, color="#ff6f00", style=dotted];
+        "Check execution mode?" -> "END: Ready to execute" [label="normal", penwidth=2, color="#2e7d32"];
         "STOP: Do NOT execute tools" -> "Revise plan" [label="if requested", penwidth=2];
         "Revise plan" -> "Present complete plan to user" [penwidth=2];
+    }
+
+    // WHEN: Autonomous execution mode enabled
+    subgraph cluster_autonomous {
+        label="AUTONOMOUS EXECUTION MODE";
+        style=filled;
+        fillcolor="#fff8e1";
+        color="#ff6f00";
+        penwidth=3;
+
+        "START: Autonomous mode" [shape=rarrow, style=filled, fillcolor="#ffe082", fontcolor="#e65100", penwidth=2];
+        "Detect autonomous trigger phrase?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Trigger: 'execute this in autonomous mode'" [shape=ellipse, style=filled, fillcolor="#ffe082", fontcolor="#e65100", penwidth=1.5];
+        "Trigger: 'execute this autonomously'" [shape=ellipse, style=filled, fillcolor="#ffe082", fontcolor="#e65100", penwidth=1.5];
+        "Grant batch tool permissions" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Scope = approved plan ONLY" [shape=ellipse, style=filled, fillcolor="#ffe082", fontcolor="#e65100", penwidth=1.5];
+
+        "CAN execute freely:" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Read/search any files" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "Run tests/lint/build" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "Make code changes in plan" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "Commit changes in plan" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+        "Report progress as I work" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
+
+        "MUST STILL ASK before:" [shape=octagon, style=filled, fillcolor="#ff9800", fontcolor="white", penwidth=2.5];
+        "Outside plan scope" [shape=note, style=filled, fillcolor="#ffe0b2", fontcolor="#e65100", penwidth=1.5];
+        "Unexpected blockers" [shape=note, style=filled, fillcolor="#ffe0b2", fontcolor="#e65100", penwidth=1.5];
+        "Destructive ops not in plan" [shape=note, style=filled, fillcolor="#ffe0b2", fontcolor="#e65100", penwidth=1.5];
+        "Plan changes/additions" [shape=note, style=filled, fillcolor="#ffe0b2", fontcolor="#e65100", penwidth=1.5];
+
+        "Execute entire plan autonomously" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Autonomous execution complete" [shape=doublecircle, style=filled, fillcolor="#ffe082", fontcolor="#e65100", penwidth=2];
+
+        "START: Autonomous mode" -> "Detect autonomous trigger phrase?" [penwidth=2];
+        "Detect autonomous trigger phrase?" -> "Trigger: 'execute this in autonomous mode'" [label="match", penwidth=2, color="#2e7d32"];
+        "Detect autonomous trigger phrase?" -> "Trigger: 'execute this autonomously'" [label="match", penwidth=2, color="#2e7d32"];
+        "Trigger: 'execute this in autonomous mode'" -> "Grant batch tool permissions" [penwidth=2];
+        "Trigger: 'execute this autonomously'" -> "Grant batch tool permissions" [penwidth=2];
+        "Grant batch tool permissions" -> "Scope = approved plan ONLY" [penwidth=2];
+        "Scope = approved plan ONLY" -> "CAN execute freely:" [penwidth=2];
+        "CAN execute freely:" -> "Read/search any files" [penwidth=1, style=dashed, color="#2e7d32"];
+        "CAN execute freely:" -> "Run tests/lint/build" [penwidth=1, style=dashed, color="#2e7d32"];
+        "CAN execute freely:" -> "Make code changes in plan" [penwidth=1, style=dashed, color="#2e7d32"];
+        "CAN execute freely:" -> "Commit changes in plan" [penwidth=1, style=dashed, color="#2e7d32"];
+        "CAN execute freely:" -> "Report progress as I work" [penwidth=1, style=dashed, color="#2e7d32"];
+        "CAN execute freely:" -> "MUST STILL ASK before:" [penwidth=2];
+        "MUST STILL ASK before:" -> "Outside plan scope" [penwidth=1, style=dashed, color="#e65100"];
+        "MUST STILL ASK before:" -> "Unexpected blockers" [penwidth=1, style=dashed, color="#e65100"];
+        "MUST STILL ASK before:" -> "Destructive ops not in plan" [penwidth=1, style=dashed, color="#e65100"];
+        "MUST STILL ASK before:" -> "Plan changes/additions" [penwidth=1, style=dashed, color="#e65100"];
+        "MUST STILL ASK before:" -> "Execute entire plan autonomously" [penwidth=2];
+        "Execute entire plan autonomously" -> "END: Autonomous execution complete" [penwidth=2];
     }
 
     // WHEN: Detecting language and tooling
@@ -184,6 +239,51 @@ digraph CLAUDE_MAIN_PROCESS {
         "Use Read tool" -> "NEVER use these" [label="NOT cat/head/tail", penwidth=2, color="#d84315", style=dashed];
         "Use LS tool" -> "NEVER use these" [label="NOT ls command", penwidth=2, color="#d84315", style=dashed];
         "Use Grep or $ rg" -> "NEVER use these" [label="NOT find/grep", penwidth=2, color="#d84315", style=dashed];
+    }
+
+    // WHEN: Editing documentation
+    subgraph cluster_documentation {
+        label="EDITING DOCUMENTATION";
+        style=filled;
+        fillcolor="#f3e5f5";
+        color="#7b1fa2";
+        penwidth=2;
+
+        "START: Edit documentation" [shape=rarrow, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+        "Read existing doc" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Understand style/tone" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Make changes" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Verify formatting?" [shape=diamond, style=filled, fillcolor="#ffeb3b", fontcolor="#f57f17", penwidth=2];
+        "Check code blocks use triple backticks" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Check commands use single backticks" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Check CLI commands start with $" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Check semantic line breaks used" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "Check no emojis present" [shape=box, style=filled, fillcolor="#c8e6c9", fontcolor="black", penwidth=1.5];
+        "END: Documentation updated" [shape=doublecircle, style=filled, fillcolor="#b3e5fc", fontcolor="#0277bd", penwidth=2];
+
+        // User preferences for documentation
+        "Code blocks: Use triple backticks" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Single commands: Use single backticks" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "CLI commands: Always start with $" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Line breaks: Use semantic (sembr.org)" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+        "Emojis: Avoid using" [shape=note, style=filled, fillcolor="#e1bee7", fontcolor="#6a1b9a", penwidth=1.5];
+
+        "START: Edit documentation" -> "Read existing doc" [penwidth=2];
+        "Read existing doc" -> "Understand style/tone" [penwidth=2];
+        "Understand style/tone" -> "Make changes" [penwidth=2];
+        "Make changes" -> "Verify formatting?" [penwidth=2];
+        "Verify formatting?" -> "Check code blocks use triple backticks" [label="yes", penwidth=2, color="#2e7d32"];
+        "Check code blocks use triple backticks" -> "Code blocks: Use triple backticks" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Check code blocks use triple backticks" -> "Check commands use single backticks" [penwidth=2];
+        "Check commands use single backticks" -> "Single commands: Use single backticks" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Check commands use single backticks" -> "Check CLI commands start with $" [penwidth=2];
+        "Check CLI commands start with $" -> "CLI commands: Always start with $" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Check CLI commands start with $" -> "Check semantic line breaks used" [penwidth=2];
+        "Check semantic line breaks used" -> "Line breaks: Use semantic (sembr.org)" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Check semantic line breaks used" -> "Check no emojis present" [penwidth=2];
+        "Check no emojis present" -> "Emojis: Avoid using" [penwidth=1, style=dashed, color="#6a1b9a"];
+        "Check no emojis present" -> "END: Documentation updated" [penwidth=2];
+        "Verify formatting?" -> "END: Documentation updated" [label="no", penwidth=2, color="#d84315"];
     }
 
     // WHEN: Writing code
@@ -414,6 +514,12 @@ digraph CLAUDE_MAIN_PROCESS {
         "EXECUTION: ALWAYS get approval before _ANY_ code execution" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
         "EXECUTION: NEVER plan -> execute; ALWAYS plan -> approval -> execute" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
 
+        "AUTONOMOUS MODE: Trigger phrases enable batch execution" [shape=note, style=filled, fillcolor="#ffe082", fontcolor="#e65100", penwidth=1.5];
+        "AUTONOMOUS MODE: 'Please execute this in autonomous mode.'" [shape=note, style=filled, fillcolor="#ffe082", fontcolor="#e65100", penwidth=1.5];
+        "AUTONOMOUS MODE: 'Please execute this autonomously.'" [shape=note, style=filled, fillcolor="#ffe082", fontcolor="#e65100", penwidth=1.5];
+        "AUTONOMOUS MODE: Scope limited to approved plan only" [shape=note, style=filled, fillcolor="#ffe082", fontcolor="#e65100", penwidth=1.5];
+        "AUTONOMOUS MODE: Still ask before out-of-scope actions" [shape=note, style=filled, fillcolor="#ffe082", fontcolor="#e65100", penwidth=1.5];
+
         "SUBAGENTS: Consider Task tool for parallel/independent work" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
         "SUBAGENTS: Consider Task tool for specialized tasks (debug/research/review)" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
         "SUBAGENTS: Use when task is self-contained with clear scope" [shape=note, style=filled, fillcolor="#c8e6c9", fontcolor="#2e7d32", penwidth=1.5];
@@ -433,6 +539,9 @@ digraph CLAUDE_MAIN_PROCESS {
     "END: Capabilities checked" -> "START: Planning phase" [style=dotted, penwidth=2, color="#01579b"];
     "END: Ready to execute" -> "START: Need language context" [style=dotted, penwidth=2, color="#f57f17"];
     "END: Language context set" -> "START: Need to use tool" [style=dotted, penwidth=2, color="#7b1fa2"];
+    "END: Ready to execute" -> "START: Edit documentation" [label="docs work", style=dotted, penwidth=2, color="#7b1fa2"];
+    "END: Autonomous execution complete" -> "START: Ready to complete" [style=dotted, penwidth=2, color="#ff6f00"];
+    "END: Documentation updated" -> "START: Ready to complete" [style=dotted, penwidth=2, color="#00796b"];
     "Run <test_command> to verify success" -> "START: I'm stuck" [label="confused", style=dotted, penwidth=2, color="#e65100"];
     "Run <test_command> to verify success" -> "START: Verification failing" [label="fails", style=dotted, penwidth=2, color="#c62828"];
     "END: Task complete" -> "START: Request arrives" [label="next", style=dotted, penwidth=2, color="#1976d2"];
