@@ -16,6 +16,7 @@ mkdir -p "$HOME/.local/bin" 2>/dev/null || true
 
 add_to_path "/usr/local/git/bin"
 add_to_path "/usr/local/bin" true
+add_to_path "$DOTFILES/claude/bin/" true
 add_to_path "$DOTFILES/bin" true
 add_to_path "$HOME/.local/bin" true
 add_to_path "./bin" true

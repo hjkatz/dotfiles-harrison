@@ -284,6 +284,8 @@ keymap('n', '<C-h>', '<C-w>h')
 keymap('n', '<C-j>', '<C-w>j')
 keymap('n', '<C-k>', '<C-w>k')
 keymap('n', '<C-l>', '<C-w>l')
+-- Alternative mapping if terminal doesn't pass through C-j
+keymap('n', '<leader>j', '<C-w>j')
 
 -- Move up/down on wrapped lines
 keymap('n', 'j', 'gj')
