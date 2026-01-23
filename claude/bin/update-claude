@@ -18,22 +18,20 @@ echo -e "${BLUE}🔄 Updating Claude Code...${RESET}"
 echo
 
 # Get current version
-CURRENT_VERSION=$(npx -y @anthropic-ai/claude-code --version 2>/dev/null || echo "unknown")
+CURRENT_VERSION=$(claude --version 2>/dev/null || echo "unknown")
 echo -e "${CYAN}Current version: ${CURRENT_VERSION}${RESET}"
 
-# Update Claude Code
-echo -e "${CYAN}Running npm update...${RESET}"
-if npm update -g @anthropic-ai/claude-code 2>&1; then
+# Update Claude Code using the official install command
+echo -e "${CYAN}Running claude install...${RESET}"
+if claude install 2>&1; then
     echo -e "${GREEN}✅ Update complete!${RESET}"
 else
-    echo -e "${YELLOW}⚠️  Global update failed, trying npx cache clear...${RESET}"
-    # Clear npx cache and try again
-    rm -rf ~/.npm/_npx 2>/dev/null || true
-    echo -e "${GREEN}✅ NPX cache cleared${RESET}"
+    echo -e "${RED}❌ Update failed${RESET}"
+    exit 1
 fi
 
 # Get new version
-NEW_VERSION=$(npx -y @anthropic-ai/claude-code --version 2>/dev/null || echo "unknown")
+NEW_VERSION=$(claude --version 2>/dev/null || echo "unknown")
 echo -e "${CYAN}New version: ${NEW_VERSION}${RESET}"
 
 if [[ "$CURRENT_VERSION" == "$NEW_VERSION" && "$NEW_VERSION" != "unknown" ]]; then

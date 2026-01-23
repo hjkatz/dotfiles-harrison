@@ -14,7 +14,7 @@ elements:
     foreground: "#8a9aa6"
     modes: [faint]
   level:
-    foreground: "#2d3139"
+    foreground: "#3f5e7f"
   message:
     foreground: "#d4af37"
     modes: [bold]
