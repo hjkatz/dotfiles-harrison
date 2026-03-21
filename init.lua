@@ -45,7 +45,6 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     Plug 'williamboman/mason-lspconfig.nvim'
     Plug 'neovim/nvim-lspconfig'
     Plug 'ray-x/guihua.lua', { 'do': 'cd lua/fzy && make' }
-    Plug 'ray-x/navigator.lua'
     Plug 'hrsh7th/nvim-cmp'
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-nvim-lua'
@@ -79,11 +78,9 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     Plug 'Julian/vim-textobj-variable-segment', { 'branch': 'main' }
 
     " Filetype Plugins
-    Plug 'sheerun/vim-polyglot'
     " tree-sitter
     Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
-    Plug 'nvim-treesitter/playground'
     " adds folding, fancy settings, and more!
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 
@@ -91,7 +88,7 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
     Plug 'lervag/vimtex', { 'for': 'tex' }
 
     " snippets for code insertion
-    Plug 'L3MON4D3/LuaSnip', {'tag': 'v1.*'}
+    Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*'}
 
     " debug print
     Plug 'andrewferrier/debugprint.nvim'
@@ -142,9 +139,6 @@ call plug#begin(expand(g:dotfiles_vim_dir.'plugged'))
 
     " git signs in the gutter
     Plug 'lewis6991/gitsigns.nvim'
-
-    " tagbar
-    Plug 'majutsushi/tagbar'
 
     " colorscheme tokyonight
     Plug 'folke/tokyonight.nvim'
@@ -220,7 +214,7 @@ opt.autoread = true
 
 -- Pulse Line function
 local function pulse()
-    local old_hi = vim.api.nvim_exec('hi CursorLine', true)
+    local old_hi = vim.api.nvim_exec2('hi CursorLine', { output = true }).output
     local steps = 8
     local width = 1
     local start = width
@@ -324,7 +318,7 @@ keymap('n', 'q:', '<Nop>')
 -- Jump to definition mappings
 keymap('n', '<C-N>', function()
     -- Use LSP definition if available, otherwise fallback to gd
-    if vim.lsp.get_active_clients({bufnr = 0})[1] then
+    if vim.lsp.get_clients({bufnr = 0})[1] then
         vim.lsp.buf.definition()
     else
         local keys = vim.api.nvim_replace_termcodes('gd', true, false, true)
@@ -414,7 +408,7 @@ vim.api.nvim_create_autocmd("WinNew", {
     pattern = "*",
     callback = function()
         if is_win_guihua_floating() then
-            local timer = vim.loop.new_timer()
+            local timer = vim.uv.new_timer()
             timer:start(50, 0, vim.schedule_wrap(hijack_guihua_mappings))
         end
     end,
@@ -714,18 +708,10 @@ require("mason").setup({
     },
 })
 
--- Workaround for missing vim.lsp.enable in some Neovim versions
-if not vim.lsp.enable then
-    vim.lsp.enable = function()
-        -- No-op function to prevent errors
-        return true
-    end
-end
-
 -- require('java').setup()
 
 require("mason-lspconfig").setup({
-    automatic_enable = false,  -- Disable automatic enable feature to avoid vim.lsp.enable error
+    automatic_enable = true,
     ensure_installed = {
         "vimls",
         "lua_ls",
@@ -781,92 +767,6 @@ local luasnip = require('luasnip')
 
 -- Setup copilot cmp - disabled due to serialization errors
 require("copilot_cmp").setup({})
-
--- Navigator setup - disabled due to persistent CursorHold errors
-require("navigator").setup({
-    debug = false,
-    mason = false,  -- Disable mason integration
-    default_mapping = false,
-    lsp_signature_help = false,  -- Disable signature help
-    signature_help_cfg = nil,
-    lines_show_prompt = 20,
-    prompt_mode = 'normal',
-    keymaps = {},  -- Disable default keymaps
-    lsp = {
-	    enable = false,
-        disable_lsp = "all",
-        code_action = {
-            enable = false,
-            sign = false,
-            delay = 0,  -- Set to 0 to disable
-        },
-        code_lens = false,  -- Disable code lens
-        diagnostic_scrollbar_sign = false,
-        diagnostic_virtual_text = '',
-        display_diagnostic_qf = false,
-        diagnostic = {
-            enable = false, -- somehow this actually _enables_ diagnostics to work
-            float = false,
-            -- float = {
-            --     border = 'rounded',
-            -- },
-            virtual_lines = {
-                current_line = false,
-            }
-        },
-        tsserver = {
-            single_file_support = true,
-        },
-        ts_ls = {
-            single_file_support = true,
-        },
-        format_on_save = false,
-    },
-    icons = {
-        icons = true,
-        code_action_icon = '󱐋 ',
-        code_lens_action_icon = '󰍉 ',
-        diagnostic_head = "",
-        diagnostic_err = "",
-        diagnostic_warn = "",
-        diagnostic_info = "",
-        diagnostic_hint = "",
-        diagnostic_head_severity_1 = ' ',
-        diagnostic_head_severity_2 = ' ',
-        diagnostic_head_severity_3 = ' ',
-        diagnostic_head_description = '',
-        diagnostic_virtual_text = '',
-        diagnostic_file = '',
-        value_definition = '󰐕',
-        value_changed = '󰆕 ',
-        side_panel = {
-            section_separator = '󰇜',
-            line_num_left = '',
-            line_num_right = '',
-            inner_node = '├○',
-            outer_node = '╰○',
-            bracket_left = '⟪',
-            bracket_right = '⟫',
-        },
-        match_kinds = {
-            var = '󱀍 ',
-            const = '󱀍 ',
-            method = 'ƒ ',
-            parameter = '󰫧 ',
-            parameters = '󰫧 ',
-            required_parameter = '󰫧 ',
-            associated = ' ',
-            namespace = ' ',
-            type = '𝐓 ',
-            field = ' ',
-            module = ' ',
-            flag = ' ',
-            import = '󰋺 ',
-        },
-        treesitter_defult = ' ',
-        doc_symbols = ' ',
-    },
-})
 
 -- CMP setup
 cmp.setup({
@@ -961,7 +861,7 @@ local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 
 local lsp_capabilities = vim.tbl_deep_extend('force',
-    require('lspconfig').util.default_config.capabilities,
+    vim.lsp.protocol.make_client_capabilities(),
     require('cmp_nvim_lsp').default_capabilities())
 
 local function toggle_diagnostics()
@@ -982,10 +882,9 @@ end
 local function qflist_references()
 	local win = vim.api.nvim_get_current_win()
 	vim.lsp.buf.references(nil, {
-		on_list = function(items, title, context)
-			vim.fn.setqflist({}, " ", items)
+		on_list = function(list)
+			vim.fn.setqflist({}, " ", list)
             require('trouble').open("qflist")
-			-- vim.cmd.copen()
 			vim.api.nvim_set_current_win(win)
 		end,
 	})
@@ -993,18 +892,8 @@ end
 
 local function lsp_attach(client, bufnr)
     local opts = { buffer = bufnr }
-    -- Navigator calls with error handling (commented out to avoid key conflicts)
-    require("navigator.lspclient.mapping").setup({
-        client = client,
-        bufnr = bufnr,
-    })
-
-    require("navigator.dochighlight").documentHighlight(bufnr)
-    require("navigator.codeAction").code_action_prompt(client, bfnr)
-    require("navigator.lspclient.highlight").add_highlight()
-    require("navigator.lspclient.highlight").config_signs()
-    require('navigator.lspclient.lspkind').init()
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+    vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+    vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
 
     -- LSP keymaps (using standard LSP functions)
     local keymaps = {
@@ -1049,170 +938,116 @@ local function lsp_attach(client, bufnr)
 end
 
 local function dir_has_file(dir, file)
-    return require("lspconfig").util.search_ancestors(dir, function(path)
-        local abs_path = require("lspconfig").util.path.join(path, file)
-        if require("lspconfig").util.path.is_file(abs_path) then
-            return true
-        end
-    end)
+    return vim.fs.root(dir, file) ~= nil
 end
-
--- Define lspconfig early to avoid nil errors in configuration
-local lspconfig = require('lspconfig')
 
 -- allow pylsp_mypy to run in virtual environments
 vim.env.PYLSP_MYPY_ALLOW_DANGEROUS_CODE_EXECUTION = 1
 
--- LSP server configurations
-local lsp_config_override = {
-    yamlls = {
-        settings = {
-            yaml = {
-                keyOrdering = false,
-            },
+-- Global LSP defaults applied to every server
+vim.lsp.config('*', {
+    on_attach = lsp_attach,
+    capabilities = lsp_capabilities,
+})
+
+-- Per-server configuration overrides
+vim.lsp.config('yamlls', {
+    settings = {
+        yaml = {
+            keyOrdering = false,
         },
     },
+})
 
-    helm_ls = {
-        root_dir = function(fname)
-            local root_files = {
-                'Chart.yaml',
-                'Chart.lock',
-                'helm',
-                'charts',
-                '.git',
-            }
-            return lspconfig.util.root_pattern(table.unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
-        end,
-        settings = {
-            ['helm-ls'] = {
-                yamlls = {
-                    enabled = false,
-                    enabledForFilesGlob = "*.{yaml.yml}",
-                    path = "yaml-language-server",
-                    config = {
-                        keyOrdering = false,
-                    },
-                },
-            },
-        },
-    },
-
-    gopls = {
-        root_dir = function(fname)
-            local root_files = {
-                'go.mod',
-                'go/go.mod',
-                'go.work',
-                '.git',
-            }
-            return lspconfig.util.root_pattern(table.unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
-        end,
-    },
-
-    golangci_lint_ls = {},
-
-    terraformls = {
-        root_dir = function(fname)
-            local root_files = {
-                '.terraform_root',
-                '.terraform',
-                '.git',
-            }
-            return lspconfig.util.root_pattern(table.unpack(root_files))(fname) or lspconfig.util.path.dirname(fname)
-        end,
-    },
-
-    pylsp = {
-        settings = {
-            pylsp = {
-                plugins = {
-                    pycodestyle = {
-                        enabled = true,
-                        ignore = {
-                            'E402',
-                            'E501',
-                            'E731',
-                            'W503',
-                            'W504',
-                        },
-                    },
-                    jedi_completion = {
-                        enabled = true,
-                    },
-                    jedi = {
-                      environment = vim.env.VIRTUAL_ENV or ".venv/",
-                    },
-
-                    pylsp_mypy = {
-                        enabled = true,
-                        live_mode = false, -- only on save
-                        strict = true,
-                        ignore_missing_imports = true,
-                        ["follow-imports"] = "silent",
-                         mypy_command = {
-                            "mypy",
-                            "--strict",
-                            "--follow-imports=silent",
-                            "--ignore-missing-imports",
-                         },
-                    },
-                },
-            },
-        },
-    },
-
-    pyright = {
-        on_new_config = function(new_config, dir)
-            if dir_has_file(dir, "poetry.lock") then
-                new_config.cmd = { "poetry", "run", "pyright-langserver", "--stdio" }
-            elseif dir_has_file(dir, "Pipfile") then
-                new_config.cmd = { "pipenv", "run", "pyright-langserver", "--stdio" }
-            end
-        end,
-    },
-}
-
--- Set default metatable for lsp_config_override
-setmetatable(lsp_config_override, { __index = function() return {} end })
-
-local function get_lspconfig(server_name)
-    local opts = {
-        on_attach = lsp_attach,
-        capabilities = lsp_capabilities,
-    }
-
-    if lsp_config_override[server_name] ~= false then
-        opts = vim.tbl_extend('force', opts, lsp_config_override[server_name])
-    end
-
-    return opts
-end
-
--- Mason handlers
-local mason_handlers = {
-    function(server_name)
-        lspconfig[server_name].setup(get_lspconfig(server_name))
+vim.lsp.config('helm_ls', {
+    root_dir = function(fname)
+        return vim.fs.root(fname, {'Chart.yaml', 'Chart.lock', 'helm', 'charts', '.git'})
+            or vim.fn.fnamemodify(fname, ':h')
     end,
-}
+    settings = {
+        ['helm-ls'] = {
+            yamlls = {
+                enabled = false,
+                enabledForFilesGlob = "*.{yaml.yml}",
+                path = "yaml-language-server",
+                config = {
+                    keyOrdering = false,
+                },
+            },
+        },
+    },
+})
 
--- Try to use setup_handlers, if not available setup servers manually
-local ok, mason_lspconfig = pcall(require, 'mason-lspconfig')
-if ok and mason_lspconfig.setup_handlers then
-    mason_lspconfig.setup_handlers(mason_handlers)
-else
-    -- Manually setup servers if setup_handlers is not available
-    local servers = {
-        "vimls", "lua_ls", "terraformls", "jqls", "taplo", "yamlls",
-        "helm_ls", "pylsp", "jsonls", "gopls", "golangci_lint_ls",
-        "dockerls", "bashls", "ts_ls"
-    }
-    for _, server_name in ipairs(servers) do
-        if lspconfig[server_name] then
-            lspconfig[server_name].setup(get_lspconfig(server_name))
+vim.lsp.config('gopls', {
+    root_dir = function(fname)
+        return vim.fs.root(fname, {'go.mod', 'go/go.mod', 'go.work', '.git'})
+            or vim.fn.fnamemodify(fname, ':h')
+    end,
+})
+
+vim.lsp.config('terraformls', {
+    root_dir = function(fname)
+        return vim.fs.root(fname, {'.terraform_root', '.terraform', '.git'})
+            or vim.fn.fnamemodify(fname, ':h')
+    end,
+})
+
+vim.lsp.config('pylsp', {
+    settings = {
+        pylsp = {
+            plugins = {
+                pycodestyle = {
+                    enabled = true,
+                    ignore = {
+                        'E402',
+                        'E501',
+                        'E731',
+                        'W503',
+                        'W504',
+                    },
+                },
+                jedi_completion = {
+                    enabled = true,
+                },
+                jedi = {
+                    environment = vim.env.VIRTUAL_ENV or ".venv/",
+                },
+                pylsp_mypy = {
+                    enabled = true,
+                    live_mode = false, -- only on save
+                    strict = true,
+                    ignore_missing_imports = true,
+                    ["follow-imports"] = "silent",
+                    mypy_command = {
+                        "mypy",
+                        "--strict",
+                        "--follow-imports=silent",
+                        "--ignore-missing-imports",
+                    },
+                },
+            },
+        },
+    },
+})
+
+vim.lsp.config('pyright', {
+    cmd = function()
+        local cwd = vim.fn.getcwd()
+        if dir_has_file(cwd, "poetry.lock") then
+            return { "poetry", "run", "pyright-langserver", "--stdio" }
+        elseif dir_has_file(cwd, "Pipfile") then
+            return { "pipenv", "run", "pyright-langserver", "--stdio" }
         end
-    end
-end
+        return { "pyright-langserver", "--stdio" }
+    end,
+})
+
+-- Enable all servers (mason-lspconfig auto_enable handles newly installed ones)
+vim.lsp.enable({
+    "vimls", "lua_ls", "terraformls", "jqls", "taplo", "yamlls",
+    "helm_ls", "pylsp", "jsonls", "gopls", "golangci_lint_ls",
+    "dockerls", "bashls", "ts_ls",
+})
 
 -- Treesitter setup
 require'nvim-treesitter.configs'.setup {
@@ -1266,10 +1101,6 @@ require'nvim-treesitter.configs'.setup {
     indent = {
         enable = true,
     },
-
-    playground = {
-        enable = true,
-    }
 }
 
 require('ts_context_commentstring').setup {
@@ -1377,11 +1208,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 -- vim-fubitive
 vim.g.fubitive_domain_pattern = 'code\\.squarespace\\.net'
 
--- Tagbar
-keymap('n', '<F2>', ':TagbarToggle<CR>', { silent = true })
-vim.g.tagbar_map_togglefold = '<Space>'
-vim.g.tagbar_autofocus = 1
-
 -- which-key
 require("which-key").setup({
     plugins = {
@@ -1468,11 +1294,12 @@ vim.api.nvim_create_autocmd("InsertLeave", {
 })
 
 -- Automatically reload init.lua when it's saved
+local init_lua_path = vim.env.HOME .. '/.dotfiles-harrison/init.lua'
 vim.api.nvim_create_augroup("AutoReloadVimRC", { clear = true })
 vim.api.nvim_create_autocmd("BufWritePost", {
     group = "AutoReloadVimRC",
-    pattern = vim.fn.stdpath("config") .. "/init.lua",
-    command = "luafile " .. vim.fn.stdpath("config") .. "/init.lua"
+    pattern = init_lua_path,
+    command = "luafile " .. init_lua_path
 })
 
 -- Return to same line when reopening a file
@@ -1494,7 +1321,7 @@ vim.api.nvim_create_autocmd("InsertEnter", {
     group = "NoInsertFolding",
     pattern = "*",
     callback = function()
-        vim.w.oldfdm = vim.opt_local.foldmethod[0]
+        vim.w.oldfdm = vim.wo.foldmethod
         vim.opt_local.foldmethod = 'manual'
     end
 })
@@ -1550,14 +1377,14 @@ vim.api.nvim_create_autocmd({"BufRead", "BufWinEnter"}, {
 -- ============================================================================
 
 opt.foldmethod = 'expr'
-opt.foldexpr = 'nvim_treesitter#foldexpr()'
+opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 opt.foldenable = true
 opt.foldlevelstart = 0
 
 -- Space to toggle folds
 keymap({'n', 'v'}, '<Space>', 'za')
--- Shift+Space to toggle folds recursively
-keymap({'n', 'v'}, '<Enter>', 'zA')
+-- Enter to toggle folds recursively in normal mode
+keymap('n', '<Enter>', 'zA')
 
 -- Make zO recursively open whatever fold we're in
 keymap('n', 'zO', 'zczO')
@@ -1584,8 +1411,8 @@ local function my_fold_text()
     return line .. '…' .. string.rep(" ", fillcharcount) .. count_str .. '…' .. ' '
 end
 
-opt.foldtext = 'v:lua.my_fold_text()'
 _G.my_fold_text = my_fold_text
+opt.foldtext = 'v:lua.my_fold_text()'
 
 -- ============================================================================
 -- Filetype-specific Configuration
