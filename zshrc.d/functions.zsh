@@ -825,3 +825,49 @@ function vim-pipe () {
 
     vim -- ${files[@]}
 }
+
+# copy <file> or pipe content to clipboard (supports pbcopy, xclip, xsel)
+function copy () {
+    local file content input
+
+    # Determine clipboard command
+    local clip_cmd
+    if command_exists pbcopy; then
+        clip_cmd="pbcopy"
+    elif command_exists xclip; then
+        clip_cmd="xclip -selection clipboard"
+    elif command_exists xsel; then
+        clip_cmd="xsel --clipboard --input"
+    else
+        echo "Error: no clipboard utility found (pbcopy, xclip, or xsel required)" >&2
+        return 1
+    fi
+
+    file="$1"
+
+    if [[ -n $file ]]; then
+        if [[ ! -f "$file" ]]; then
+            echo "Error: file '$file' not found" >&2
+            return 1
+        fi
+        content=$(cat "$file") || {
+            echo "Error: failed to read '$file'" >&2
+            return 1
+        }
+    fi
+
+    if [[ -z $content ]]; then
+        input=$(cat)
+        [[ -n $input ]] && content="$input"
+    fi
+
+    if [[ -z $content ]]; then
+        echo "Usage: copy [file] (or pipe content to it)" >&2
+        return 1
+    fi
+
+    if ! echo -n "$content" | eval "$clip_cmd"; then
+        echo "Error: failed to copy to clipboard" >&2
+        return 1
+    fi
+}
