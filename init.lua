@@ -711,7 +711,7 @@ require("mason").setup({
 -- require('java').setup()
 
 require("mason-lspconfig").setup({
-    automatic_enable = true,
+    automatic_enable = false,
     ensure_installed = {
         "vimls",
         "lua_ls",

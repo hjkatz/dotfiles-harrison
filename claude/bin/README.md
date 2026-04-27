@@ -15,6 +15,7 @@ These tools help Claude:
 <!-- Keep this list sorted alphabetically -->
 <!-- Format: - `tool-name` - Brief description -->
 
+- `stop-save-permissions` - Stop-hook: notify and merge `.claude/settings.local.json` into `~/.claude/settings.json` so permission grants persist across sessions
 - `update-claude` - Update Claude Code to the latest version and resume the current session
 
 ## Tool Header Template

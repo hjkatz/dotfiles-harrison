@@ -56,6 +56,54 @@ mkdir -p ~/.claude
 ln -s -f -v $DEFAULT_DOTFILES_HOME/compiled/CLAUDE.md ~/.claude/CLAUDE.md
 
 echo
+color_echo cyan "🪝 Merging Claude hooks into ~/.claude/settings.json..."
+# Idempotently merge dotfiles hook fragments into the global Claude settings.
+# We don't symlink settings.json because Claude writes to it at runtime
+# (e.g. permission grants). Instead, we deep-merge our fragment so hook entries
+# from dotfiles travel with the repo while per-machine settings stay intact.
+hooks_fragment="$DEFAULT_DOTFILES_HOME/claude/settings.hooks.json"
+claude_settings="$HOME/.claude/settings.json"
+if [[ ! -f "$hooks_fragment" ]]; then
+    color_echo yellow "  ⚠️  No hooks fragment at $hooks_fragment, skipping..."
+elif ! command -v jq >/dev/null 2>&1; then
+    color_echo red "  ❌ jq not installed — cannot merge hooks. Install jq and re-run 'make install'."
+else
+    [[ -f "$claude_settings" ]] || echo '{}' > "$claude_settings"
+    tmp_settings="$(mktemp)"
+    # Deep-merge: for each event in the fragment, append any hook blocks that
+    # aren't already present (deduped by exact JSON equality).
+    if jq --slurpfile frag "$hooks_fragment" '
+          . as $base
+          | ($frag[0].hooks // {}) as $new
+          | reduce ($new | keys[]) as $event (
+              $base;
+              .hooks[$event] = (((.hooks[$event] // []) + $new[$event]) | unique)
+            )
+        ' "$claude_settings" > "$tmp_settings"; then
+        mv "$tmp_settings" "$claude_settings"
+        color_echo green "  ✅ Hooks merged into $claude_settings"
+    else
+        rm -f "$tmp_settings"
+        color_echo red "  ❌ Failed to merge hooks (settings.json left untouched)"
+    fi
+fi
+
+echo
+color_echo cyan "🔧 Verifying Claude hook runtime dependencies..."
+missing_deps=()
+for dep in jq yq osascript; do
+    if ! command -v "$dep" >/dev/null 2>&1; then
+        missing_deps+=("$dep")
+    fi
+done
+if [[ ${#missing_deps[@]} -gt 0 ]]; then
+    color_echo yellow "  ⚠️  Missing: ${missing_deps[*]} — stop-save-permissions hook will fail until installed"
+    color_echo white  "     (osascript ships with macOS; install jq + yq via 'brew install jq yq')"
+else
+    color_echo green "  ✅ jq, yq, osascript all present"
+fi
+
+echo
 color_echo cyan "🤖 Setting up Claude commands..."
 # Create Claude commands directory and symlink all command files
 mkdir -p ~/.claude/commands

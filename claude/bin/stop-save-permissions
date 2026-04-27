@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Purpose: Stop-hook: notify, then lift project-local permission grants into the global settings so they persist across sessions
+# Usage: stop-save-permissions    (invoked by Claude Code Stop hook from the project cwd)
+# Args: None
+# Output: macOS notification; merges .claude/settings.local.json (in cwd) into ~/.claude/settings.json and removes the local file
+
+set -eu
+
+osascript -e 'display notification "Claude finished" with title "Claude Code" sound name "default"'
+
+local_settings=".claude/settings.local.json"
+if [[ -f "${local_settings}" ]]; then
+  global_settings="${HOME}/.claude/settings.json"
+  new_json="$(yq ". *+ load(\"${local_settings}\")" "${global_settings}" \
+    | jq -S 'walk(if type == "array" then sort else . end)')"
+  echo "${new_json}" > "${global_settings}"
+  rm "${local_settings}"
+fi

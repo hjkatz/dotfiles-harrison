@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.dotfiles-harrison/claude/bin/stop-save-permissions"
+          }
+        ]
+      }
+    ]
+  }
+}
