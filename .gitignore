@@ -5,3 +5,4 @@
 .last_updated_at
 compiled/
 .cache/*
+.init_lua_checksum
